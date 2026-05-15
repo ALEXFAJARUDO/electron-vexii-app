@@ -177,30 +177,20 @@ export default function ConveniencePage() {
                   <h2 className="font-bold text-gray-900 text-lg">WiFi接続情報</h2>
                 </div>
                 <div className="space-y-3">
-                  <div className="bg-blue-50 rounded-xl p-4 flex items-center justify-between">
-                    <div>
-                      <p className="text-[10px] text-blue-400 uppercase tracking-wider font-semibold">SSID</p>
-                      <p className="font-mono font-semibold text-blue-900 mt-0.5">{DEMO_WIFI.ssid}</p>
-                    </div>
-                    <button
-                      onClick={() => copy(DEMO_WIFI.ssid, 'ssid')}
-                      className="text-xs px-3 py-1.5 rounded-lg bg-white border border-blue-200 text-blue-600 font-semibold transition-colors hover:bg-blue-50"
-                    >
-                      {copied === 'ssid' ? '✓ コピー済' : 'コピー'}
-                    </button>
+                  <div className="bg-blue-50 rounded-xl p-4">
+                    <p className="text-[10px] text-blue-400 uppercase tracking-wider font-semibold">SSID</p>
+                    <p className="font-mono font-semibold text-blue-900 mt-0.5">{DEMO_WIFI.ssid}</p>
                   </div>
-                  <div className="bg-blue-50 rounded-xl p-4 flex items-center justify-between">
-                    <div>
-                      <p className="text-[10px] text-blue-400 uppercase tracking-wider font-semibold">パスワード</p>
-                      <p className="font-mono font-semibold text-blue-900 mt-0.5">{DEMO_WIFI.password}</p>
-                    </div>
-                    <button
-                      onClick={() => copy(DEMO_WIFI.password, 'pass')}
-                      className="text-xs px-3 py-1.5 rounded-lg bg-white border border-blue-200 text-blue-600 font-semibold transition-colors hover:bg-blue-50"
-                    >
-                      {copied === 'pass' ? '✓ コピー済' : 'コピー'}
-                    </button>
+                  <div className="bg-blue-50 rounded-xl p-4">
+                    <p className="text-[10px] text-blue-400 uppercase tracking-wider font-semibold">パスワード</p>
+                    <p className="font-mono font-semibold text-blue-900 mt-0.5">{DEMO_WIFI.password}</p>
                   </div>
+                  <button
+                    onClick={() => copy(DEMO_WIFI.password, 'pass')}
+                    className="w-full py-3 rounded-xl bg-blue-500 text-white font-bold text-sm transition-colors hover:bg-blue-600 active:bg-blue-700"
+                  >
+                    {copied === 'pass' ? '✓ 接続済' : '接続'}
+                  </button>
                 </div>
               </div>
             )}
