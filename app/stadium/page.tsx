@@ -3,7 +3,15 @@
 import { useState } from 'react'
 import Link from 'next/link'
 
+type Sport = 'baseball' | 'soccer' | 'american-football' | 'rugby'
 type PanelId = 'game' | 'vendor' | 'map' | 'order' | 'community' | 'coupon' | 'goods'
+
+const SPORT_LIST: { id: Sport; label: string; en: string; emoji: string; color: string; bg: string; border: string }[] = [
+  { id: 'baseball',          label: '野球',    en: 'Baseball',          emoji: '⚾', color: '#22c55e', bg: '#f0fdf4', border: '#bbf7d0' },
+  { id: 'soccer',            label: 'サッカー', en: 'Soccer',            emoji: '⚽', color: '#0ea5e9', bg: '#f0f9ff', border: '#bae6fd' },
+  { id: 'american-football', label: 'アメフト', en: 'American Football', emoji: '🏈', color: '#f97316', bg: '#fff7ed', border: '#fed7aa' },
+  { id: 'rugby',             label: 'ラグビー', en: 'Rugby',             emoji: '🏉', color: '#a855f7', bg: '#faf5ff', border: '#e9d5ff' },
+]
 
 const BUTTONS: {
   id: PanelId
@@ -49,7 +57,7 @@ const BUTTONS: {
     border: '#bae6fd',
     icon: (
       <svg className="w-9 h-9" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z"/>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c-.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z"/>
       </svg>
     ),
   },
@@ -131,9 +139,12 @@ const DEMO_COUPONS = [
 ]
 
 export default function StadiumPage() {
+  const [sport, setSport] = useState<Sport | null>(null)
   const [panel, setPanel] = useState<PanelId | null>(null)
   const [vendorCalled, setVendorCalled] = useState(false)
   const [cart, setCart] = useState<Record<number, number>>({})
+
+  const selectedSport = SPORT_LIST.find((s) => s.id === sport)
 
   function callVendor() {
     setVendorCalled(true)
@@ -154,21 +165,60 @@ export default function StadiumPage() {
     setVendorCalled(false)
   }
 
+  // ─── Sport selection screen ───────────────────────────────
+  if (!sport) {
+    return (
+      <main className="h-dvh flex flex-col bg-gray-50 max-w-md mx-auto overflow-hidden">
+        <header className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-2.5 shrink-0">
+          <Link href="/" className="flex items-center gap-2">
+            <img src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png" alt="Vexii" className="h-6 w-auto object-contain"/>
+            <span className="font-bold text-sm silver-gradient">Vexii</span>
+          </Link>
+          <span className="text-gray-200 text-lg leading-none mx-0.5">|</span>
+          <span className="text-sm font-semibold text-gray-500">球場</span>
+        </header>
+
+        <div className="flex-1 flex flex-col items-center justify-center px-5">
+          <p className="text-xs font-semibold tracking-widest text-gray-400 uppercase mb-2">Select Sport</p>
+          <h2 className="text-xl font-bold text-gray-800 mb-8">競技を選択してください</h2>
+          <div className="w-full grid grid-cols-2 gap-4">
+            {SPORT_LIST.map((s) => (
+              <button
+                key={s.id}
+                onClick={() => setSport(s.id)}
+                className="card-light flex flex-col items-center gap-3 py-7 active:scale-95 transition-transform duration-150"
+                style={{ borderColor: s.border }}
+              >
+                <span className="text-5xl">{s.emoji}</span>
+                <div className="text-center">
+                  <p className="font-bold text-gray-800 text-base">{s.label}</p>
+                  <p className="text-xs text-gray-400">{s.en}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </main>
+    )
+  }
+
+  // ─── Main menu ────────────────────────────────────────────
   return (
     <>
       <main className="h-dvh flex flex-col bg-gray-50 max-w-md mx-auto overflow-hidden">
         {/* Header */}
         <header className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-2.5 shrink-0">
-          <Link href="/" className="flex items-center gap-2">
-            <img
-              src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png"
-              alt="Vexii"
-              className="h-6 w-auto object-contain"
-            />
-            <span className="font-bold text-sm silver-gradient">Vexii</span>
-          </Link>
-          <span className="text-gray-200 text-lg leading-none mx-0.5">|</span>
-          <span className="text-sm font-semibold text-gray-500">球場</span>
+          <button onClick={() => setSport(null)} className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+            <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
+            </svg>
+          </button>
+          <div className="flex items-center gap-1.5">
+            <span className="text-lg">{selectedSport?.emoji}</span>
+            <span className="font-bold text-sm text-gray-800">{selectedSport?.label}</span>
+          </div>
+          <span className="text-gray-200 text-lg leading-none mx-0.5 ml-auto" />
+          <span className="text-xs text-gray-400 font-semibold">球場</span>
         </header>
 
         {/* 2-col × 4-row grid — fills height, no scroll */}
@@ -214,7 +264,10 @@ export default function StadiumPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728"/>
                     </svg>
                   </div>
-                  <h2 className="font-bold text-gray-900 text-lg">試合情報</h2>
+                  <div>
+                    <h2 className="font-bold text-gray-900 text-lg">試合情報</h2>
+                    <p className="text-xs text-gray-400">{selectedSport?.emoji} {selectedSport?.label}</p>
+                  </div>
                 </div>
 
                 <div className="bg-green-50 border border-green-100 rounded-2xl p-5 mb-4">
@@ -284,7 +337,7 @@ export default function StadiumPage() {
                 <div className="flex items-center gap-3 mb-5">
                   <div className="w-10 h-10 rounded-xl bg-sky-50 flex items-center justify-center">
                     <svg className="w-5 h-5 text-sky-500" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z"/>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c-.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z"/>
                     </svg>
                   </div>
                   <h2 className="font-bold text-gray-900 text-lg">スタジアムマップ</h2>

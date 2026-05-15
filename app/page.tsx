@@ -10,6 +10,10 @@ const GENRE_HREF: Record<string, string> = {
   mall: '/mall',
   hotel: '/hotel',
   racing: '/racing',
+  airport: '/airport',
+  'theme-park': '/theme-park',
+  concert: '/concert',
+  hospital: '/hospital',
 }
 
 const GENRES = [
@@ -84,6 +88,54 @@ const GENRES = [
     color: '#8b5cf6',
     bg: '#f5f3ff',
     border: '#ddd6fe',
+  },
+  {
+    id: 'airport',
+    label: '空港',
+    icon: (
+      <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/>
+      </svg>
+    ),
+    color: '#0ea5e9',
+    bg: '#f0f9ff',
+    border: '#bae6fd',
+  },
+  {
+    id: 'theme-park',
+    label: 'テーマパーク',
+    icon: (
+      <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+    ),
+    color: '#ec4899',
+    bg: '#fdf2f8',
+    border: '#fbcfe8',
+  },
+  {
+    id: 'concert',
+    label: 'コンサート会場',
+    icon: (
+      <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z"/>
+      </svg>
+    ),
+    color: '#7c3aed',
+    bg: '#f5f3ff',
+    border: '#ddd6fe',
+  },
+  {
+    id: 'hospital',
+    label: '病院',
+    icon: (
+      <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z"/>
+      </svg>
+    ),
+    color: '#10b981',
+    bg: '#ecfdf5',
+    border: '#a7f3d0',
   },
 ]
 
