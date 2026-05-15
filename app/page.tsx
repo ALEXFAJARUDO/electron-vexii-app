@@ -185,7 +185,7 @@ export default function Home() {
               style={{ borderColor: genre.border }}
             >
               <div
-                className="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110"
+                className="w-16 h-16 rounded-full flex items-center justify-center transition-transform group-hover:scale-110"
                 style={{ background: genre.bg, color: genre.color }}
               >
                 {genre.icon}
