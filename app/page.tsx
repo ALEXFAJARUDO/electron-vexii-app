@@ -3,6 +3,10 @@ import MenuButton from '@/components/MenuButton'
 
 const DEMO_CHARGER_ID = '11111111-1111-1111-1111-111111111111'
 
+const GENRE_HREF: Record<string, string> = {
+  convenience: '/convenience',
+}
+
 const GENRES = [
   {
     id: 'restaurant',
@@ -107,7 +111,7 @@ export default function Home() {
           {GENRES.map((genre) => (
             <Link
               key={genre.id}
-              href={`/s/${DEMO_CHARGER_ID}`}
+              href={GENRE_HREF[genre.id] ?? `/s/${DEMO_CHARGER_ID}`}
               className="group card-light p-5 flex flex-col items-center gap-3 transition-all duration-200 active:scale-95"
               style={{ borderColor: genre.border }}
             >
