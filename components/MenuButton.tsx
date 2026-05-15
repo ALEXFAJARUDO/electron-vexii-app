@@ -27,7 +27,7 @@ export default function MenuButton() {
       <button
         onClick={() => setOpen((v) => !v)}
         aria-label="メニュー"
-        className="w-9 h-9 rounded-xl bg-[#0d1f3c] silver-border flex items-center justify-center transition-colors hover:bg-[#0f2545]"
+        className="w-9 h-9 rounded-none bg-[#0d1f3c] silver-border flex items-center justify-center transition-colors hover:bg-[#0f2545]"
       >
         <span className="flex flex-col gap-[5px] items-center justify-center">
           <span className={`block w-4 h-[1.5px] bg-[#60a5fa] transition-all origin-center ${open ? 'rotate-45 translate-y-[6.5px]' : ''}`} />

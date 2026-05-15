@@ -163,7 +163,6 @@ export default function Home() {
             alt="Vexii"
             className="h-8 w-auto object-contain"
           />
-          <span className="font-bold text-lg silver-gradient">Vexii</span>
         </div>
         <MenuButton />
       </header>
