@@ -4,6 +4,7 @@ import MenuButton from '@/components/MenuButton'
 const DEMO_CHARGER_ID = '11111111-1111-1111-1111-111111111111'
 
 const GENRE_HREF: Record<string, string> = {
+  cafe: '/cafe',
   restaurant: '/restaurant',
   convenience: '/convenience',
   stadium: '/stadium',
@@ -17,6 +18,18 @@ const GENRE_HREF: Record<string, string> = {
 }
 
 const GENRES = [
+  {
+    id: 'cafe',
+    label: 'カフェ',
+    icon: (
+      <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513M15 21H9m6 0h2.25A2.25 2.25 0 0019.5 18.75v-2.892c0-.595-.232-1.165-.645-1.591l-1.2-1.278a.75.75 0 00-1.093.033L15 14.25m0 6.75V14.25m-6 6.75V14.25m0 0l-1.562-1.228a.75.75 0 00-1.093.033l-1.2 1.278A2.254 2.254 0 004.5 15.858v2.892A2.25 2.25 0 006.75 21H9"/>
+      </svg>
+    ),
+    color: '#92400e',
+    bg: '#fffbeb',
+    border: '#fde68a',
+  },
   {
     id: 'restaurant',
     label: '飲食店用',
