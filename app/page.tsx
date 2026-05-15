@@ -7,6 +7,7 @@ const GENRE_HREF: Record<string, string> = {
   restaurant: '/restaurant',
   convenience: '/convenience',
   stadium: '/stadium',
+  mall: '/mall',
 }
 
 const GENRES = [
@@ -71,16 +72,16 @@ const GENRES = [
     border: '#fecdd3',
   },
   {
-    id: 'family-restaurant',
-    label: 'ファミレス',
+    id: 'mall',
+    label: 'ショッピングモール',
     icon: (
       <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z"/>
       </svg>
     ),
-    color: '#f59e0b',
-    bg: '#fffbeb',
-    border: '#fde68a',
+    color: '#8b5cf6',
+    bg: '#f5f3ff',
+    border: '#ddd6fe',
   },
 ]
 
