@@ -1,13 +1,21 @@
 @import "tailwindcss";
 
+:root {
+  --neu-bg: #edf1f7;
+  --neu-shadow-dark: #c4cad4;
+  --neu-shadow-light: #ffffff;
+  --neu-accent: #00d4b1;
+  --neu-accent2: #7b6fe0;
+}
+
 body {
-  background: #ffffff;
-  color: #1e293b;
+  background: var(--neu-bg);
+  color: #374151;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Blue gradient logo text — works on both light and dark */
+/* Blue gradient logo text */
 .silver-gradient {
   background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 60%, #60a5fa 100%);
   -webkit-background-clip: text;
@@ -29,15 +37,29 @@ body {
   border-top: 1px solid rgba(59, 130, 246, 0.18);
 }
 
-/* Light theme card (user-facing pages) */
+/* Neumorphic light card */
 .card-light {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
-  border-radius: 16px;
+  background: var(--neu-bg);
+  border: none;
+  box-shadow: 6px 6px 14px var(--neu-shadow-dark), -6px -6px 14px var(--neu-shadow-light);
+  border-radius: 20px;
 }
 .card-light:hover {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.06);
+  box-shadow: 8px 8px 18px var(--neu-shadow-dark), -8px -8px 18px var(--neu-shadow-light);
+}
+.card-light:active {
+  box-shadow: inset 4px 4px 10px var(--neu-shadow-dark), inset -4px -4px 10px var(--neu-shadow-light);
+}
+
+/* Neumorphic icon container */
+.neu-icon {
+  box-shadow: 4px 4px 8px var(--neu-shadow-dark), -4px -4px 8px var(--neu-shadow-light);
+}
+
+/* Neumorphic header */
+.neu-header {
+  background: var(--neu-bg);
+  box-shadow: 0 3px 10px var(--neu-shadow-dark), 0 -1px 0 var(--neu-shadow-light);
 }
 
 /* Google Maps InfoWindow overrides */

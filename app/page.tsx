@@ -154,9 +154,9 @@ const GENRES = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-[#edf1f7]">
       {/* Header */}
-      <header className="border-b border-gray-100 px-5 py-4 flex items-center justify-between">
+      <header className="neu-header px-5 py-4 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <img
             src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png"
@@ -182,10 +182,9 @@ export default function Home() {
               key={genre.id}
               href={GENRE_HREF[genre.id] ?? `/s/${DEMO_CHARGER_ID}`}
               className="group card-light p-5 flex flex-col items-center gap-3 transition-all duration-200 active:scale-95"
-              style={{ borderColor: genre.border }}
             >
               <div
-                className="w-16 h-16 rounded-full flex items-center justify-center transition-transform group-hover:scale-110"
+                className="w-16 h-16 rounded-full flex items-center justify-center transition-transform group-hover:scale-110 neu-icon"
                 style={{ background: genre.bg, color: genre.color }}
               >
                 {genre.icon}
@@ -198,7 +197,7 @@ export default function Home() {
         </div>
       </div>
 
-      <footer className="text-center text-gray-300 text-xs pb-8">
+      <footer className="text-center text-gray-400 text-xs pb-8">
         &copy; {new Date().getFullYear()} Electron Vexii
       </footer>
     </main>

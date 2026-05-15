@@ -162,9 +162,9 @@ export default function MallPage() {
 
   return (
     <>
-      <main className="h-dvh flex flex-col bg-gray-50 max-w-md mx-auto overflow-hidden">
+      <main className="h-dvh flex flex-col bg-[#edf1f7] max-w-lg mx-auto overflow-hidden">
         {/* Header */}
-        <header className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-2.5 shrink-0">
+        <header className="neu-header px-4 py-3 flex items-center gap-2.5 shrink-0">
           <Link href="/" className="flex items-center gap-2">
             <img
               src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png"
@@ -178,7 +178,7 @@ export default function MallPage() {
         </header>
 
         {/* 2-col × 3-row grid */}
-        <div className="flex-1 min-h-0 p-3 grid grid-cols-2 grid-rows-3 gap-3">
+        <div className="flex-1 min-h-0 overflow-y-auto p-3 pb-6 grid grid-cols-2 auto-rows-[minmax(110px,auto)] gap-3">
           {BUTTONS.map((btn) => (
             <button
               key={btn.id}
@@ -206,7 +206,7 @@ export default function MallPage() {
           onClick={closePanel}
         >
           <div
-            className="w-full max-w-md bg-white rounded-t-3xl max-h-[85vh] overflow-y-auto"
+            className="w-full max-w-lg bg-white rounded-t-3xl max-h-[85vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="w-8 h-1 bg-gray-200 rounded-full mx-auto mt-3 mb-4" />

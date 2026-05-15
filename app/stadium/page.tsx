@@ -168,8 +168,8 @@ export default function StadiumPage() {
   // ─── Sport selection screen ───────────────────────────────
   if (!sport) {
     return (
-      <main className="h-dvh flex flex-col bg-gray-50 max-w-md mx-auto overflow-hidden">
-        <header className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-2.5 shrink-0">
+      <main className="h-dvh flex flex-col bg-[#edf1f7] max-w-lg mx-auto overflow-hidden">
+        <header className="neu-header px-4 py-3 flex items-center gap-2.5 shrink-0">
           <Link href="/" className="flex items-center gap-2">
             <img src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png" alt="Vexii" className="h-6 w-auto object-contain"/>
             <span className="font-bold text-sm silver-gradient">Vexii</span>
@@ -205,9 +205,9 @@ export default function StadiumPage() {
   // ─── Main menu ────────────────────────────────────────────
   return (
     <>
-      <main className="h-dvh flex flex-col bg-gray-50 max-w-md mx-auto overflow-hidden">
+      <main className="h-dvh flex flex-col bg-[#edf1f7] max-w-lg mx-auto overflow-hidden">
         {/* Header */}
-        <header className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-2.5 shrink-0">
+        <header className="neu-header px-4 py-3 flex items-center gap-2.5 shrink-0">
           <button onClick={() => setSport(null)} className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
             <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
@@ -222,7 +222,7 @@ export default function StadiumPage() {
         </header>
 
         {/* 2-col × 4-row grid — fills height, no scroll */}
-        <div className="flex-1 min-h-0 p-3 grid grid-cols-2 grid-rows-4 gap-3">
+        <div className="flex-1 min-h-0 overflow-y-auto p-3 pb-6 grid grid-cols-2 auto-rows-[minmax(110px,auto)] gap-3">
           {BUTTONS.map((btn) => (
             <button
               key={btn.id}
@@ -250,7 +250,7 @@ export default function StadiumPage() {
           onClick={closePanel}
         >
           <div
-            className="w-full max-w-md bg-white rounded-t-3xl max-h-[85vh] overflow-y-auto"
+            className="w-full max-w-lg bg-white rounded-t-3xl max-h-[85vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="w-8 h-1 bg-gray-200 rounded-full mx-auto mt-3 mb-4" />

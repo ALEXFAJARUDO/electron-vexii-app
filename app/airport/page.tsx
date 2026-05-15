@@ -77,8 +77,8 @@ export default function AirportPage() {
 
   return (
     <>
-      <main className="h-dvh flex flex-col bg-gray-50 max-w-md mx-auto overflow-hidden">
-        <header className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-2.5 shrink-0">
+      <main className="h-dvh flex flex-col bg-[#edf1f7] max-w-lg mx-auto overflow-hidden">
+        <header className="neu-header px-4 py-3 flex items-center gap-2.5 shrink-0">
           <Link href="/" className="flex items-center gap-2">
             <img src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png" alt="Vexii" className="h-6 w-auto object-contain"/>
             <span className="font-bold text-sm silver-gradient">Vexii</span>
@@ -87,7 +87,7 @@ export default function AirportPage() {
           <span className="text-sm font-semibold text-gray-500">✈️ 空港</span>
         </header>
 
-        <div className="flex-1 min-h-0 p-3 grid grid-cols-2 grid-rows-4 gap-3">
+        <div className="flex-1 min-h-0 overflow-y-auto p-3 pb-6 grid grid-cols-2 auto-rows-[minmax(110px,auto)] gap-3">
           {BUTTONS.map((btn) => (
             <button
               key={btn.id}
@@ -98,7 +98,7 @@ export default function AirportPage() {
               {btn.badge && (
                 <span className="absolute top-1.5 right-2 text-[9px] font-black text-sky-500">{btn.badge}</span>
               )}
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: btn.bg, color: btn.color }}>
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center neu-icon" style={{ background: btn.bg, color: btn.color }}>
                 {btn.icon}
               </div>
               <p className="font-bold text-gray-800 text-xs leading-tight text-center">{btn.label}</p>
@@ -110,7 +110,7 @@ export default function AirportPage() {
 
       {panel && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-end justify-center" onClick={closePanel}>
-          <div className="w-full max-w-md bg-white rounded-t-3xl max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-lg bg-white rounded-t-3xl max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="w-8 h-1 bg-gray-200 rounded-full mx-auto mt-3 mb-4"/>
 
             {/* フライト情報 */}
@@ -122,7 +122,7 @@ export default function AirportPage() {
                 </div>
                 <div className="space-y-2">
                   {FLIGHTS.map((f) => (
-                    <div key={f.no} className={`flex items-center justify-between px-4 py-3 rounded-xl border ${f.statusColor === 'green' ? 'bg-green-50 border-green-200' : f.statusColor === 'red' ? 'bg-red-50 border-red-200' : f.statusColor === 'blue' ? 'bg-sky-50 border-sky-200' : 'bg-gray-50 border-gray-100'}`}>
+                    <div key={f.no} className={`flex items-center justify-between px-4 py-3 rounded-xl border ${f.statusColor === 'green' ? 'bg-green-50 border-green-200' : f.statusColor === 'red' ? 'bg-red-50 border-red-200' : f.statusColor === 'blue' ? 'bg-sky-50 border-sky-200' : 'bg-[#edf1f7] border-gray-100'}`}>
                       <div>
                         <div className="flex items-center gap-2 mb-0.5">
                           <p className="font-black text-gray-800 text-sm">{f.no}</p>
@@ -201,7 +201,7 @@ export default function AirportPage() {
                     { name: 'ビジネスラウンジ B', floor: '2F 中央エリア', price: '¥1,000/時', avail: '空きあり', hot: false },
                     { name: 'ファミリーラウンジ', floor: '1F 到着ロビー横', price: '¥800/時', avail: '空きあり', hot: false },
                   ].map((l) => (
-                    <div key={l.name} className={`rounded-2xl p-4 border ${l.hot ? 'bg-amber-50 border-amber-200' : 'bg-gray-50 border-gray-100'}`}>
+                    <div key={l.name} className={`rounded-2xl p-4 border ${l.hot ? 'bg-amber-50 border-amber-200' : 'bg-[#edf1f7] border-gray-100'}`}>
                       <div className="flex items-start justify-between mb-2">
                         <div>
                           <p className="font-bold text-gray-800 text-sm">{l.name}</p>
@@ -237,7 +237,7 @@ export default function AirportPage() {
                     { belt: '3番', flight: 'NH001 東京発', status: '受取中', statusColor: 'green' },
                     { belt: '4番', flight: '—', status: '待機中', statusColor: 'gray' },
                   ].map((b) => (
-                    <div key={b.belt} className={`flex items-center justify-between px-4 py-2.5 rounded-xl border ${b.statusColor === 'green' ? 'bg-green-50 border-green-200' : b.statusColor === 'blue' ? 'bg-sky-50 border-sky-200' : 'bg-gray-50 border-gray-100'}`}>
+                    <div key={b.belt} className={`flex items-center justify-between px-4 py-2.5 rounded-xl border ${b.statusColor === 'green' ? 'bg-green-50 border-green-200' : b.statusColor === 'blue' ? 'bg-sky-50 border-sky-200' : 'bg-[#edf1f7] border-gray-100'}`}>
                       <div className="flex items-center gap-3">
                         <span className="font-black text-gray-800 w-12">ベルト {b.belt}</span>
                         <span className="text-xs text-gray-500">{b.flight}</span>

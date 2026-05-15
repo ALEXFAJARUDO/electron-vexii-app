@@ -94,8 +94,8 @@ export default function HospitalPage() {
 
   return (
     <>
-      <main className="h-dvh flex flex-col bg-gray-50 max-w-md mx-auto overflow-hidden">
-        <header className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-2.5 shrink-0">
+      <main className="h-dvh flex flex-col bg-[#edf1f7] max-w-lg mx-auto overflow-hidden">
+        <header className="neu-header px-4 py-3 flex items-center gap-2.5 shrink-0">
           <Link href="/" className="flex items-center gap-2">
             <img src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png" alt="Vexii" className="h-6 w-auto object-contain"/>
             <span className="font-bold text-sm silver-gradient">Vexii</span>
@@ -104,7 +104,7 @@ export default function HospitalPage() {
           <span className="text-sm font-semibold text-gray-500">🏥 病院</span>
         </header>
 
-        <div className="flex-1 min-h-0 p-3 grid grid-cols-2 grid-rows-4 gap-3">
+        <div className="flex-1 min-h-0 overflow-y-auto p-3 pb-6 grid grid-cols-2 auto-rows-[minmax(110px,auto)] gap-3">
           {BUTTONS.map((btn) => (
             <button
               key={btn.id}
@@ -115,7 +115,7 @@ export default function HospitalPage() {
               {btn.badge && (
                 <span className="absolute top-1.5 right-2 text-[9px] font-black" style={{ color: btn.color }}>{btn.badge}</span>
               )}
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: btn.bg, color: btn.color }}>
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center neu-icon" style={{ background: btn.bg, color: btn.color }}>
                 {btn.icon}
               </div>
               <p className="font-bold text-gray-800 text-xs leading-tight text-center">{btn.label}</p>
@@ -127,7 +127,7 @@ export default function HospitalPage() {
 
       {panel && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-end justify-center" onClick={closePanel}>
-          <div className="w-full max-w-md bg-white rounded-t-3xl max-h-[88vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-lg bg-white rounded-t-3xl max-h-[88vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="w-8 h-1 bg-gray-200 rounded-full mx-auto mt-3 mb-4"/>
 
             {/* 診察待ち通知 */}
@@ -140,7 +140,7 @@ export default function HospitalPage() {
                   <p className="text-xs text-gray-400">内科 · 外来受付</p>
                 </div>
                 <div className="flex gap-3 mb-4">
-                  <div className="flex-1 bg-gray-50 border border-gray-100 rounded-xl p-3 text-center">
+                  <div className="flex-1 bg-[#edf1f7] border border-gray-100 rounded-xl p-3 text-center">
                     <p className="text-[10px] text-gray-400 mb-1">現在呼出中</p>
                     <p className="font-black text-2xl text-gray-800">{currentNumber}<span className="text-xs font-semibold">番</span></p>
                   </div>
@@ -148,7 +148,7 @@ export default function HospitalPage() {
                     <p className="text-[10px] text-gray-400 mb-1">あなたの前</p>
                     <p className="font-black text-2xl text-amber-600">{waitCount}<span className="text-xs font-semibold">人</span></p>
                   </div>
-                  <div className="flex-1 bg-gray-50 border border-gray-100 rounded-xl p-3 text-center">
+                  <div className="flex-1 bg-[#edf1f7] border border-gray-100 rounded-xl p-3 text-center">
                     <p className="text-[10px] text-gray-400 mb-1">予想待ち時間</p>
                     <p className="font-black text-2xl text-gray-800">{waitCount * 7}<span className="text-xs font-semibold">分</span></p>
                   </div>
@@ -175,7 +175,7 @@ export default function HospitalPage() {
                 </div>
                 <div className="space-y-2">
                   {FLOOR_MAP.map((f) => (
-                    <button key={f.floor} className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl border border-gray-100 bg-gray-50 text-left active:scale-[0.98] transition-transform">
+                    <button key={f.floor} className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl border border-gray-100 bg-[#edf1f7] text-left active:scale-[0.98] transition-transform">
                       <span className="text-xs font-black w-7 text-center" style={{ color: f.color }}>{f.floor}</span>
                       <span className="text-sm text-gray-700">{f.dept}</span>
                     </button>
@@ -226,7 +226,7 @@ export default function HospitalPage() {
                   <p className="text-xs text-gray-400 mt-1">内科 1F 薬局</p>
                 </div>
                 <div className="flex gap-3 mb-4">
-                  <div className="flex-1 bg-gray-50 border border-gray-100 rounded-xl p-3 text-center">
+                  <div className="flex-1 bg-[#edf1f7] border border-gray-100 rounded-xl p-3 text-center">
                     <p className="text-[10px] text-gray-400 mb-1">現在処理中</p>
                     <p className="font-black text-2xl text-gray-800">38<span className="text-xs font-semibold">番</span></p>
                   </div>
@@ -234,7 +234,7 @@ export default function HospitalPage() {
                     <p className="text-[10px] text-gray-400 mb-1">お待ちの方</p>
                     <p className="font-black text-2xl text-orange-600">9<span className="text-xs font-semibold">人</span></p>
                   </div>
-                  <div className="flex-1 bg-gray-50 border border-gray-100 rounded-xl p-3 text-center">
+                  <div className="flex-1 bg-[#edf1f7] border border-gray-100 rounded-xl p-3 text-center">
                     <p className="text-[10px] text-gray-400 mb-1">予想時間</p>
                     <p className="font-black text-2xl text-gray-800">25<span className="text-xs font-semibold">分</span></p>
                   </div>

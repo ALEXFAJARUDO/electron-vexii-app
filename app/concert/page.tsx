@@ -84,8 +84,8 @@ export default function ConcertPage() {
 
   return (
     <>
-      <main className="h-dvh flex flex-col bg-gray-50 max-w-md mx-auto overflow-hidden">
-        <header className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-2.5 shrink-0">
+      <main className="h-dvh flex flex-col bg-[#edf1f7] max-w-lg mx-auto overflow-hidden">
+        <header className="neu-header px-4 py-3 flex items-center gap-2.5 shrink-0">
           <Link href="/" className="flex items-center gap-2">
             <img src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png" alt="Vexii" className="h-6 w-auto object-contain"/>
             <span className="font-bold text-sm silver-gradient">Vexii</span>
@@ -94,7 +94,7 @@ export default function ConcertPage() {
           <span className="text-sm font-semibold text-gray-500">🎵 コンサート会場</span>
         </header>
 
-        <div className="flex-1 min-h-0 p-3 grid grid-cols-2 grid-rows-4 gap-3">
+        <div className="flex-1 min-h-0 overflow-y-auto p-3 pb-6 grid grid-cols-2 auto-rows-[minmax(110px,auto)] gap-3">
           {BUTTONS.map((btn) => (
             <button
               key={btn.id}
@@ -105,7 +105,7 @@ export default function ConcertPage() {
               {btn.badge && (
                 <span className="absolute top-1.5 right-2 text-[9px] font-black" style={{ color: btn.color }}>{btn.badge}</span>
               )}
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: btn.bg, color: btn.color }}>
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center neu-icon" style={{ background: btn.bg, color: btn.color }}>
                 {btn.icon}
               </div>
               <p className="font-bold text-gray-800 text-xs leading-tight text-center">{btn.label}</p>
@@ -117,7 +117,7 @@ export default function ConcertPage() {
 
       {panel && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-end justify-center" onClick={closePanel}>
-          <div className="w-full max-w-md bg-white rounded-t-3xl max-h-[88vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-lg bg-white rounded-t-3xl max-h-[88vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="w-8 h-1 bg-gray-200 rounded-full mx-auto mt-3 mb-4"/>
 
             {/* セトリ速報 */}
@@ -130,7 +130,7 @@ export default function ConcertPage() {
                 <p className="text-xs text-gray-400 mb-4">Vexii Arena Tour 2026</p>
                 <div className="space-y-1.5">
                   {SETLIST.map((s) => (
-                    <div key={s.no} className={`flex items-center gap-3 px-4 py-2.5 rounded-xl border ${s.status === '演奏中' ? 'bg-red-50 border-red-300' : s.status === '済' ? 'bg-gray-50 border-gray-100' : 'bg-white border-gray-100'}`}>
+                    <div key={s.no} className={`flex items-center gap-3 px-4 py-2.5 rounded-xl border ${s.status === '演奏中' ? 'bg-red-50 border-red-300' : s.status === '済' ? 'bg-[#edf1f7] border-gray-100' : 'bg-white border-gray-100'}`}>
                       <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-black shrink-0 ${s.status === '演奏中' ? 'bg-red-500 text-white' : s.status === '済' ? 'bg-gray-300 text-white' : 'bg-gray-100 text-gray-400'}`}>
                         {s.no}
                       </span>

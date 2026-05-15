@@ -169,8 +169,8 @@ export default function RacingPage() {
   // ─── Sport selection screen ───────────────────────────────
   if (!sport) {
     return (
-      <main className="h-dvh flex flex-col bg-gray-50 max-w-md mx-auto overflow-hidden">
-        <header className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-2.5 shrink-0">
+      <main className="h-dvh flex flex-col bg-[#edf1f7] max-w-lg mx-auto overflow-hidden">
+        <header className="neu-header px-4 py-3 flex items-center gap-2.5 shrink-0">
           <Link href="/" className="flex items-center gap-2">
             <img src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png" alt="Vexii" className="h-6 w-auto object-contain"/>
             <span className="font-bold text-sm silver-gradient">Vexii</span>
@@ -206,8 +206,8 @@ export default function RacingPage() {
   // ─── Main 14-feature menu ────────────────────────────────
   return (
     <>
-      <main className="h-dvh flex flex-col bg-gray-50 max-w-md mx-auto overflow-hidden">
-        <header className="bg-white border-b border-gray-100 px-4 py-2.5 flex items-center gap-2.5 shrink-0">
+      <main className="h-dvh flex flex-col bg-[#edf1f7] max-w-lg mx-auto overflow-hidden">
+        <header className="neu-header px-4 py-2.5 flex items-center gap-2.5 shrink-0">
           <button onClick={() => setSport(null)} className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
             <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
@@ -226,7 +226,7 @@ export default function RacingPage() {
         </header>
 
         {/* 2-col × 7-row compact grid */}
-        <div className="flex-1 min-h-0 p-2 grid grid-cols-2 grid-rows-7 gap-1.5">
+        <div className="flex-1 min-h-0 overflow-y-auto p-2 pb-6 grid grid-cols-2 auto-rows-[minmax(110px,auto)] gap-1.5">
           {MENU_BUTTONS.map((btn) => (
             <button
               key={btn.id}
@@ -237,7 +237,7 @@ export default function RacingPage() {
               {btn.badge && (
                 <span className="absolute top-1 right-1.5 text-[9px] font-black" style={{ color: btn.color }}>{btn.badge}</span>
               )}
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: btn.bg, color: btn.color }}>
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center neu-icon" style={{ background: btn.bg, color: btn.color }}>
                 {btn.icon}
               </div>
               <p className="font-bold text-gray-800 text-[10px] leading-tight text-center">{btn.label}</p>
@@ -248,7 +248,7 @@ export default function RacingPage() {
 
       {panel && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-end justify-center" onClick={closePanel}>
-          <div className="w-full max-w-md bg-white rounded-t-3xl max-h-[88vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-lg bg-white rounded-t-3xl max-h-[88vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="w-8 h-1 bg-gray-200 rounded-full mx-auto mt-3 mb-4"/>
 
             {/* レース情報 */}
@@ -261,7 +261,7 @@ export default function RacingPage() {
                 {/* Race list */}
                 <div className="space-y-1.5 mb-4">
                   {RACE_INFO.map((r) => (
-                    <div key={r.no} className={`flex items-center justify-between px-4 py-2.5 rounded-xl border ${r.status === '進行中' ? 'bg-green-50 border-green-300' : r.status === '発売中' ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-100'}`}>
+                    <div key={r.no} className={`flex items-center justify-between px-4 py-2.5 rounded-xl border ${r.status === '進行中' ? 'bg-green-50 border-green-300' : r.status === '発売中' ? 'bg-blue-50 border-blue-200' : 'bg-[#edf1f7] border-gray-100'}`}>
                       <div className="flex items-center gap-3">
                         <p className="font-bold text-gray-700 text-sm w-12">{r.name}</p>
                         <p className="text-xs text-gray-400">{r.time}</p>
@@ -279,7 +279,7 @@ export default function RacingPage() {
                 <p className="text-xs font-bold text-gray-400 mb-2 px-1">第3R オッズ（2連単）</p>
                 <div className="grid grid-cols-3 gap-1.5">
                   {ODDS.map((o) => (
-                    <div key={o.comb} className={`rounded-xl p-2.5 text-center border ${o.hot ? 'bg-red-50 border-red-300' : 'bg-gray-50 border-gray-100'}`}>
+                    <div key={o.comb} className={`rounded-xl p-2.5 text-center border ${o.hot ? 'bg-red-50 border-red-300' : 'bg-[#edf1f7] border-gray-100'}`}>
                       <p className={`text-sm font-black ${o.hot ? 'text-red-600' : 'text-gray-700'}`}>{o.comb}</p>
                       <p className={`text-xs font-semibold ${o.hot ? 'text-red-400' : 'text-gray-400'}`}>{o.odds}倍</p>
                     </div>
@@ -406,7 +406,7 @@ export default function RacingPage() {
                     { time: '11:33', type: '展示', msg: '1号艇 展示タイム 6.87秒', alert: false },
                     { time: '11:30', type: '情報', msg: '4号艇のモーター交換が完了', alert: false },
                   ].map((item, i) => (
-                    <div key={i} className="flex items-start gap-2.5 px-3 py-2.5 bg-gray-50 rounded-xl border border-gray-100">
+                    <div key={i} className="flex items-start gap-2.5 px-3 py-2.5 bg-[#edf1f7] rounded-xl border border-gray-100">
                       <span className="text-[10px] text-gray-300 font-mono mt-0.5 w-10 shrink-0">{item.time}</span>
                       <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold shrink-0 ${item.alert ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-500'}`}>{item.type}</span>
                       <p className="text-xs text-gray-700">{item.msg}</p>

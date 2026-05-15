@@ -100,9 +100,9 @@ export default function ConveniencePage() {
 
   return (
     <>
-      <main className="h-dvh flex flex-col bg-gray-50 max-w-md mx-auto overflow-hidden">
+      <main className="h-dvh flex flex-col bg-[#edf1f7] max-w-lg mx-auto overflow-hidden">
         {/* Header */}
-        <header className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-2.5 shrink-0">
+        <header className="neu-header px-4 py-3 flex items-center gap-2.5 shrink-0">
           <Link href="/" className="flex items-center gap-2">
             <img
               src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png"
@@ -116,7 +116,7 @@ export default function ConveniencePage() {
         </header>
 
         {/* Feature grid — 3 rows × 2 cols, fills remaining height with no scroll */}
-        <div className="flex-1 min-h-0 p-3 grid grid-cols-2 grid-rows-3 gap-3">
+        <div className="flex-1 min-h-0 overflow-y-auto p-3 pb-6 grid grid-cols-2 auto-rows-[minmax(110px,auto)] gap-3">
           {BUTTONS.map((btn) => (
             <button
               key={btn.id}
@@ -159,7 +159,7 @@ export default function ConveniencePage() {
           onClick={closePanel}
         >
           <div
-            className="w-full max-w-md bg-white rounded-t-3xl"
+            className="w-full max-w-lg bg-white rounded-t-3xl"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Drag handle */}
@@ -272,7 +272,7 @@ export default function ConveniencePage() {
                   {TICKETS.map((t) => (
                     <div
                       key={t.id}
-                      className={`rounded-xl p-4 flex items-center justify-between border ${t.available ? 'bg-orange-50 border-orange-100' : 'bg-gray-50 border-gray-100 opacity-60'}`}
+                      className={`rounded-xl p-4 flex items-center justify-between border ${t.available ? 'bg-orange-50 border-orange-100' : 'bg-[#edf1f7] border-gray-100 opacity-60'}`}
                     >
                       <div>
                         <p className="font-semibold text-gray-800 text-sm">{t.name}</p>
@@ -308,13 +308,13 @@ export default function ConveniencePage() {
                   </div>
                   <p className="text-xs text-gray-400 px-1">最新の情報は各機関の公式サイトをご確認ください</p>
                   <div className="space-y-2">
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100">
+                    <div className="flex items-center justify-between p-3 bg-[#edf1f7] rounded-xl border border-gray-100">
                       <span className="text-sm font-semibold text-gray-700">内閣府 防災情報</span>
                       <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/>
                       </svg>
                     </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100">
+                    <div className="flex items-center justify-between p-3 bg-[#edf1f7] rounded-xl border border-gray-100">
                       <span className="text-sm font-semibold text-gray-700">気象庁 防災情報</span>
                       <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/>
