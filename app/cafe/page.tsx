@@ -4,17 +4,13 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { registerSW, requestPermission, notify } from '@/lib/webNotify'
 
-type PanelId = 'order' | 'menu' | 'app' | 'wifi' | 'coupon' | 'info' | 'points' | 'seat'
+type PanelId = 'order' | 'app' | 'wifi' | 'coupon' | 'info' | 'points' | 'seat'
 type DrinkTab = 'hot' | 'iced' | 'food'
 
 const BUTTONS: { id: PanelId; label: string; desc: string; color: string; bg: string; border: string; badge?: string; icon: React.ReactNode }[] = [
   {
     id: 'order', label: 'モバイルオーダー', desc: '席から事前注文', color: '#92400e', bg: '#fffbeb', border: '#fde68a',
     icon: <svg className="w-9 h-9" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg>,
-  },
-  {
-    id: 'menu', label: 'メニュー', desc: 'ドリンク・フード', color: '#b45309', bg: '#fef3c7', border: '#fcd34d',
-    icon: <svg className="w-9 h-9" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>,
   },
   {
     id: 'app', label: 'アプリダウンロード', desc: '公式アプリを取得', color: '#15803d', bg: '#f0fdf4', border: '#bbf7d0', badge: 'NEW',
@@ -220,38 +216,6 @@ export default function CafePage() {
                     注文する（できたら通知）{cartTotal > 0 ? `　¥${cartTotal.toLocaleString()}` : ''}
                   </button>
                 )}
-              </div>
-            )}
-
-            {/* メニュー */}
-            {panel === 'menu' && (
-              <div className="px-5 pb-8">
-                <h2 className="font-bold text-gray-900 text-lg mb-4">メニュー</h2>
-                <div className="flex gap-1.5 mb-4">
-                  {([['hot', '🔥 HOT'], ['iced', '🧊 ICED'], ['food', '🥐 フード']] as const).map(([key, label]) => (
-                    <button
-                      key={key}
-                      onClick={() => setTab(key)}
-                      className={`flex-1 py-2 rounded-xl text-xs font-bold transition-colors ${tab === key ? 'bg-amber-500 text-white' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-                <div className="space-y-2">
-                  {MENU[tab].map((item) => (
-                    <div key={item.id} className="flex items-center justify-between px-4 py-3 bg-amber-50 border border-amber-100 rounded-xl">
-                      <div>
-                        <div className="flex items-center gap-1.5 mb-0.5">
-                          <p className="font-semibold text-gray-800 text-sm">{item.name}</p>
-                          {item.tag && <span className="text-[9px] bg-amber-500 text-white px-1.5 py-0.5 rounded font-bold">{item.tag}</span>}
-                        </div>
-                        <p className="text-[10px] text-gray-400">{item.desc}</p>
-                      </div>
-                      <p className="font-bold text-amber-700 text-sm shrink-0">¥{item.price}</p>
-                    </div>
-                  ))}
-                </div>
               </div>
             )}
 
