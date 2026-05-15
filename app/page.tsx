@@ -4,6 +4,7 @@ import MenuButton from '@/components/MenuButton'
 const DEMO_CHARGER_ID = '11111111-1111-1111-1111-111111111111'
 
 const GENRE_HREF: Record<string, string> = {
+  restaurant: '/restaurant',
   convenience: '/convenience',
 }
 
