@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { registerSW, requestPermission, notify } from '@/lib/webNotify'
 
 type PanelId = 'waiting' | 'map' | 'questionnaire' | 'pharmacy' | 'payment' | 'wifi' | 'visitor' | 'seat'
 
@@ -66,19 +67,21 @@ export default function HospitalPage() {
   const seatNo = 'W-15'
   const waitCount = waitingNumber - currentNumber
 
-  function enableNotif() {
-    if (typeof window !== 'undefined' && 'Notification' in window) {
-      Notification.requestPermission().then((perm) => {
-        if (perm === 'granted') {
-          setNotifEnabled(true)
-          new Notification('診察待ち通知を設定しました', {
-            body: `番号 ${waitingNumber} 番。呼ばれたらお知らせします。`,
-          })
-        }
-      })
-    } else {
-      setNotifEnabled(true)
-    }
+  useEffect(() => { registerSW() }, [])
+
+  async function enableNotif() {
+    const granted = await requestPermission()
+    if (!granted) return
+    setNotifEnabled(true)
+    // 確認通知を即座に送信
+    await notify('診察待ち通知を設定しました', `番号 ${waitingNumber} 番。呼ばれたらお知らせします。`, 0, { tag: 'hospital-waiting' })
+    // waitCount × 7分後に本番通知をスケジュール（デモ: 15秒後）
+    notify(
+      '診察の準備ができました',
+      `番号 ${waitingNumber} 番の患者さん、診察室へお越しください`,
+      15,
+      { tag: 'hospital-call', requireInteraction: true }
+    )
   }
 
   function copyWifi() {
@@ -238,7 +241,16 @@ export default function HospitalPage() {
                 </div>
                 <div className="bg-amber-50 border border-amber-100 rounded-xl p-4">
                   <p className="text-sm font-semibold text-gray-700 mb-2">薬の準備ができたら通知</p>
-                  <button className="w-full py-3 rounded-xl bg-orange-500 text-white font-bold text-sm">
+                  <button
+                    onClick={async () => {
+                      const granted = await requestPermission()
+                      if (granted) {
+                        await notify('薬局通知を設定しました', 'お薬の準備ができたらお知らせします', 0, { tag: 'pharmacy-set' })
+                        notify('お薬の準備ができました', '1F 薬局カウンターまでお越しください', 20, { tag: 'pharmacy-ready', requireInteraction: true })
+                      }
+                    }}
+                    className="w-full py-3 rounded-xl bg-orange-500 text-white font-bold text-sm active:scale-95 transition-transform"
+                  >
                     準備完了を通知する
                   </button>
                 </div>

@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { registerSW, requestPermission, notify } from '@/lib/webNotify'
 
 type Sport = 'keiba' | 'kyotei' | 'keirin' | 'auto'
 type PanelId =
@@ -132,9 +133,24 @@ export default function RacingPage() {
   const seatNo = 'A-12'
   const selectedSport = SPORT_LIST.find((s) => s.id === sport)
 
+  useEffect(() => { registerSW() }, [])
+
   function addFood(id: number) { setFoodCart((p) => ({ ...p, [id]: (p[id] ?? 0) + 1 })) }
   function remFood(id: number) { setFoodCart((p) => ({ ...p, [id]: Math.max(0, (p[id] ?? 0) - 1) })) }
   const foodTotal = FOOD_MENU.reduce((s, i) => s + (foodCart[i.id] ?? 0) * i.price, 0)
+
+  async function placeRacingFoodOrder() {
+    const canNotify = await requestPermission()
+    if (canNotify) {
+      notify(
+        'フードの準備ができました！',
+        `席 ${seatNo} にお持ちします。スタッフをお待ちください。`,
+        10,
+        { tag: 'racing-food', requireInteraction: true }
+      )
+    }
+    closePanel()
+  }
 
   function addEc(id: number) { setEcCart((p) => ({ ...p, [id]: (p[id] ?? 0) + 1 })) }
   const ecTotal = EC_ITEMS.reduce((s, i) => s + (ecCart[i.id] ?? 0) * parseInt(i.price.replace(/[¥,]/g, '')), 0)
@@ -423,8 +439,12 @@ export default function RacingPage() {
                     </div>
                   ))}
                 </div>
-                <button disabled={foodTotal === 0} className="w-full py-3.5 rounded-xl bg-amber-500 text-white font-bold text-sm disabled:opacity-40">
-                  {seatNo}に注文する{foodTotal > 0 ? `　¥${foodTotal}` : ''}
+                <button
+                  disabled={foodTotal === 0}
+                  onClick={placeRacingFoodOrder}
+                  className="w-full py-3.5 rounded-xl bg-amber-500 text-white font-bold text-sm disabled:opacity-40 active:scale-95 transition-transform"
+                >
+                  注文する（できたらスマホ通知）{foodTotal > 0 ? `　¥${foodTotal}` : ''}
                 </button>
               </div>
             )}

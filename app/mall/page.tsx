@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import { registerSW, requestPermission, notify } from '@/lib/webNotify'
 
 type PanelId = 'floor1' | 'floor2' | 'food' | 'events' | 'map'
 type OrderStatus = 'idle' | 'waiting' | 'ready'
@@ -43,22 +44,28 @@ export default function MallPage() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
+    registerSW()
     return () => { if (timerRef.current) clearInterval(timerRef.current) }
   }, [])
 
   async function placeOrder() {
     if (selectedFood === null) return
 
-    let canNotify = false
-    if ('Notification' in window) {
-      const perm = await Notification.requestPermission()
-      canNotify = perm === 'granted'
-    }
-
+    const canNotify = await requestPermission()
     const num = Math.floor(Math.random() * 900) + 100
     const item = FOOD_MENU.find((f) => f.id === selectedFood)!
     setOrderNumber(num)
     setOrderStatus('waiting')
+
+    // Service Worker 経由でバックグラウンド通知をスケジュール
+    if (canNotify) {
+      notify(
+        'お食事の準備ができました！',
+        `番号札 ${num} のお食事をカウンターでお受け取りください`,
+        item.wait,
+        { tag: `food-${num}`, requireInteraction: true }
+      )
+    }
 
     let remaining = item.wait
     setCountdown(remaining)
@@ -69,12 +76,6 @@ export default function MallPage() {
       if (remaining <= 0) {
         clearInterval(timerRef.current!)
         setOrderStatus('ready')
-        if (canNotify) {
-          new Notification('お食事の準備ができました！', {
-            body: `番号札 ${num} のお食事をカウンターでお受け取りください`,
-            icon: '/favicon.ico',
-          })
-        }
       }
     }, 1000)
   }

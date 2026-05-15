@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { registerSW, requestPermission, notify } from '@/lib/webNotify'
 
 type PanelId = 'wait' | 'fastpass' | 'map' | 'food' | 'event' | 'goods' | 'photo' | 'seat'
 
@@ -71,10 +72,26 @@ export default function ThemeParkPage() {
   const [chargePercent] = useState(62)
 
   const seatNo = 'C-07'
+  const FOOD_WAIT_SEC = 8
+
+  useEffect(() => { registerSW() }, [])
 
   function addFood(id: number) { setFoodCart((p) => ({ ...p, [id]: (p[id] ?? 0) + 1 })) }
   function remFood(id: number) { setFoodCart((p) => ({ ...p, [id]: Math.max(0, (p[id] ?? 0) - 1) })) }
   const foodTotal = FOOD_MENU.reduce((s, i) => s + (foodCart[i.id] ?? 0) * i.price, 0)
+
+  async function placeOrder() {
+    const canNotify = await requestPermission()
+    if (canNotify) {
+      notify(
+        'フードの準備ができました！',
+        `エリア ${seatNo} にお持ちします。スタッフをお待ちください。`,
+        FOOD_WAIT_SEC,
+        { tag: 'park-food', requireInteraction: true }
+      )
+    }
+    setPanel(null)
+  }
 
   function closePanel() { setPanel(null) }
 
@@ -216,8 +233,12 @@ export default function ThemeParkPage() {
                     </div>
                   ))}
                 </div>
-                <button disabled={foodTotal === 0} className="w-full py-3.5 rounded-xl bg-orange-500 text-white font-bold text-sm disabled:opacity-40">
-                  {seatNo}に注文する{foodTotal > 0 ? `　¥${foodTotal.toLocaleString()}` : ''}
+                <button
+                  disabled={foodTotal === 0}
+                  onClick={placeOrder}
+                  className="w-full py-3.5 rounded-xl bg-orange-500 text-white font-bold text-sm disabled:opacity-40 active:scale-95 transition-transform"
+                >
+                  注文する（できたらスマホ通知）{foodTotal > 0 ? `　¥${foodTotal.toLocaleString()}` : ''}
                 </button>
               </div>
             )}
