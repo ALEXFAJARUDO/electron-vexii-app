@@ -9,6 +9,7 @@ const GENRE_HREF: Record<string, string> = {
   stadium: '/stadium',
   mall: '/mall',
   hotel: '/hotel',
+  racing: '/racing',
 }
 
 const GENRES = [
