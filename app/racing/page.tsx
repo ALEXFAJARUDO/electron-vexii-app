@@ -1,4 +1,5 @@
 'use client'
+import { iconGradient } from '@/lib/colorLight'
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
@@ -8,13 +9,58 @@ type Sport = 'keiba' | 'kyotei' | 'keirin' | 'auto'
 type PanelId =
   | 'race' | 'vote' | 'ai' | 'player' | 'live' | 'food'
   | 'vendor' | 'map' | 'events' | 'points' | 'ec'
-  | 'replay' | 'vip' | 'seat'
+  | 'replay' | 'vip' | 'seat' | 'ad'
 
-const SPORT_LIST: { id: Sport; label: string; en: string; emoji: string; color: string; bg: string; border: string }[] = [
-  { id: 'keiba',  label: '競馬',      en: 'Horse Racing',    emoji: '🐎', color: '#22c55e', bg: '#f0fdf4', border: '#bbf7d0' },
-  { id: 'kyotei', label: '競艇',      en: 'Boat Racing',     emoji: '🚤', color: '#0ea5e9', bg: '#f0f9ff', border: '#bae6fd' },
-  { id: 'keirin', label: '競輪',      en: 'Keirin',          emoji: '🚴', color: '#f97316', bg: '#fff7ed', border: '#fed7aa' },
-  { id: 'auto',   label: 'オートレース', en: 'Auto Racing',  emoji: '🏍️', color: '#ef4444', bg: '#fff1f2', border: '#fecdd3' },
+const SPORT_LIST: { id: Sport; label: string; en: string; icon: React.ReactNode; color: string; bg: string; border: string }[] = [
+  {
+    id: 'keiba', label: '競馬', en: 'Horse Racing', color: '#22c55e', bg: '#f0fdf4', border: '#bbf7d0',
+    icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+      {/* body */}
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3.5 16c.5-3.5 2.5-5.5 6-5.5 1.5 0 3 .5 4.5 1.5l3-3 1.5.5-.5 2-1 .5c.5 1 .5 2 0 3.5"/>
+      {/* neck + head */}
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9.5 10.5c-.5-1.5 0-3.5 2-4.5l2 .5v2l-1.5.5"/>
+      {/* ear */}
+      <path strokeLinecap="round" d="M11.5 6l.5-1.5"/>
+      {/* mane */}
+      <path strokeLinecap="round" d="M10 8c.5-.5 1.5-1 2-1.5"/>
+      {/* front legs */}
+      <path strokeLinecap="round" d="M6 16v4M8.5 15.5l-.5 4.5"/>
+      {/* back legs */}
+      <path strokeLinecap="round" d="M14 16l.5 4M16.5 15l.5 4"/>
+      {/* tail */}
+      <path strokeLinecap="round" d="M17.5 14.5c1.5.5 2 2.5 1 4"/>
+    </svg>,
+  },
+  {
+    id: 'kyotei', label: '競艇', en: 'Boat Racing', color: '#0ea5e9', bg: '#f0f9ff', border: '#bae6fd',
+    icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+      {/* outer circle */}
+      <circle cx="12" cy="12" r="9"/>
+      {/* speed lines with arrows (horizontal) */}
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5 8.5h11l-2-1.5M5 10.5h12l-2-1.5M5 12.5h13l-2-1.5M5 14.5h12l-2-1.5M5 16.5h11l-2-1.5"/>
+    </svg>,
+  },
+  {
+    id: 'keirin', label: '競輪', en: 'Keirin', color: '#f97316', bg: '#fff7ed', border: '#fed7aa',
+    icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+      <circle cx="5.5" cy="16.5" r="4"/>
+      <circle cx="18.5" cy="16.5" r="4"/>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5.5 16.5l3.5-7h5.5l3.5 7"/>
+      <path strokeLinecap="round" d="M10 9.5l1.5-3.5h3"/>
+      <circle cx="12" cy="5.5" r="1.5"/>
+    </svg>,
+  },
+  {
+    id: 'auto', label: 'オートレース', en: 'Auto Racing', color: '#ef4444', bg: '#fff1f2', border: '#fecdd3',
+    icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+      <circle cx="5.5" cy="16.5" r="3.5"/>
+      <circle cx="18.5" cy="16.5" r="3.5"/>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5.5 16.5l3-8h4l2.5 5.5L18.5 16.5"/>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M8.5 8.5l2-3.5h4.5l1 3"/>
+      <path strokeLinecap="round" d="M13 5l2-2M15 5l1-2"/>
+      <path strokeLinecap="round" d="M9 7.5h5.5"/>
+    </svg>,
+  },
 ]
 
 const RACE_INFO = [
@@ -169,14 +215,14 @@ export default function RacingPage() {
   // ─── Sport selection screen ───────────────────────────────
   if (!sport) {
     return (
-      <main className="h-dvh flex flex-col bg-[#edf1f7] max-w-lg mx-auto overflow-hidden">
+      <main className="min-h-dvh flex flex-col bg-[#edf1f7]">
         <header className="neu-header px-4 py-3 flex items-center gap-2.5 shrink-0">
           <Link href="/" className="flex items-center gap-2">
-            <img src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png" alt="Vexii" className="h-6 w-auto object-contain"/>
-            <span className="font-bold text-sm silver-gradient">Vexii</span>
+            <div className="h-7 w-24 rounded-md bg-gray-100 flex items-center justify-center">
+              <span className="text-[10px] text-gray-300 font-semibold tracking-wider">SHOP LOGO</span>
+            </div>
           </Link>
-          <span className="text-gray-200 text-lg leading-none mx-0.5">|</span>
-          <span className="text-sm font-semibold text-gray-500">公営競技場</span>
+          <span className="ml-auto text-sm font-semibold text-gray-500">公営競技場</span>
         </header>
 
         <div className="flex-1 flex flex-col items-center justify-center px-5">
@@ -190,7 +236,9 @@ export default function RacingPage() {
                 className="card-light flex flex-col items-center gap-3 py-7 active:scale-95 transition-transform duration-150"
                 style={{ borderColor: s.border }}
               >
-                <span className="text-5xl">{s.emoji}</span>
+                <div className="w-14 h-14 rounded-full flex items-center justify-center neu-icon" style={{ background: iconGradient(s.color), color: '#ffffff' }}>
+                  {s.icon}
+                </div>
                 <div className="text-center">
                   <p className="font-bold text-gray-800 text-base">{s.label}</p>
                   <p className="text-xs text-gray-400">{s.en}</p>
@@ -199,6 +247,9 @@ export default function RacingPage() {
             ))}
           </div>
         </div>
+        <div className="py-2 flex items-center justify-center shrink-0">
+          <span className="text-xs font-semibold text-blue-900 mr-1.5">Powered by</span><img src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png" alt="Vexii" className="h-6 w-auto object-contain"/>
+        </div>
       </main>
     )
   }
@@ -206,7 +257,7 @@ export default function RacingPage() {
   // ─── Main 14-feature menu ────────────────────────────────
   return (
     <>
-      <main className="h-dvh flex flex-col bg-[#edf1f7] max-w-lg mx-auto overflow-hidden">
+      <main className="min-h-dvh flex flex-col bg-[#edf1f7]">
         <header className="neu-header px-4 py-2.5 flex items-center gap-2.5 shrink-0">
           <button onClick={() => setSport(null)} className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
             <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -226,7 +277,17 @@ export default function RacingPage() {
         </header>
 
         {/* 2-col × 7-row compact grid */}
-        <div className="flex-1 min-h-0 overflow-y-auto p-2 pb-6 grid grid-cols-2 auto-rows-[minmax(110px,auto)] gap-1.5">
+        <div className="flex-1 max-w-lg mx-auto w-full p-2 pb-6 grid grid-cols-2 auto-rows-[minmax(110px,auto)] gap-[10px]">
+          {/* ヒーロー画像 */}
+          <div className="col-span-2 rounded-2xl overflow-hidden shrink-0" style={{ height: '25vh' }}>
+            <div className="w-full h-full flex flex-col items-center justify-center gap-2"
+                 style={{ background: 'linear-gradient(135deg,#ef4444,#b91c1c)' }}>
+              <span className="text-5xl">🏁</span>
+              <p className="text-white font-black text-xl tracking-wide">公営競技場</p>
+            </div>
+          </div>
+
+
           {MENU_BUTTONS.map((btn) => (
             <button
               key={btn.id}
@@ -237,19 +298,32 @@ export default function RacingPage() {
               {btn.badge && (
                 <span className="absolute top-1 right-1.5 text-[9px] font-black" style={{ color: btn.color }}>{btn.badge}</span>
               )}
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center neu-icon" style={{ background: btn.bg, color: btn.color }}>
+              <div className="w-9 h-9 rounded-full flex items-center justify-center neu-icon" style={{ background: iconGradient(btn.color), color: '#ffffff' }}>
                 {btn.icon}
               </div>
               <p className="font-bold text-gray-800 text-[10px] leading-tight text-center">{btn.label}</p>
             </button>
           ))}
+          {/* 広告スペース */}
+          <div className="col-span-2 rounded-2xl overflow-hidden" style={{ height: '25vh' }}>
+            <iframe
+              src="https://www.youtube.com/embed/vNVdeRkjT2Y?autoplay=1&mute=1&loop=1&playlist=vNVdeRkjT2Y&controls=0&modestbranding=1"
+              title="Advertisement"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full h-full"
+            />
+          </div>
+        </div>
+        <div className="py-2 flex items-center justify-center shrink-0">
+          <span className="text-xs font-semibold text-blue-900 mr-1.5">Powered by</span><img src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png" alt="Vexii" className="h-6 w-auto object-contain"/>
         </div>
       </main>
 
       {panel && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-end justify-center" onClick={closePanel}>
           <div className="w-full max-w-lg bg-white rounded-t-3xl max-h-[88vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <div className="w-8 h-1 bg-gray-200 rounded-full mx-auto mt-3 mb-4"/>
+            <div className="w-8 h-1 bg-gray-200 rounded-full mx-auto mt-3 mb-4 cursor-pointer" onClick={() => setPanel(null)} />
 
             {/* レース情報 */}
             {panel === 'race' && (
@@ -453,7 +527,7 @@ export default function RacingPage() {
             {panel === 'vendor' && (
               <div className="px-5 pb-8">
                 <h2 className="font-bold text-gray-900 text-lg mb-5">売り子呼び出し</h2>
-                <div className="grid grid-cols-2 gap-3 mb-5">
+                <div className="grid grid-cols-2 gap-[15px] mb-5">
                   {['🍺 ドリンク', '🍱 フード', '🚬 タバコ', '🎁 グッズ'].map((cat) => (
                     <button
                       key={cat}
@@ -549,7 +623,7 @@ export default function RacingPage() {
             {panel === 'ec' && (
               <div className="px-5 pb-8">
                 <h2 className="font-bold text-gray-900 text-lg mb-4">EC・グッズ</h2>
-                <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="grid grid-cols-2 gap-[15px] mb-4">
                   {EC_ITEMS.map((item) => (
                     <div key={item.id} className="bg-purple-50 border border-purple-100 rounded-xl p-3">
                       <div className="aspect-square rounded-lg bg-purple-100 flex items-center justify-center mb-2">
@@ -644,7 +718,7 @@ export default function RacingPage() {
                 </div>
                 {/* Seat-linked features */}
                 <p className="text-xs font-bold text-gray-400 mb-2 px-1">席番号連動サービス</p>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-[11px]">
                   {[
                     { label: '席まで配達', icon: '🍱', action: () => setPanel('food') },
                     { label: 'AI今日の買い目', icon: '🤖', action: () => setPanel('ai') },
@@ -661,6 +735,28 @@ export default function RacingPage() {
                     </button>
                   ))}
                 </div>
+              </div>
+            )}
+            {panel === 'ad' && (
+              <div className="px-5 pb-8">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 01-1.44-4.282m3.102.069a18.03 18.03 0 01-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 018.835 2.535M10.34 6.66a23.847 23.847 0 008.835-2.535m0 0A23.74 23.74 0 0018.795 3m.38 1.125a23.91 23.91 0 011.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 001.014-5.395m0-3.46c.495.413.811 1.035.811 1.73 0 .695-.316 1.317-.811 1.73m0-3.46a24.347 24.347 0 010 3.46"/>
+                    </svg>
+                  </div>
+                  <h2 className="font-bold text-gray-900 text-lg">広告スペース</h2>
+                </div>
+                <div className="rounded-2xl overflow-hidden aspect-video mb-4">
+                  <iframe
+                    src="https://www.youtube.com/embed/vNVdeRkjT2Y"
+                    title="Advertisement"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full"
+                  />
+                </div>
+                <p className="text-xs text-gray-400 text-center">広告掲載のお問い合わせは Vexii までご連絡ください</p>
               </div>
             )}
           </div>

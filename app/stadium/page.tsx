@@ -1,16 +1,46 @@
 'use client'
+import { iconGradient } from '@/lib/colorLight'
 
 import { useState } from 'react'
 import Link from 'next/link'
+import BarcodeModal from '@/components/BarcodeModal'
 
 type Sport = 'baseball' | 'soccer' | 'american-football' | 'rugby'
-type PanelId = 'game' | 'vendor' | 'map' | 'order' | 'community' | 'coupon' | 'goods'
+type PanelId = 'game' | 'vendor' | 'map' | 'order' | 'community' | 'coupon' | 'goods' | 'ad'
 
-const SPORT_LIST: { id: Sport; label: string; en: string; emoji: string; color: string; bg: string; border: string }[] = [
-  { id: 'baseball',          label: '野球',    en: 'Baseball',          emoji: '⚾', color: '#22c55e', bg: '#f0fdf4', border: '#bbf7d0' },
-  { id: 'soccer',            label: 'サッカー', en: 'Soccer',            emoji: '⚽', color: '#0ea5e9', bg: '#f0f9ff', border: '#bae6fd' },
-  { id: 'american-football', label: 'アメフト', en: 'American Football', emoji: '🏈', color: '#f97316', bg: '#fff7ed', border: '#fed7aa' },
-  { id: 'rugby',             label: 'ラグビー', en: 'Rugby',             emoji: '🏉', color: '#a855f7', bg: '#faf5ff', border: '#e9d5ff' },
+const SPORT_LIST: { id: Sport; label: string; en: string; color: string; bg: string; border: string; icon: React.ReactNode }[] = [
+  {
+    id: 'baseball', label: '野球', en: 'Baseball', color: '#22c55e', bg: '#f0fdf4', border: '#bbf7d0',
+    icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 21l7.5-7.5m0 0l4-4m-4 4l-2-2m6-2l4.5-4.5a2.12 2.12 0 000-3 2.12 2.12 0 00-3 0L11.5 8.5"/>
+      <circle cx="18.5" cy="5.5" r="3"/>
+      <path strokeLinecap="round" d="M17.2 4.2c.4.9.4 2.5 0 3.3M19.8 4.2c-.4.9-.4 2.5 0 3.3"/>
+    </svg>,
+  },
+  {
+    id: 'soccer', label: 'サッカー', en: 'Soccer', color: '#0ea5e9', bg: '#f0f9ff', border: '#bae6fd',
+    icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9"/>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 8l2.5 1.8-1 3.2h-3l-1-3.2L12 8z"/>
+      <path strokeLinecap="round" d="M12 8V3.1M14.5 9.8l4.2-2.4M13 13h5.5M11 13H5.5M9.5 9.8L5.3 7.4M11 13l-1.8 4.8M13 13l1.8 4.8"/>
+    </svg>,
+  },
+  {
+    id: 'american-football', label: 'アメフト', en: 'American Football', color: '#f97316', bg: '#fff7ed', border: '#fed7aa',
+    icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12c0-3.9 3.4-6.5 7.5-6.5s7.5 2.6 7.5 6.5-3.4 6.5-7.5 6.5-7.5-2.6-7.5-6.5z"/>
+      <path strokeLinecap="round" d="M12 5.5v13"/>
+      <path strokeLinecap="round" d="M10.2 9.5h3.6M9.8 12h4.4M10.2 14.5h3.6"/>
+    </svg>,
+  },
+  {
+    id: 'rugby', label: 'ラグビー', en: 'Rugby', color: '#a855f7', bg: '#faf5ff', border: '#e9d5ff',
+    icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M7 12c0-4.8 2.2-8.5 5-8.5s5 3.7 5 8.5-2.2 8.5-5 8.5-5-3.7-5-8.5z"/>
+      <path strokeLinecap="round" d="M12 3.5v17"/>
+      <path strokeLinecap="round" d="M7.3 8.5c3.1 1.4 6.3 1.4 9.4 0M7.3 15.5c3.1-1.4 6.3-1.4 9.4 0"/>
+    </svg>,
+  },
 ]
 
 const BUTTONS: {
@@ -141,6 +171,7 @@ const DEMO_COUPONS = [
 export default function StadiumPage() {
   const [sport, setSport] = useState<Sport | null>(null)
   const [panel, setPanel] = useState<PanelId | null>(null)
+  const [barcode, setBarcode] = useState<{ code: string; title: string } | null>(null)
   const [vendorCalled, setVendorCalled] = useState(false)
   const [cart, setCart] = useState<Record<number, number>>({})
 
@@ -168,14 +199,14 @@ export default function StadiumPage() {
   // ─── Sport selection screen ───────────────────────────────
   if (!sport) {
     return (
-      <main className="h-dvh flex flex-col bg-[#edf1f7] max-w-lg mx-auto overflow-hidden">
+      <main className="min-h-dvh flex flex-col bg-[#edf1f7]">
         <header className="neu-header px-4 py-3 flex items-center gap-2.5 shrink-0">
-          <Link href="/" className="flex items-center gap-2">
-            <img src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png" alt="Vexii" className="h-6 w-auto object-contain"/>
-            <span className="font-bold text-sm silver-gradient">Vexii</span>
+          <Link href="/" className="flex items-center">
+            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
+            </svg>
           </Link>
-          <span className="text-gray-200 text-lg leading-none mx-0.5">|</span>
-          <span className="text-sm font-semibold text-gray-500">球場</span>
+          <span className="ml-auto text-sm font-semibold text-gray-500">球場</span>
         </header>
 
         <div className="flex-1 flex flex-col items-center justify-center px-5">
@@ -189,7 +220,9 @@ export default function StadiumPage() {
                 className="card-light flex flex-col items-center gap-3 py-7 active:scale-95 transition-transform duration-150"
                 style={{ borderColor: s.border }}
               >
-                <span className="text-5xl">{s.emoji}</span>
+                <div className="w-14 h-14 rounded-full flex items-center justify-center neu-icon" style={{ background: iconGradient(s.color), color: '#ffffff' }}>
+                  {s.icon}
+                </div>
                 <div className="text-center">
                   <p className="font-bold text-gray-800 text-base">{s.label}</p>
                   <p className="text-xs text-gray-400">{s.en}</p>
@@ -198,6 +231,9 @@ export default function StadiumPage() {
             ))}
           </div>
         </div>
+        <div className="py-2 flex items-center justify-center shrink-0">
+          <span className="text-xs font-semibold text-blue-900 mr-1.5">Powered by</span><img src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png" alt="Vexii" className="h-6 w-auto object-contain"/>
+        </div>
       </main>
     )
   }
@@ -205,24 +241,46 @@ export default function StadiumPage() {
   // ─── Main menu ────────────────────────────────────────────
   return (
     <>
-      <main className="h-dvh flex flex-col bg-[#edf1f7] max-w-lg mx-auto overflow-hidden">
+      <main className="min-h-dvh flex flex-col bg-[#edf1f7]">
         {/* Header */}
-        <header className="neu-header px-4 py-3 flex items-center gap-2.5 shrink-0">
-          <button onClick={() => setSport(null)} className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
-            <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
-            </svg>
-          </button>
-          <div className="flex items-center gap-1.5">
-            <span className="text-lg">{selectedSport?.emoji}</span>
-            <span className="font-bold text-sm text-gray-800">{selectedSport?.label}</span>
+        <header className="neu-header shrink-0" style={{ height: '64px' }}>
+          <div className="h-full max-w-lg mx-auto w-full px-3 flex items-center gap-2.5">
+            <button onClick={() => setSport(null)} className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
+              </svg>
+            </button>
+            <div style={{
+              width: '144px', height: '38px',
+              backgroundImage: sport === 'rugby' ? 'url(/rugby-logo.png)' : sport === 'american-football' ? 'url(/amefuto-logo.png)' : sport === 'soccer' ? 'url(/soccer-logo.png)' : 'url(/stadium-logo.png)',
+              backgroundSize: sport === 'american-football' ? '210%' : sport === 'soccer' ? '136%' : '170%',
+              backgroundPosition: 'center center',
+              backgroundRepeat: 'no-repeat'
+            }} />
           </div>
-          <span className="text-gray-200 text-lg leading-none mx-0.5 ml-auto" />
-          <span className="text-xs text-gray-400 font-semibold">球場</span>
         </header>
 
         {/* 2-col × 4-row grid — fills height, no scroll */}
-        <div className="flex-1 min-h-0 overflow-y-auto p-3 pb-6 grid grid-cols-2 auto-rows-[minmax(110px,auto)] gap-3">
+        <div className="flex-1 max-w-lg mx-auto w-full p-3 pb-6 grid grid-cols-2 auto-rows-[minmax(110px,auto)] gap-[15px]">
+          {/* ヒーロー画像 */}
+          <div className="col-span-2 rounded-2xl overflow-hidden shrink-0" style={{ height: '25vh' }}>
+            {sport === 'baseball' ? (
+              <img src="/stadium-hero.png" alt="Sunshine Stadium" className="w-full h-full object-cover" />
+            ) : sport === 'rugby' ? (
+              <img src="/rugby-hero.png" alt="Rugby Stadium" className="w-full h-full object-cover" />
+            ) : sport === 'american-football' ? (
+              <img src="/amefuto-hero.png" alt="Gridiron Stadium" className="w-full h-full object-cover" />
+            ) : sport === 'soccer' ? (
+              <img src="/soccer-hero.png" alt="Football Stadium" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center gap-2"
+                   style={{ background: `linear-gradient(135deg,${selectedSport?.color ?? '#22c55e'},${selectedSport?.color ?? '#15803d'}99)` }}>
+                <span className="text-5xl">{selectedSport?.label}</span>
+              </div>
+            )}
+          </div>
+
+
           {BUTTONS.map((btn) => (
             <button
               key={btn.id}
@@ -231,8 +289,8 @@ export default function StadiumPage() {
               style={{ borderColor: btn.border }}
             >
               <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center"
-                style={{ background: btn.bg, color: btn.color }}
+                className="w-12 h-12 rounded-full flex items-center justify-center neu-icon"
+                style={{ background: iconGradient(btn.color), color: '#ffffff' }}
               >
                 {btn.icon}
               </div>
@@ -240,6 +298,19 @@ export default function StadiumPage() {
               <p className="text-[10px] text-gray-400 text-center leading-tight">{btn.desc}</p>
             </button>
           ))}
+          {/* 広告スペース */}
+          <div className="col-span-2 rounded-2xl overflow-hidden" style={{ height: '25vh' }}>
+            <iframe
+              src="https://www.youtube.com/embed/vNVdeRkjT2Y?autoplay=1&mute=1&loop=1&playlist=vNVdeRkjT2Y&controls=0&modestbranding=1"
+              title="Advertisement"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full h-full"
+            />
+          </div>
+        </div>
+        <div className="py-2 flex items-center justify-center shrink-0">
+          <span className="text-xs font-semibold text-blue-900 mr-1.5">Powered by</span><img src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png" alt="Vexii" className="h-6 w-auto object-contain"/>
         </div>
       </main>
 
@@ -253,7 +324,7 @@ export default function StadiumPage() {
             className="w-full max-w-lg bg-white rounded-t-3xl max-h-[85vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="w-8 h-1 bg-gray-200 rounded-full mx-auto mt-3 mb-4" />
+            <div className="w-8 h-1 bg-gray-200 rounded-full mx-auto mt-3 mb-4 cursor-pointer" onClick={() => setPanel(null)} />
 
             {/* 試合情報 */}
             {panel === 'game' && (
@@ -468,15 +539,13 @@ export default function StadiumPage() {
 
                 <div className="space-y-2">
                   {DEMO_COUPONS.map((c) => (
-                    <div key={c.id} className="bg-purple-50 border border-purple-100 rounded-xl p-4 flex items-center justify-between">
+                    <div key={c.id} className="bg-purple-50 border border-purple-100 rounded-xl p-4 flex items-center justify-between active:scale-95 transition-transform cursor-pointer"
+                      onClick={() => setBarcode({ code: c.code, title: c.title })}>
                       <div>
                         <p className="text-[10px] text-purple-400 font-semibold mb-0.5">{c.sponsor}</p>
                         <p className="font-semibold text-gray-800 text-sm">{c.title}</p>
-                        <p className="text-xs text-gray-400 mt-0.5">コード: <span className="font-mono text-purple-700 font-semibold">{c.code}</span></p>
                       </div>
-                      <button className="text-xs px-3 py-1.5 rounded-lg bg-purple-500 text-white font-semibold shrink-0">
-                        使う
-                      </button>
+                      <span className="text-xs px-3 py-1.5 rounded-lg bg-purple-500 text-white font-semibold shrink-0 ml-3">使う</span>
                     </div>
                   ))}
                 </div>
@@ -495,7 +564,7 @@ export default function StadiumPage() {
                   <h2 className="font-bold text-gray-900 text-lg">グッズEC</h2>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-[15px]">
                   {[
                     { name: 'ユニフォーム', price: '¥8,800', tag: '人気' },
                     { name: 'キャップ', price: '¥3,300', tag: '新着' },
@@ -521,9 +590,32 @@ export default function StadiumPage() {
                 </div>
               </div>
             )}
+            {panel === 'ad' && (
+              <div className="px-5 pb-8">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 01-1.44-4.282m3.102.069a18.03 18.03 0 01-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 018.835 2.535M10.34 6.66a23.847 23.847 0 008.835-2.535m0 0A23.74 23.74 0 0018.795 3m.38 1.125a23.91 23.91 0 011.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 001.014-5.395m0-3.46c.495.413.811 1.035.811 1.73 0 .695-.316 1.317-.811 1.73m0-3.46a24.347 24.347 0 010 3.46"/>
+                    </svg>
+                  </div>
+                  <h2 className="font-bold text-gray-900 text-lg">広告スペース</h2>
+                </div>
+                <div className="rounded-2xl overflow-hidden aspect-video mb-4">
+                  <iframe
+                    src="https://www.youtube.com/embed/vNVdeRkjT2Y"
+                    title="Advertisement"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full"
+                  />
+                </div>
+                <p className="text-xs text-gray-400 text-center">広告掲載のお問い合わせは Vexii までご連絡ください</p>
+              </div>
+            )}
           </div>
         </div>
       )}
+      {barcode && <BarcodeModal code={barcode.code} title={barcode.title} onClose={() => setBarcode(null)} />}
     </>
   )
 }

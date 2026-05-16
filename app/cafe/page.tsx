@@ -1,11 +1,14 @@
 'use client'
+import { iconGradient } from '@/lib/colorLight'
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { registerSW, requestPermission, notify } from '@/lib/webNotify'
+import BarcodeModal from '@/components/BarcodeModal'
 
 type PanelId = 'order' | 'app' | 'wifi' | 'coupon' | 'info' | 'points' | 'seat'
 type DrinkTab = 'hot' | 'iced' | 'food'
+type MenuItem = { id: number; name: string; desc: string; price: number; tag?: string; photo: string; photoBg: string }
 
 const BUTTONS: { id: PanelId; label: string; desc: string; color: string; bg: string; border: string; badge?: string; icon: React.ReactNode }[] = [
   {
@@ -38,32 +41,32 @@ const BUTTONS: { id: PanelId; label: string; desc: string; color: string; bg: st
   },
 ]
 
-const MENU: Record<DrinkTab, { id: number; name: string; desc: string; price: number; tag?: string }[]> = {
+const MENU: Record<DrinkTab, MenuItem[]> = {
   hot: [
-    { id: 1,  name: 'エスプレッソ',     desc: '濃厚なシングルショット',          price: 320 },
-    { id: 2,  name: 'カフェラテ',       desc: 'まろやかなミルクとエスプレッソ',   price: 480, tag: '人気' },
-    { id: 3,  name: 'カプチーノ',       desc: 'ふわふわフォームミルク',           price: 480 },
-    { id: 4,  name: 'カフェアメリカーノ', desc: 'すっきりした飲み口',             price: 400 },
-    { id: 5,  name: '抹茶ラテ',         desc: '国産抹茶使用',                   price: 520, tag: 'NEW' },
-    { id: 6,  name: 'チャイラテ',       desc: 'スパイシーなインドの香り',         price: 520 },
-    { id: 7,  name: 'ほうじ茶ラテ',     desc: '香ばしい和の一杯',               price: 500 },
+    { id: 1,  name: 'エスプレッソ',      desc: '濃厚なシングルショット',         price: 320, photo: '☕', photoBg: 'linear-gradient(135deg,#78350f,#92400e)' },
+    { id: 2,  name: 'カフェラテ',        desc: 'まろやかなミルクとエスプレッソ',  price: 480, tag: '人気', photo: '☕', photoBg: 'linear-gradient(135deg,#d97706,#92400e)' },
+    { id: 3,  name: 'カプチーノ',        desc: 'ふわふわフォームミルク',          price: 480, photo: '☕', photoBg: 'linear-gradient(135deg,#b45309,#78350f)' },
+    { id: 4,  name: 'カフェアメリカーノ', desc: 'すっきりした飲み口',            price: 400, photo: '☕', photoBg: 'linear-gradient(135deg,#451a03,#78350f)' },
+    { id: 5,  name: '抹茶ラテ',          desc: '国産抹茶使用',                  price: 520, tag: 'NEW', photo: '🍵', photoBg: 'linear-gradient(135deg,#166534,#15803d)' },
+    { id: 6,  name: 'チャイラテ',        desc: 'スパイシーなインドの香り',        price: 520, photo: '🫖', photoBg: 'linear-gradient(135deg,#c2410c,#9a3412)' },
+    { id: 7,  name: 'ほうじ茶ラテ',      desc: '香ばしい和の一杯',              price: 500, photo: '🍵', photoBg: 'linear-gradient(135deg,#a16207,#713f12)' },
   ],
   iced: [
-    { id: 11, name: 'アイスラテ',       desc: 'ミルクたっぷり冷たいラテ',        price: 510, tag: '人気' },
-    { id: 12, name: 'アイスアメリカーノ', desc: 'さっぱりとしたアイスコーヒー',    price: 430 },
-    { id: 13, name: 'アイス抹茶ラテ',   desc: '冷たい抹茶の味わい',             price: 550, tag: 'NEW' },
-    { id: 14, name: 'フラペチーノ',     desc: 'クリームのせブレンド',            price: 650 },
-    { id: 15, name: 'ソイラテ (ICE)',   desc: 'ヘルシーな豆乳ラテ',             price: 560 },
-    { id: 16, name: 'スムージー',       desc: '旬のフルーツ使用',               price: 620 },
+    { id: 11, name: 'アイスラテ',        desc: 'ミルクたっぷり冷たいラテ',       price: 510, tag: '人気', photo: '🧋', photoBg: 'linear-gradient(135deg,#0369a1,#0284c7)' },
+    { id: 12, name: 'アイスアメリカーノ', desc: 'さっぱりとしたアイスコーヒー',   price: 430, photo: '🧊', photoBg: 'linear-gradient(135deg,#1e3a5f,#1d4ed8)' },
+    { id: 13, name: 'アイス抹茶ラテ',    desc: '冷たい抹茶の味わい',            price: 550, tag: 'NEW', photo: '🍵', photoBg: 'linear-gradient(135deg,#14532d,#166534)' },
+    { id: 14, name: 'フラペチーノ',      desc: 'クリームのせブレンド',           price: 650, photo: '🥤', photoBg: 'linear-gradient(135deg,#6d28d9,#7c3aed)' },
+    { id: 15, name: 'ソイラテ (ICE)',    desc: 'ヘルシーな豆乳ラテ',            price: 560, photo: '🥛', photoBg: 'linear-gradient(135deg,#0891b2,#0e7490)' },
+    { id: 16, name: 'スムージー',        desc: '旬のフルーツ使用',              price: 620, photo: '🍹', photoBg: 'linear-gradient(135deg,#be185d,#db2777)' },
   ],
   food: [
-    { id: 21, name: 'クロワッサン',     desc: 'バター香るサクサク生地',          price: 280, tag: '人気' },
-    { id: 22, name: 'スコーン',         desc: 'クロテッドクリーム添え',          price: 320 },
-    { id: 23, name: 'ブルーベリーマフィン', desc: '大粒ブルーベリー入り',         price: 350 },
-    { id: 24, name: 'サンドイッチ',     desc: 'チキン&アボカド',                price: 580, tag: 'NEW' },
-    { id: 25, name: 'ベーグル',         desc: 'クリームチーズ添え',              price: 480 },
-    { id: 26, name: 'チーズケーキ',     desc: 'なめらかなニューヨーク風',        price: 420 },
-    { id: 27, name: 'シナモンロール',   desc: 'ふわふわ焼きたて',               price: 380 },
+    { id: 21, name: 'クロワッサン',        desc: 'バター香るサクサク生地',        price: 280, tag: '人気', photo: '🥐', photoBg: 'linear-gradient(135deg,#b45309,#d97706)' },
+    { id: 22, name: 'スコーン',            desc: 'クロテッドクリーム添え',        price: 320, photo: '🧁', photoBg: 'linear-gradient(135deg,#9a3412,#c2410c)' },
+    { id: 23, name: 'ブルーベリーマフィン', desc: '大粒ブルーベリー入り',         price: 350, photo: '🫐', photoBg: 'linear-gradient(135deg,#3730a3,#4f46e5)' },
+    { id: 24, name: 'サンドイッチ',        desc: 'チキン&アボカド',              price: 580, tag: 'NEW', photo: '🥪', photoBg: 'linear-gradient(135deg,#166534,#15803d)' },
+    { id: 25, name: 'ベーグル',            desc: 'クリームチーズ添え',           price: 480, photo: '🥯', photoBg: 'linear-gradient(135deg,#92400e,#b45309)' },
+    { id: 26, name: 'チーズケーキ',        desc: 'なめらかなニューヨーク風',      price: 420, photo: '🍰', photoBg: 'linear-gradient(135deg,#be123c,#e11d48)' },
+    { id: 27, name: 'シナモンロール',      desc: 'ふわふわ焼きたて',             price: 380, photo: '🍩', photoBg: 'linear-gradient(135deg,#a16207,#ca8a04)' },
   ],
 }
 
@@ -75,13 +78,14 @@ const COUPONS = [
 
 export default function CafePage() {
   const [panel, setPanel] = useState<PanelId | null>(null)
+  const [barcode, setBarcode] = useState<{ code: string; title: string } | null>(null)
   const [tab, setTab] = useState<DrinkTab>('hot')
   const [cart, setCart] = useState<Record<number, number>>({})
   const [orderPlaced, setOrderPlaced] = useState(false)
   const [wifiCopied, setWifiCopied] = useState(false)
   const [chargePercent] = useState(54)
 
-  const seatNo = 'A-05'
+  const seatNo = 'A-05' | 'ad'
 
   useEffect(() => { registerSW() }, [])
 
@@ -120,14 +124,27 @@ export default function CafePage() {
 
   return (
     <>
-      <main className="h-dvh flex flex-col bg-[#edf1f7] max-w-lg mx-auto overflow-hidden">
+      <main className="min-h-dvh flex flex-col bg-[#edf1f7]">
         <header className="neu-header px-4 py-3 flex items-center gap-2.5 shrink-0">
           <Link href="/" className="flex items-center gap-2">
-            <img src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png" alt="Vexii" className="h-6 w-auto object-contain"/>
-            <span className="font-bold text-sm silver-gradient">Vexii</span>
+            <div className="flex items-center gap-2">
+              {/* アイコンバッジ */}
+              <div
+                className="w-8 h-8 rounded-xl flex items-center justify-center shadow-sm shrink-0"
+                style={{ background: 'linear-gradient(145deg, #fbbf24 0%, #d97706 45%, #92400e 100%)' }}
+              >
+                <svg className="w-[18px] h-[18px]" fill="none" stroke="white" strokeWidth={1.8} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 7.5h13.5v9A2.25 2.25 0 0116.5 18.75H7.5A2.25 2.25 0 015.25 16.5V7.5zm13.5 2.25h2.25a2.25 2.25 0 010 4.5H18.75M10 3.5l-.75 1.5M12 3v1.5M14 3.5l.75 1.5"/>
+                </svg>
+              </div>
+              {/* テキスト */}
+              <div className="flex flex-col leading-none">
+                <span className="text-[14px] font-black tracking-tight text-amber-900" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>Café</span>
+                <span className="text-[8px] font-bold tracking-[0.35em] text-amber-500 mt-0.5">VEXII</span>
+              </div>
+            </div>
           </Link>
-          <span className="text-gray-200 text-lg leading-none mx-0.5">|</span>
-          <span className="text-sm font-semibold text-gray-500">☕ カフェ</span>
+          <span className="ml-auto text-sm font-semibold text-gray-500">☕ カフェ</span>
           {cartCount > 0 && (
             <button onClick={() => setPanel('order')} className="ml-auto flex items-center gap-1.5 bg-amber-50 border border-amber-300 rounded-lg px-2.5 py-1">
               <span className="text-xs font-black text-amber-700">カート {cartCount}点</span>
@@ -135,31 +152,68 @@ export default function CafePage() {
           )}
         </header>
 
-        <div className="flex-1 min-h-0 overflow-y-auto p-3 pb-6 grid grid-cols-2 auto-rows-[minmax(110px,auto)] gap-3">
+        <div className="flex-1 max-w-lg mx-auto w-full p-3 pb-6 grid grid-cols-2 auto-rows-[minmax(110px,auto)] gap-[15px]">
+          {/* ヒーロー画像 — 角丸・固定サイズ */}
+          <div className="col-span-2 rounded-2xl overflow-hidden" style={{ height: '25vh' }}>
+            <img
+              src="/cafe-hero.png"
+              alt="Cafe Vexii"
+              className="w-full h-full object-cover"
+            />
+          </div>
+
           {BUTTONS.map((btn) => (
-            <button
-              key={btn.id}
-              onClick={() => setPanel(btn.id)}
-              className="card-light flex flex-col items-center justify-center gap-1.5 active:scale-95 transition-transform duration-150 p-2 relative"
-              style={{ borderColor: btn.border }}
-            >
-              {btn.badge && (
-                <span className="absolute top-1.5 right-2 text-[9px] font-black" style={{ color: btn.color }}>{btn.badge}</span>
-              )}
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center neu-icon" style={{ background: btn.bg, color: btn.color }}>
-                {btn.icon}
-              </div>
-              <p className="font-bold text-gray-800 text-xs leading-tight text-center">{btn.label}</p>
-              <p className="text-[10px] text-gray-400 text-center leading-tight">{btn.desc}</p>
-            </button>
+            btn.id === 'order' ? (
+              <button
+                key={btn.id}
+                onClick={() => setPanel(btn.id)}
+                className="col-span-2 card-light flex flex-col items-center justify-center gap-2 py-5 active:scale-95 transition-transform duration-150 relative"
+                style={{ borderColor: btn.border, background: '#fffbeb' }}
+              >
+                <div className="w-14 h-14 rounded-full flex items-center justify-center neu-icon" style={{ background: iconGradient(btn.color), color: '#ffffff' }}>
+                  {btn.icon}
+                </div>
+                <p className="font-black text-gray-800 text-base leading-tight text-center">{btn.label}</p>
+                <p className="text-xs text-gray-400 text-center leading-tight">{btn.desc}</p>
+              </button>
+            ) : (
+              <button
+                key={btn.id}
+                onClick={() => setPanel(btn.id)}
+                className="card-light flex flex-col items-center justify-center gap-1.5 active:scale-95 transition-transform duration-150 p-2 relative"
+                style={{ borderColor: btn.border }}
+              >
+                {btn.badge && (
+                  <span className="absolute top-1.5 right-2 text-[9px] font-black" style={{ color: btn.color }}>{btn.badge}</span>
+                )}
+                <div className="w-12 h-12 rounded-full flex items-center justify-center neu-icon" style={{ background: iconGradient(btn.color), color: '#ffffff' }}>
+                  {btn.icon}
+                </div>
+                <p className="font-bold text-gray-800 text-xs leading-tight text-center">{btn.label}</p>
+                <p className="text-[10px] text-gray-400 text-center leading-tight">{btn.desc}</p>
+              </button>
+            )
           ))}
+          {/* 広告スペース */}
+          <div className="col-span-2 rounded-2xl overflow-hidden" style={{ height: '25vh' }}>
+            <iframe
+              src="https://www.youtube.com/embed/vNVdeRkjT2Y?autoplay=1&mute=1&loop=1&playlist=vNVdeRkjT2Y&controls=0&modestbranding=1"
+              title="Advertisement"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full h-full"
+            />
+          </div>
+        </div>
+        <div className="py-2 flex items-center justify-center shrink-0">
+          <span className="text-xs font-semibold text-blue-900 mr-1.5">Powered by</span><img src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png" alt="Vexii" className="h-6 w-auto object-contain"/>
         </div>
       </main>
 
       {panel && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-end justify-center" onClick={closePanel}>
-          <div className="w-full max-w-lg bg-white rounded-t-3xl max-h-[88vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <div className="w-8 h-1 bg-gray-200 rounded-full mx-auto mt-3 mb-4"/>
+          <div className={`w-full max-w-lg rounded-t-3xl max-h-[88vh] overflow-y-auto ${panel === 'order' ? 'bg-amber-50' : 'bg-white'}`} onClick={(e) => e.stopPropagation()}>
+            <div className="w-8 h-1 bg-gray-200 rounded-full mx-auto mt-3 mb-4 cursor-pointer" onClick={() => setPanel(null)} />
 
             {/* モバイルオーダー */}
             {panel === 'order' && (
@@ -183,21 +237,30 @@ export default function CafePage() {
                   ))}
                 </div>
 
-                <div className="space-y-2 mb-4">
+                <div className="space-y-3 mb-4">
                   {MENU[tab].map((item) => (
-                    <div key={item.id} className="flex items-center justify-between p-3 bg-amber-50 border border-amber-100 rounded-xl">
-                      <div className="flex-1 min-w-0 mr-3">
-                        <div className="flex items-center gap-1.5 mb-0.5">
-                          <p className="font-semibold text-gray-800 text-sm truncate">{item.name}</p>
-                          {item.tag && <span className="text-[9px] bg-amber-500 text-white px-1.5 py-0.5 rounded font-bold shrink-0">{item.tag}</span>}
-                        </div>
-                        <p className="text-[10px] text-gray-400 truncate">{item.desc}</p>
-                        <p className="text-xs font-bold text-amber-700 mt-0.5">¥{item.price}</p>
+                    <div key={item.id} className="flex items-center gap-3 p-3 bg-white border border-amber-200 rounded-2xl shadow-sm">
+                      {/* 写真 */}
+                      <div
+                        className="w-16 h-16 rounded-xl flex items-center justify-center text-3xl shrink-0"
+                        style={{ background: item.photoBg }}
+                      >
+                        {item.photo}
                       </div>
+                      {/* テキスト */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          <p className="font-bold text-gray-800 text-sm truncate">{item.name}</p>
+                          {item.tag && <span className="text-[9px] bg-amber-500 text-white px-1.5 py-0.5 rounded-full font-bold shrink-0">{item.tag}</span>}
+                        </div>
+                        <p className="text-[11px] text-gray-400 mb-1">{item.desc}</p>
+                        <p className="text-sm font-black text-amber-700">¥{item.price}</p>
+                      </div>
+                      {/* カウンター */}
                       <div className="flex items-center gap-2 shrink-0">
-                        <button onClick={() => rem(item.id)} className="w-7 h-7 rounded-full bg-white border border-amber-200 text-amber-600 font-bold flex items-center justify-center">−</button>
-                        <span className="w-4 text-center font-bold text-gray-800 text-sm">{cart[item.id] ?? 0}</span>
-                        <button onClick={() => add(item.id)} className="w-7 h-7 rounded-full bg-amber-500 text-white font-bold flex items-center justify-center">+</button>
+                        <button onClick={() => rem(item.id)} className="w-8 h-8 rounded-full bg-amber-50 border border-amber-300 text-amber-600 font-bold text-base flex items-center justify-center">−</button>
+                        <span className="w-4 text-center font-black text-gray-800 text-sm">{cart[item.id] ?? 0}</span>
+                        <button onClick={() => add(item.id)} className="w-8 h-8 rounded-full bg-amber-500 text-white font-bold text-base flex items-center justify-center">+</button>
                       </div>
                     </div>
                   ))}
@@ -319,20 +382,16 @@ export default function CafePage() {
                 <h2 className="font-bold text-gray-900 text-lg mb-4">クーポン</h2>
                 <div className="space-y-3">
                   {COUPONS.map((c) => (
-                    <div key={c.id} className="bg-red-50 border border-red-100 rounded-2xl p-4">
+                    <div key={c.id} className="bg-red-50 border border-red-100 rounded-2xl p-4 active:scale-95 transition-transform cursor-pointer"
+                      onClick={() => setBarcode({ code: c.code, title: c.title })}>
                       <div className="flex items-start justify-between mb-2">
                         <p className="font-bold text-gray-800 text-sm leading-tight flex-1 mr-2">{c.title}</p>
                         <span className="text-[9px] bg-red-500 text-white px-2 py-0.5 rounded-full font-bold shrink-0">{c.tag}</span>
                       </div>
                       <p className="text-xs text-gray-400 mb-3">{c.exp}</p>
                       <div className="flex items-center justify-between">
-                        <p className="text-xs text-gray-400">コード: <span className="font-mono text-red-700 font-bold">{c.code}</span></p>
-                        <button
-                          onClick={() => navigator.clipboard.writeText(c.code).catch(() => {})}
-                          className="text-xs px-3 py-1.5 rounded-lg bg-red-500 text-white font-bold"
-                        >
-                          使う
-                        </button>
+                        <p className="text-xs text-gray-400">{c.code}</p>
+                        <span className="text-xs px-3 py-1.5 rounded-lg bg-red-500 text-white font-bold">使う</span>
                       </div>
                     </div>
                   ))}
@@ -424,7 +483,7 @@ export default function CafePage() {
                   </div>
                   <p className="text-xs text-gray-400 mt-1.5">{chargePercent}% · 残り約50分で満充電</p>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-[11px]">
                   {[
                     { label: '注文する', icon: '☕', action: () => setPanel('order') },
                     { label: 'クーポン', icon: '🎟', action: () => setPanel('coupon') },
@@ -439,9 +498,32 @@ export default function CafePage() {
                 </div>
               </div>
             )}
+            {panel === 'ad' && (
+              <div className="px-5 pb-8">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 01-1.44-4.282m3.102.069a18.03 18.03 0 01-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 018.835 2.535M10.34 6.66a23.847 23.847 0 008.835-2.535m0 0A23.74 23.74 0 0018.795 3m.38 1.125a23.91 23.91 0 011.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 001.014-5.395m0-3.46c.495.413.811 1.035.811 1.73 0 .695-.316 1.317-.811 1.73m0-3.46a24.347 24.347 0 010 3.46"/>
+                    </svg>
+                  </div>
+                  <h2 className="font-bold text-gray-900 text-lg">広告スペース</h2>
+                </div>
+                <div className="rounded-2xl overflow-hidden aspect-video mb-4">
+                  <iframe
+                    src="https://www.youtube.com/embed/vNVdeRkjT2Y"
+                    title="Advertisement"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full"
+                  />
+                </div>
+                <p className="text-xs text-gray-400 text-center">広告掲載のお問い合わせは Vexii までご連絡ください</p>
+              </div>
+            )}
           </div>
         </div>
       )}
+      {barcode && <BarcodeModal code={barcode.code} title={barcode.title} onClose={() => setBarcode(null)} />}
     </>
   )
 }

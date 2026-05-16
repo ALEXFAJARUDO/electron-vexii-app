@@ -1,9 +1,12 @@
 'use client'
+import { iconGradient } from '@/lib/colorLight'
 
 import { useState } from 'react'
 import Link from 'next/link'
 
-type PanelId = 'flight' | 'immigration' | 'shops' | 'lounge' | 'baggage' | 'exchange' | 'map' | 'wifi'
+type PanelId = 'flight' | 'immigration' | 'shops' | 'lounge' | 'baggage' | 'exchange' | 'map' | 'wifi' | 'language' | 'ad'
+type Lang = 'ja' | 'en' | 'zh' | 'ko' | 'fr'
+const LANG_LABELS: Record<Lang, string> = { ja: '日本語', en: 'English', zh: '中文', ko: '한국어', fr: 'Français' }
 
 const BUTTONS: { id: PanelId; label: string; desc: string; color: string; bg: string; border: string; badge?: string; icon: React.ReactNode }[] = [
   {
@@ -38,6 +41,10 @@ const BUTTONS: { id: PanelId; label: string; desc: string; color: string; bg: st
     id: 'wifi', label: 'WiFi接続', desc: '無料WiFiに接続', color: '#a855f7', bg: '#faf5ff', border: '#e9d5ff',
     icon: <svg className="w-9 h-9" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.288 15.038a5.25 5.25 0 017.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 011.06 0z"/></svg>,
   },
+  {
+    id: 'language', label: '言語切替', desc: '5ヶ国語対応', color: '#ec4899', bg: '#fdf2f8', border: '#fbcfe8',
+    icon: <svg className="w-9 h-9" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 21l5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 016-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-4.589 8.495a18.023 18.023 0 01-3.827-5.802"/></svg>,
+  },
 ]
 
 const FLIGHTS = [
@@ -65,6 +72,7 @@ const EXCHANGE_RATES = [
 
 export default function AirportPage() {
   const [panel, setPanel] = useState<PanelId | null>(null)
+  const [lang, setLang] = useState<Lang>('ja')
   const [wifiCopied, setWifiCopied] = useState(false)
 
   function copyWifi() {
@@ -77,17 +85,23 @@ export default function AirportPage() {
 
   return (
     <>
-      <main className="h-dvh flex flex-col bg-[#edf1f7] max-w-lg mx-auto overflow-hidden">
-        <header className="neu-header px-4 py-3 flex items-center gap-2.5 shrink-0">
-          <Link href="/" className="flex items-center gap-2">
-            <img src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png" alt="Vexii" className="h-6 w-auto object-contain"/>
-            <span className="font-bold text-sm silver-gradient">Vexii</span>
-          </Link>
-          <span className="text-gray-200 text-lg leading-none mx-0.5">|</span>
-          <span className="text-sm font-semibold text-gray-500">✈️ 空港</span>
+      <main className="min-h-dvh flex flex-col bg-[#edf1f7]">
+        <header className="neu-header shrink-0" style={{ height: '64px' }}>
+          <div className="h-full max-w-lg mx-auto w-full px-3 flex items-center gap-2.5">
+            <Link href="/">
+              <div style={{ width: '144px', height: '38px', backgroundImage: 'url(/airport-logo.png)', backgroundSize: '170%', backgroundPosition: 'center center', backgroundRepeat: 'no-repeat' }} />
+            </Link>
+            <button onClick={() => setPanel('language')} className="ml-auto text-xs font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{LANG_LABELS[lang]}</button>
+          </div>
         </header>
 
-        <div className="flex-1 min-h-0 overflow-y-auto p-3 pb-6 grid grid-cols-2 auto-rows-[minmax(110px,auto)] gap-3">
+        <div className="flex-1 max-w-lg mx-auto w-full p-3 pb-6 grid grid-cols-2 auto-rows-[minmax(110px,auto)] gap-[15px]">
+          {/* ヒーロー画像 */}
+          <div className="col-span-2 rounded-2xl overflow-hidden shrink-0" style={{ height: '25vh' }}>
+            <img src="/airport-hero.png" alt="Tokyo International Airport" className="w-full h-full object-cover" />
+          </div>
+
+
           {BUTTONS.map((btn) => (
             <button
               key={btn.id}
@@ -98,20 +112,33 @@ export default function AirportPage() {
               {btn.badge && (
                 <span className="absolute top-1.5 right-2 text-[9px] font-black text-sky-500">{btn.badge}</span>
               )}
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center neu-icon" style={{ background: btn.bg, color: btn.color }}>
+              <div className="w-12 h-12 rounded-full flex items-center justify-center neu-icon" style={{ background: iconGradient(btn.color), color: '#ffffff' }}>
                 {btn.icon}
               </div>
               <p className="font-bold text-gray-800 text-xs leading-tight text-center">{btn.label}</p>
               <p className="text-[10px] text-gray-400 text-center leading-tight">{btn.desc}</p>
             </button>
           ))}
+          {/* 広告スペース */}
+          <div className="col-span-2 rounded-2xl overflow-hidden" style={{ height: '25vh' }}>
+            <iframe
+              src="https://www.youtube.com/embed/vNVdeRkjT2Y?autoplay=1&mute=1&loop=1&playlist=vNVdeRkjT2Y&controls=0&modestbranding=1"
+              title="Advertisement"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full h-full"
+            />
+          </div>
+        </div>
+        <div className="py-2 flex items-center justify-center shrink-0">
+          <span className="text-xs font-semibold text-blue-900 mr-1.5">Powered by</span><img src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png" alt="Vexii" className="h-6 w-auto object-contain"/>
         </div>
       </main>
 
       {panel && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-end justify-center" onClick={closePanel}>
           <div className="w-full max-w-lg bg-white rounded-t-3xl max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <div className="w-8 h-1 bg-gray-200 rounded-full mx-auto mt-3 mb-4"/>
+            <div className="w-8 h-1 bg-gray-200 rounded-full mx-auto mt-3 mb-4 cursor-pointer" onClick={() => setPanel(null)} />
 
             {/* フライト情報 */}
             {panel === 'flight' && (
@@ -288,23 +315,33 @@ export default function AirportPage() {
             {/* 館内マップ */}
             {panel === 'map' && (
               <div className="px-5 pb-8">
-                <h2 className="font-bold text-gray-900 text-lg mb-4">館内マップ</h2>
-                <div className="rounded-2xl bg-violet-50 border border-violet-100 aspect-video flex items-center justify-center mb-4">
-                  <div className="text-center">
-                    <p className="text-violet-400 text-sm font-semibold">ターミナルマップ</p>
-                    <p className="text-violet-300 text-xs mt-1">表示エリア</p>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-bold text-gray-900 text-lg">館内マップ</h2>
+                  <span className="text-xs bg-violet-100 text-violet-700 font-bold px-2.5 py-1 rounded-full">KIX T1</span>
+                </div>
+                {/* KIX Terminal 1 floor diagram */}
+                <div className="rounded-2xl bg-violet-50 border border-violet-100 p-4 mb-4">
+                  <p className="text-[10px] text-violet-400 font-bold mb-3 text-center tracking-widest">関西国際空港 第1ターミナル</p>
+                  <div className="space-y-1.5">
+                    {[
+                      { floor: '4F', color: 'bg-violet-500', light: 'bg-violet-50 border-violet-200', desc: '出発ロビー・国際線チェックイン' },
+                      { floor: '3F', color: 'bg-sky-500',    light: 'bg-sky-50 border-sky-200',       desc: '搭乗ゲート (50〜89番) · 免税店' },
+                      { floor: '2F', color: 'bg-orange-400', light: 'bg-orange-50 border-orange-200', desc: '到着ロビー・手荷物受取・税関' },
+                      { floor: '1F', color: 'bg-green-500',  light: 'bg-green-50 border-green-200',   desc: '国内線・乗継・シャトルバス' },
+                      { floor: 'B1F', color: 'bg-gray-500',  light: 'bg-gray-50 border-gray-200',     desc: 'はるか・ラピート・バスターミナル' },
+                    ].map((f) => (
+                      <div key={f.floor} className={`flex items-center gap-3 px-3 py-2 rounded-xl border ${f.light}`}>
+                        <span className={`text-[10px] ${f.color} text-white font-bold px-1.5 py-0.5 rounded w-8 text-center shrink-0`}>{f.floor}</span>
+                        <span className="text-xs text-gray-700">{f.desc}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
-                <div className="space-y-2">
-                  {[
-                    { floor: '3F', desc: '出発ロビー・搭乗ゲート・免税店' },
-                    { floor: '2F', desc: 'チェックインカウンター・ショップ' },
-                    { floor: '1F', desc: '到着ロビー・税関・手荷物受取' },
-                    { floor: 'B1F', desc: '鉄道・バスターミナル・駐車場' },
-                  ].map((f) => (
-                    <button key={f.floor} className="w-full flex items-center gap-3 px-4 py-2.5 bg-violet-50 border border-violet-100 rounded-xl text-left active:scale-[0.98] transition-transform">
-                      <span className="text-xs bg-violet-500 text-white font-bold px-2 py-0.5 rounded w-10 text-center shrink-0">{f.floor}</span>
-                      <span className="text-xs text-gray-600">{f.desc}</span>
+                <p className="text-[10px] text-gray-400 text-center mb-3">※ 第2ターミナルへは無料シャトルバス (約10分)</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {['トイレ', '授乳室', '喫煙所', 'ATM', '救護室', '両替所'].map((loc) => (
+                    <button key={loc} className="py-2 rounded-xl bg-violet-50 border border-violet-200 text-violet-700 text-xs font-bold active:scale-95 transition-transform">
+                      {loc}
                     </button>
                   ))}
                 </div>
@@ -339,6 +376,55 @@ export default function AirportPage() {
                 >
                   {wifiCopied ? '✓ コピーしました' : '接続'}
                 </button>
+              </div>
+            )}
+
+            {panel === 'language' && (
+              <div className="px-5 pb-8">
+                <h2 className="font-bold text-gray-900 text-lg mb-2">言語切替 / Language</h2>
+                <p className="text-sm text-gray-400 mb-5 text-center">表示言語を選択してください</p>
+                <div className="grid grid-cols-2 gap-[15px]">
+                  {([
+                    { code: 'ja', label: '日本語', sub: 'Japanese', flag: '🇯🇵' },
+                    { code: 'en', label: 'English', sub: '英語', flag: '🇺🇸' },
+                    { code: 'zh', label: '中文', sub: '中国語', flag: '🇨🇳' },
+                    { code: 'ko', label: '한국어', sub: '韓国語', flag: '🇰🇷' },
+                    { code: 'fr', label: 'Français', sub: 'フランス語', flag: '🇫🇷' },
+                  ] as const).map((l) => (
+                    <button
+                      key={l.code}
+                      onClick={() => { setLang(l.code); closePanel() }}
+                      className={`py-4 rounded-2xl border-2 flex flex-col items-center gap-1.5 transition-all active:scale-95 ${lang === l.code ? 'border-pink-500 bg-pink-50' : 'border-gray-100 bg-white'}`}
+                    >
+                      <span className="text-3xl">{l.flag}</span>
+                      <p className="font-bold text-gray-800 text-sm">{l.label}</p>
+                      <p className="text-xs text-gray-400">{l.sub}</p>
+                      {lang === l.code && <span className="text-[10px] bg-pink-500 text-white px-2 py-0.5 rounded-full font-bold">選択中</span>}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            {panel === 'ad' && (
+              <div className="px-5 pb-8">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 01-1.44-4.282m3.102.069a18.03 18.03 0 01-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 018.835 2.535M10.34 6.66a23.847 23.847 0 008.835-2.535m0 0A23.74 23.74 0 0018.795 3m.38 1.125a23.91 23.91 0 011.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 001.014-5.395m0-3.46c.495.413.811 1.035.811 1.73 0 .695-.316 1.317-.811 1.73m0-3.46a24.347 24.347 0 010 3.46"/>
+                    </svg>
+                  </div>
+                  <h2 className="font-bold text-gray-900 text-lg">広告スペース</h2>
+                </div>
+                <div className="rounded-2xl overflow-hidden aspect-video mb-4">
+                  <iframe
+                    src="https://www.youtube.com/embed/vNVdeRkjT2Y"
+                    title="Advertisement"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full"
+                  />
+                </div>
+                <p className="text-xs text-gray-400 text-center">広告掲載のお問い合わせは Vexii までご連絡ください</p>
               </div>
             )}
           </div>

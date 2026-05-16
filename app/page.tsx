@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import MenuButton from '@/components/MenuButton'
+import SplashScreen from '@/components/SplashScreen'
 
 const DEMO_CHARGER_ID = '11111111-1111-1111-1111-111111111111'
 
@@ -23,22 +24,25 @@ const GENRES = [
     label: 'カフェ',
     icon: (
       <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513M15 21H9m6 0h2.25A2.25 2.25 0 0019.5 18.75v-2.892c0-.595-.232-1.165-.645-1.591l-1.2-1.278a.75.75 0 00-1.093.033L15 14.25m0 6.75V14.25m-6 6.75V14.25m0 0l-1.562-1.228a.75.75 0 00-1.093.033l-1.2 1.278A2.254 2.254 0 004.5 15.858v2.892A2.25 2.25 0 006.75 21H9"/>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 7.5h13.5v9A2.25 2.25 0 0116.5 18.75H7.5A2.25 2.25 0 015.25 16.5V7.5zm13.5 2.25h2.25a2.25 2.25 0 010 4.5H18.75M10.5 3l-1.125 2.25M12 3v2.25M13.5 3l1.125 2.25"/>
       </svg>
     ),
     color: '#92400e',
+    light: '#fbbf24',
     bg: '#fffbeb',
     border: '#fde68a',
   },
   {
     id: 'restaurant',
-    label: '飲食店用',
+    label: '飲食店',
     icon: (
       <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513M15 21H9m6 0h2.25A2.25 2.25 0 0019.5 18.75v-2.892c0-.595-.232-1.165-.645-1.591l-1.2-1.278a.75.75 0 00-1.093.033L15 14.25m0 6.75V14.25m-6 6.75V14.25m0 0l-1.562-1.228a.75.75 0 00-1.093.033l-1.2 1.278A2.254 2.254 0 004.5 15.858v2.892A2.25 2.25 0 006.75 21H9"/>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 3v6m2-6v6m2-6v6M6 9h4M8 9v12"/>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M14.5 3V21M14.5 3a3 3 0 013 3v3a3 3 0 01-3 3"/>
       </svg>
     ),
     color: '#f97316',
+    light: '#fdba74',
     bg: '#fff7ed',
     border: '#fed7aa',
   },
@@ -51,6 +55,7 @@ const GENRES = [
       </svg>
     ),
     color: '#0ea5e9',
+    light: '#7dd3fc',
     bg: '#f0f9ff',
     border: '#bae6fd',
   },
@@ -63,6 +68,7 @@ const GENRES = [
       </svg>
     ),
     color: '#22c55e',
+    light: '#86efac',
     bg: '#f0fdf4',
     border: '#bbf7d0',
   },
@@ -75,6 +81,7 @@ const GENRES = [
       </svg>
     ),
     color: '#a855f7',
+    light: '#d8b4fe',
     bg: '#faf5ff',
     border: '#e9d5ff',
   },
@@ -87,6 +94,7 @@ const GENRES = [
       </svg>
     ),
     color: '#ef4444',
+    light: '#fca5a5',
     bg: '#fff1f2',
     border: '#fecdd3',
   },
@@ -95,10 +103,11 @@ const GENRES = [
     label: 'ショッピングモール',
     icon: (
       <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z"/>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
       </svg>
     ),
     color: '#8b5cf6',
+    light: '#c4b5fd',
     bg: '#f5f3ff',
     border: '#ddd6fe',
   },
@@ -107,10 +116,11 @@ const GENRES = [
     label: '空港',
     icon: (
       <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 2c-1 0-2 1-2 2v6L3.5 14v1.5l6.5-2V19L8 21v1l4-1 4 1V21l-2-2v-5.5l6.5 2V14L14 10V4c0-1-1-2-2-2Z"/>
       </svg>
     ),
     color: '#0ea5e9',
+    light: '#7dd3fc',
     bg: '#f0f9ff',
     border: '#bae6fd',
   },
@@ -119,10 +129,11 @@ const GENRES = [
     label: 'テーマパーク',
     icon: (
       <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21V9.75A8.25 8.25 0 0112 1.5a8.25 8.25 0 018.25 8.25V21m-16.5 0h16.5m-11.25 0v-3.75A3 3 0 0112 14.25a3 3 0 013 3V21"/>
       </svg>
     ),
     color: '#ec4899',
+    light: '#f9a8d4',
     bg: '#fdf2f8',
     border: '#fbcfe8',
   },
@@ -135,6 +146,7 @@ const GENRES = [
       </svg>
     ),
     color: '#7c3aed',
+    light: '#c4b5fd',
     bg: '#f5f3ff',
     border: '#ddd6fe',
   },
@@ -143,10 +155,11 @@ const GENRES = [
     label: '病院',
     icon: (
       <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z"/>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
       </svg>
     ),
     color: '#10b981',
+    light: '#6ee7b7',
     bg: '#ecfdf5',
     border: '#a7f3d0',
   },
@@ -155,6 +168,7 @@ const GENRES = [
 export default function Home() {
   return (
     <main className="min-h-screen bg-[#edf1f7]">
+      <SplashScreen />
       {/* Header */}
       <header className="neu-header px-5 py-4 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
@@ -176,7 +190,7 @@ export default function Home() {
 
       {/* Genre grid */}
       <div className="px-5 pb-12 max-w-lg mx-auto">
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-[15px]">
           {GENRES.map((genre) => (
             <Link
               key={genre.id}
@@ -185,7 +199,10 @@ export default function Home() {
             >
               <div
                 className="w-16 h-16 rounded-full flex items-center justify-center transition-transform group-hover:scale-110 neu-icon"
-                style={{ background: genre.bg, color: genre.color }}
+                style={{
+                  background: `linear-gradient(to bottom, ${genre.light}, ${genre.color})`,
+                  color: '#ffffff',
+                }}
               >
                 {genre.icon}
               </div>

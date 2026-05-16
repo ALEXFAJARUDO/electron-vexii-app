@@ -1,9 +1,11 @@
 'use client'
+import { iconGradient } from '@/lib/colorLight'
 
 import { useState } from 'react'
 import Link from 'next/link'
+import BarcodeModal from '@/components/BarcodeModal'
 
-type PanelId = 'wifi' | 'coupons' | 'store' | 'tickets' | 'disaster'
+type PanelId = 'wifi' | 'coupons' | 'store' | 'tickets' | 'disaster' | 'ad'
 
 const DEMO_WIFI = { ssid: 'STORE_FREE_WIFI', password: 'welcome2024' }
 
@@ -84,6 +86,7 @@ const BUTTONS: { id: PanelId; label: string; desc: string; color: string; bg: st
 export default function ConveniencePage() {
   const [panel, setPanel] = useState<PanelId | null>(null)
   const [copied, setCopied] = useState<'ssid' | 'pass' | null>(null)
+  const [barcode, setBarcode] = useState<{ code: string; title: string } | null>(null)
 
   async function copy(text: string, type: 'ssid' | 'pass') {
     try {
@@ -100,23 +103,28 @@ export default function ConveniencePage() {
 
   return (
     <>
-      <main className="h-dvh flex flex-col bg-[#edf1f7] max-w-lg mx-auto overflow-hidden">
+      <main className="h-dvh flex flex-col bg-[#edf1f7] overflow-hidden">
         {/* Header */}
-        <header className="neu-header px-4 py-3 flex items-center gap-2.5 shrink-0">
-          <Link href="/" className="flex items-center gap-2">
-            <img
-              src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png"
-              alt="Vexii"
-              className="h-6 w-auto object-contain"
-            />
-            <span className="font-bold text-sm silver-gradient">Vexii</span>
-          </Link>
-          <span className="text-gray-200 text-lg leading-none mx-0.5">|</span>
-          <span className="text-sm font-semibold text-gray-500">コンビニ</span>
+        <header className="neu-header shrink-0" style={{ height: '64px' }}>
+          <div className="h-full max-w-lg mx-auto w-full px-3 flex items-center gap-2.5">
+            <Link href="/">
+              <div style={{ width: '144px', height: '38px', backgroundImage: 'url(/convenience-logo.png)', backgroundSize: '120%', backgroundPosition: 'center center', backgroundRepeat: 'no-repeat', marginTop: '20px' }} />
+            </Link>
+            <span className="ml-auto text-sm font-semibold text-gray-500">コンビニ</span>
+          </div>
         </header>
 
         {/* Feature grid — 3 rows × 2 cols, fills remaining height with no scroll */}
-        <div className="flex-1 min-h-0 overflow-y-auto p-3 pb-6 grid grid-cols-2 auto-rows-[minmax(110px,auto)] gap-3">
+        <div className="flex-1 min-h-0 overflow-y-auto max-w-lg mx-auto w-full p-3 pb-6 grid grid-cols-2 auto-rows-[minmax(110px,auto)] gap-[15px]">
+          {/* ヒーロー画像 — 上下カットなし、ページの1/4 */}
+          <div className="col-span-2 rounded-2xl overflow-hidden" style={{ height: '25vh' }}>
+            <img
+              src="/convenience-hero.png"
+              alt="Ever Green Convenience Store"
+              className="w-full h-full object-contain"
+            />
+          </div>
+
           {BUTTONS.map((btn) => (
             <button
               key={btn.id}
@@ -126,7 +134,7 @@ export default function ConveniencePage() {
             >
               <div
                 className="w-14 h-14 rounded-2xl flex items-center justify-center"
-                style={{ background: btn.bg, color: btn.color }}
+                style={{ background: iconGradient(btn.color), color: '#ffffff' }}
               >
                 {btn.icon}
               </div>
@@ -149,6 +157,19 @@ export default function ConveniencePage() {
             <p className="font-bold text-red-600 text-sm leading-tight text-center">災害情報</p>
             <p className="text-xs text-red-300 text-center leading-tight">緊急・避難情報を確認</p>
           </button>
+          {/* 広告スペース */}
+          <div className="col-span-2 rounded-2xl overflow-hidden" style={{ height: '25vh' }}>
+            <iframe
+              src="https://www.youtube.com/embed/vNVdeRkjT2Y?autoplay=1&mute=1&loop=1&playlist=vNVdeRkjT2Y&controls=0&modestbranding=1"
+              title="Advertisement"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full h-full"
+            />
+          </div>
+        </div>
+        <div className="py-2 flex items-center justify-center shrink-0">
+          <span className="text-xs font-semibold text-blue-900 mr-1.5">Powered by</span><img src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png" alt="Vexii" className="h-6 w-auto object-contain"/>
         </div>
       </main>
 
@@ -163,14 +184,14 @@ export default function ConveniencePage() {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Drag handle */}
-            <div className="w-8 h-1 bg-gray-200 rounded-full mx-auto mt-3 mb-4" />
+            <div className="w-8 h-1 bg-gray-200 rounded-full mx-auto mt-3 mb-4 cursor-pointer" onClick={() => setPanel(null)} />
 
             {/* WiFi panel */}
             {panel === 'wifi' && (
               <div className="px-5 pb-8">
                 <div className="flex items-center gap-3 mb-5">
                   <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
-                    <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-blue-900" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M8.288 15.038a5.25 5.25 0 017.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 011.06 0z"/>
                     </svg>
                   </div>
@@ -208,13 +229,13 @@ export default function ConveniencePage() {
                 </div>
                 <div className="space-y-2">
                   {COUPONS.map((c) => (
-                    <div key={c.id} className="bg-green-50 border border-green-100 rounded-xl p-4 flex items-center justify-between">
+                    <div key={c.id} className="bg-green-50 border border-green-100 rounded-xl p-4 flex items-center justify-between active:scale-95 transition-transform cursor-pointer"
+                      onClick={() => setBarcode({ code: c.code, title: c.title })}>
                       <div>
                         <p className="font-semibold text-gray-800 text-sm">{c.title}</p>
-                        <p className="text-xs text-gray-400 mt-0.5">
-                          コード: <span className="font-mono text-green-700 font-semibold">{c.code}</span>　{c.expires}まで
-                        </p>
+                        <p className="text-xs text-gray-400 mt-0.5">{c.expires}まで</p>
                       </div>
+                      <span className="text-xs px-3 py-1.5 rounded-lg bg-green-500 text-white font-semibold shrink-0 ml-3">使う</span>
                     </div>
                   ))}
                 </div>
@@ -324,9 +345,32 @@ export default function ConveniencePage() {
                 </div>
               </div>
             )}
+            {panel === 'ad' && (
+              <div className="px-5 pb-8">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 01-1.44-4.282m3.102.069a18.03 18.03 0 01-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 018.835 2.535M10.34 6.66a23.847 23.847 0 008.835-2.535m0 0A23.74 23.74 0 0018.795 3m.38 1.125a23.91 23.91 0 011.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 001.014-5.395m0-3.46c.495.413.811 1.035.811 1.73 0 .695-.316 1.317-.811 1.73m0-3.46a24.347 24.347 0 010 3.46"/>
+                    </svg>
+                  </div>
+                  <h2 className="font-bold text-gray-900 text-lg">広告スペース</h2>
+                </div>
+                <div className="rounded-2xl overflow-hidden aspect-video mb-4">
+                  <iframe
+                    src="https://www.youtube.com/embed/vNVdeRkjT2Y"
+                    title="Advertisement"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full"
+                  />
+                </div>
+                <p className="text-xs text-gray-400 text-center">広告掲載のお問い合わせは Vexii までご連絡ください</p>
+              </div>
+            )}
           </div>
         </div>
       )}
+      {barcode && <BarcodeModal code={barcode.code} title={barcode.title} onClose={() => setBarcode(null)} />}
     </>
   )
 }
