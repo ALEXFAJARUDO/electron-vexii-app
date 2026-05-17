@@ -1,6 +1,6 @@
 'use client'
 import { iconGradient } from '@/lib/colorLight'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import BarcodeModal from '@/components/BarcodeModal'
 
@@ -123,6 +123,23 @@ export default function RestaurantPage() {
   const [cart, setCart] = useState<Record<number, number>>({})
   const [orderPlaced, setOrderPlaced] = useState(false)
   const [quickAdded, setQuickAdded] = useState<string | null>(null)
+  const [tableId, setTableId] = useState<string>('')
+  const [showTableModal, setShowTableModal] = useState(false)
+  const [tableInput, setTableInput] = useState('')
+
+  useEffect(() => {
+    const saved = localStorage.getItem('restaurant_table_id') ?? ''
+    setTableId(saved)
+    if (!saved) setShowTableModal(true)
+  }, [])
+
+  function saveTableId() {
+    const v = tableInput.trim()
+    if (!v) return
+    localStorage.setItem('restaurant_table_id', v)
+    setTableId(v)
+    setShowTableModal(false)
+  }
 
   const cartTotal = ALL_ITEMS.reduce((s, i) => s + (cart[i.id] ?? 0) * i.price, 0)
   const cartCount = ALL_ITEMS.reduce((s, i) => s + (cart[i.id] ?? 0), 0)
@@ -162,9 +179,21 @@ export default function RestaurantPage() {
             <Link href="/" className="flex items-center gap-2">
               <img src="/restaurant-logo.png" alt="翠旬 Suishun" style={{ height: '40px', width: 'auto' }} />
             </Link>
-            <span className="ml-auto text-sm font-semibold text-gray-500">飲食店</span>
+            <button
+              onClick={() => { setTableInput(tableId); setShowTableModal(true) }}
+              className="ml-auto flex items-center gap-1.5 rounded-lg px-2.5 py-1 active:opacity-70 transition-opacity"
+              style={tableId ? { background: '#fff7ed', border: '1px solid #fed7aa' } : { background: '#fef2f2', border: '1px solid #fecaca' }}
+            >
+              <svg className="w-3.5 h-3.5" style={{ color: tableId ? '#f97316' : '#ef4444' }} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/>
+              </svg>
+              <span className="text-xs font-black" style={{ color: tableId ? '#ea580c' : '#dc2626' }}>
+                {tableId ? `席 ${tableId}` : '席番号を設定'}
+              </span>
+            </button>
             {cartCount > 0 && (
-              <button onClick={() => setPanel('order')} className="ml-2 flex items-center gap-1.5 bg-orange-50 border border-orange-300 rounded-lg px-2.5 py-1">
+              <button onClick={() => setPanel('order')} className="ml-1 flex items-center gap-1.5 bg-orange-50 border border-orange-300 rounded-lg px-2.5 py-1">
                 <span className="text-xs font-black text-orange-700">カート {cartCount}点</span>
               </button>
             )}
@@ -690,6 +719,46 @@ export default function RestaurantPage() {
         </div>
       )}
       {barcode && <BarcodeModal code={barcode.code} title={barcode.title} onClose={() => setBarcode(null)} />}
+
+      {/* ── 席番号入力モーダル ── */}
+      {showTableModal && (
+        <div className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center px-6" onClick={() => tableId && setShowTableModal(false)}>
+          <div className="w-full max-w-sm bg-white rounded-3xl p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="text-center mb-5">
+              <div className="w-14 h-14 rounded-2xl bg-orange-50 flex items-center justify-center mx-auto mb-3">
+                <svg className="w-7 h-7 text-orange-400" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/>
+                </svg>
+              </div>
+              <h2 className="font-black text-gray-900 text-lg">席番号を入力</h2>
+              <p className="text-sm text-gray-400 mt-1">テーブルのQRコードまたは席札の番号を入力してください</p>
+            </div>
+            <input
+              type="text"
+              inputMode="numeric"
+              placeholder="例：3、A-2、カウンター1"
+              value={tableInput}
+              onChange={e => setTableInput(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && saveTableId()}
+              autoFocus
+              className="w-full border-2 border-gray-200 focus:border-orange-400 rounded-xl px-4 py-3 text-center text-2xl font-black text-gray-800 outline-none mb-4 transition-colors"
+            />
+            <button
+              onClick={saveTableId}
+              disabled={!tableInput.trim()}
+              className="w-full py-3.5 rounded-xl bg-orange-500 text-white font-black text-base disabled:opacity-40 active:scale-95 transition-transform"
+            >
+              決定
+            </button>
+            {tableId && (
+              <button onClick={() => setShowTableModal(false)} className="w-full mt-2 py-2.5 text-sm text-gray-400 font-semibold">
+                キャンセル
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </>
   )
 }
