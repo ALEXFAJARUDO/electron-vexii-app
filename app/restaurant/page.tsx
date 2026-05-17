@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import BarcodeModal from '@/components/BarcodeModal'
 
-type PanelId = 'wifi' | 'coupons' | 'order' | 'ad' | 'app' | 'store'
+type PanelId = 'wifi' | 'coupons' | 'order' | 'ad' | 'app' | 'store' | 'staff' | 'payment'
 type OrderItem = { id: number; name: string; desc: string; price: number; photo: string; photoBg: string; tag?: string }
 
 const DEMO_WIFI = { ssid: 'RESTAURANT_WIFI', password: 'dinner2024' }
@@ -42,11 +42,30 @@ const ORDER_MENU: Record<string, OrderItem[]> = {
     { id: 404, name: '串カツ盛り合わせ', desc: '5本盛り・ソース/塩から選択', price:  980, photo: '🍢', photoBg: 'linear-gradient(135deg,#92400e,#78350f)', tag: 'NEW' },
   ],
   drink: [
-    { id: 501, name: 'ビール',    desc: '生ビール・中ジョッキ',          price: 580, photo: '🍺', photoBg: 'linear-gradient(135deg,#d97706,#b45309)',  tag: '人気' },
-    { id: 502, name: 'ハイボール', desc: 'ウイスキーソーダ割り',          price: 480, photo: '🥃', photoBg: 'linear-gradient(135deg,#475569,#334155)' },
-    { id: 503, name: '酎ハイ',    desc: 'レモン・グレープフルーツ・梅',   price: 480, photo: '🍹', photoBg: 'linear-gradient(135deg,#0284c7,#0369a1)' },
-    { id: 504, name: '日本酒',    desc: '季節の地酒・1合',               price: 680, photo: '🍶', photoBg: 'linear-gradient(135deg,#6d28d9,#5b21b6)' },
-    { id: 505, name: '焼酎',      desc: '芋/麦/米・ロック/水割り',       price: 580, photo: '🥃', photoBg: 'linear-gradient(135deg,#1e40af,#1d4ed8)' },
+    { id: 501, name: '生ビール',    desc: '中ジョッキ・キンキン冷え',       price: 580, photo: '🍺', photoBg: 'linear-gradient(135deg,#d97706,#b45309)',  tag: '人気' },
+    { id: 502, name: 'ハイボール',  desc: 'ウイスキーソーダ割り',           price: 480, photo: '🥃', photoBg: 'linear-gradient(135deg,#475569,#334155)' },
+    { id: 506, name: 'レモンサワー', desc: '生レモン搾りたて',              price: 480, photo: '🍋', photoBg: 'linear-gradient(135deg,#ca8a04,#a16207)',  tag: '人気' },
+    { id: 503, name: '酎ハイ',      desc: 'グレープフルーツ・梅',          price: 480, photo: '🍹', photoBg: 'linear-gradient(135deg,#0284c7,#0369a1)' },
+    { id: 504, name: '日本酒',      desc: '季節の地酒・1合',               price: 680, photo: '🍶', photoBg: 'linear-gradient(135deg,#6d28d9,#5b21b6)' },
+    { id: 505, name: '焼酎',        desc: '芋/麦/米・ロック/水割り',       price: 580, photo: '🥃', photoBg: 'linear-gradient(135deg,#1e40af,#1d4ed8)' },
+  ],
+  yaki: [
+    { id: 601, name: '焼き鳥盛り合わせ', desc: '5本・塩orタレ選択',         price: 780, photo: '🍢', photoBg: 'linear-gradient(135deg,#92400e,#78350f)', tag: '人気' },
+    { id: 602, name: '牛タン塩焼き',     desc: '厚切り・レモン添え',         price: 980, photo: '🥩', photoBg: 'linear-gradient(135deg,#b45309,#92400e)' },
+    { id: 603, name: '豚バラねぎ塩',     desc: 'ジューシー豚バラ炭火焼き',   price: 680, photo: '🐷', photoBg: 'linear-gradient(135deg,#f97316,#ea580c)' },
+    { id: 604, name: 'ししとう',          desc: '炭火香ばしい一品',           price: 380, photo: '🫑', photoBg: 'linear-gradient(135deg,#16a34a,#15803d)' },
+  ],
+  age: [
+    { id: 701, name: '唐揚げ',           desc: '国産鶏・ニンニク醤油',       price: 680, photo: '🍗', photoBg: 'linear-gradient(135deg,#d97706,#b45309)', tag: '人気' },
+    { id: 702, name: 'フライドポテト',   desc: '塩・チーズから選択',          price: 480, photo: '🍟', photoBg: 'linear-gradient(135deg,#ca8a04,#a16207)' },
+    { id: 703, name: '手羽先',           desc: 'スパイシー甘辛ダレ',          price: 580, photo: '🍗', photoBg: 'linear-gradient(135deg,#dc2626,#b91c1c)' },
+    { id: 704, name: '海老フライ',       desc: 'タルタルソース添え',           price: 780, photo: '🦐', photoBg: 'linear-gradient(135deg,#f97316,#ea580c)' },
+  ],
+  shime: [
+    { id: 801, name: '〆ラーメン',   desc: '鶏白湯スープ',                  price: 680, photo: '🍜', photoBg: 'linear-gradient(135deg,#d97706,#b45309)', tag: '人気' },
+    { id: 802, name: 'お茶漬け',    desc: '梅・鮭・明太子から選択',         price: 580, photo: '🍵', photoBg: 'linear-gradient(135deg,#059669,#047857)' },
+    { id: 803, name: 'チャーハン',  desc: '半熟卵と特製XO醤',               price: 680, photo: '🍳', photoBg: 'linear-gradient(135deg,#92400e,#78350f)' },
+    { id: 804, name: 'うどん',      desc: '釜揚げ・ぶっかけから選択',       price: 580, photo: '🍜', photoBg: 'linear-gradient(135deg,#0284c7,#0369a1)' },
   ],
 }
 
@@ -74,14 +93,26 @@ const ORDER_CATEGORIES = [
     icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1 1 .03 2.798-1.16 2.798H3.96c-1.19 0-2.16-1.798-1.16-2.798L4 15.3"/></svg>,
   },
   {
+    id: 'yaki', label: '焼き物', color: '#b45309', bg: '#fffbeb', border: '#fde68a',
+    icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z"/><path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z"/></svg>,
+  },
+  {
+    id: 'age', label: '揚げ物', color: '#d97706', bg: '#fefce8', border: '#fef08a',
+    icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513M15 21H9m6 0h2.25A2.25 2.25 0 0019.5 18.75v-2.892c0-.595-.232-1.165-.645-1.591l-1.2-1.278a.75.75 0 00-1.093.033L15 14.25m0 6.75V14.25m-6 6.75V14.25m0 0l-1.562-1.228a.75.75 0 00-1.093.033l-1.2 1.278A2.254 2.254 0 004.5 15.858v2.892A2.25 2.25 0 006.75 21H9"/></svg>,
+  },
+  {
+    id: 'shime', label: '締め', color: '#6366f1', bg: '#eef2ff', border: '#c7d2fe',
+    icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513M15 21H9m6 0h2.25A2.25 2.25 0 0019.5 18.75v-2.892c0-.595-.232-1.165-.645-1.591l-1.2-1.278a.75.75 0 00-1.093.033L15 14.25m0 6.75V14.25m-6 6.75V14.25m0 0l-1.562-1.228a.75.75 0 00-1.093.033l-1.2 1.278A2.254 2.254 0 004.5 15.858v2.892A2.25 2.25 0 006.75 21H9"/></svg>,
+  },
+  {
     id: 'history', label: '注文履歴', color: '#6b7280', bg: '#f9fafb', border: '#e5e7eb',
     icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>,
   },
 ]
 
 const CAT_LABEL: Record<string, string> = {
-  speed: 'スピードメニュー', recommend: 'おすすめ', salad: 'サラダ',
-  main: 'メイン', drink: 'ドリンク',
+  speed: 'スピードメニュー', recommend: '本日のおすすめ', salad: 'サラダ',
+  main: 'メイン', drink: 'ドリンク', yaki: '焼き物', age: '揚げ物', shime: '締め',
 }
 
 export default function RestaurantPage() {
@@ -91,12 +122,21 @@ export default function RestaurantPage() {
   const [orderCat, setOrderCat] = useState<string | null>(null)
   const [cart, setCart] = useState<Record<number, number>>({})
   const [orderPlaced, setOrderPlaced] = useState(false)
+  const [quickAdded, setQuickAdded] = useState<string | null>(null)
 
   const cartTotal = ALL_ITEMS.reduce((s, i) => s + (cart[i.id] ?? 0) * i.price, 0)
   const cartCount = ALL_ITEMS.reduce((s, i) => s + (cart[i.id] ?? 0), 0)
 
   function addItem(id: number) { setCart(p => ({ ...p, [id]: (p[id] ?? 0) + 1 })) }
   function remItem(id: number) { setCart(p => ({ ...p, [id]: Math.max(0, (p[id] ?? 0) - 1) })) }
+
+  function quickAdd(id: number, name: string) {
+    addItem(id)
+    setQuickAdded(name)
+    setTimeout(() => setQuickAdded(null), 1800)
+  }
+
+  function openCat(cat: string) { setPanel('order'); setOrderCat(cat) }
 
   async function placeOrder() {
     setOrderPlaced(true)
@@ -141,78 +181,125 @@ export default function RestaurantPage() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-[15px]">
-            {/* モバイルオーダー — full width */}
-            <button
-              onClick={() => setPanel('order')}
-              className="card-light col-span-2 flex flex-col items-center justify-center gap-2 active:scale-95 transition-transform duration-150 py-5 min-h-[110px]"
-              style={{ background: '#fff3e0' }}
-            >
-              <div className="w-14 h-14 rounded-full flex items-center justify-center neu-icon" style={{ background: iconGradient('#f97316'), color: '#ffffff' }}>
-                <svg className="w-9 h-9" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
-                </svg>
+          {/* クイック追加トースト */}
+          {quickAdded && (
+            <div className="fixed top-20 left-1/2 -translate-x-1/2 z-40 bg-gray-900 text-white text-sm font-bold px-4 py-2.5 rounded-xl shadow-lg">
+              🍺 {quickAdded} をカートに追加しました
+            </div>
+          )}
+
+          {/* ━━ クイックドリンク ━━ */}
+          <div className="grid grid-cols-3 gap-[10px]">
+            {[
+              { id: 501, label: 'とりあえず\n生ビール', emoji: '🍺', color: '#d97706', bg: '#fffbeb', border: '#fde68a' },
+              { id: 502, label: 'ハイボール', emoji: '🥃', color: '#475569', bg: '#f8fafc', border: '#e2e8f0' },
+              { id: 506, label: 'レモンサワー', emoji: '🍋', color: '#ca8a04', bg: '#fefce8', border: '#fef08a' },
+            ].map((d) => (
+              <button
+                key={d.id}
+                onClick={() => quickAdd(d.id, d.label.replace('\n', ''))}
+                className="card-light flex flex-col items-center justify-center gap-1.5 active:scale-95 transition-transform duration-150 py-3 px-1 min-h-[90px]"
+                style={{ background: d.bg, borderColor: d.border }}
+              >
+                <span className="text-3xl leading-none">{d.emoji}</span>
+                <p className="font-bold text-[11px] leading-tight text-center whitespace-pre-line" style={{ color: d.color }}>{d.label}</p>
+                <span className="text-[9px] text-gray-400 font-semibold bg-white/70 px-1.5 py-0.5 rounded-full">1タップ注文</span>
+              </button>
+            ))}
+          </div>
+
+          {/* ━━ メニュー & サービス ━━ */}
+          <div className="grid grid-cols-2 gap-[10px]">
+            {/* 本日のおすすめ */}
+            <button onClick={() => openCat('recommend')}
+              className="card-light flex items-center gap-3 p-3.5 active:scale-95 transition-transform duration-150"
+              style={{ background: '#fefce8', borderColor: '#fde68a' }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 neu-icon" style={{ background: iconGradient('#eab308'), color: '#fff' }}>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>
               </div>
-              <p className="font-black text-orange-700 text-base leading-tight text-center">モバイルオーダー</p>
-              <p className="text-xs text-orange-400 text-center leading-tight">席から事前注文</p>
+              <div className="text-left">
+                <p className="font-bold text-gray-800 text-sm leading-tight">本日のおすすめ</p>
+                <p className="text-[10px] text-gray-400 leading-tight">今日の一品</p>
+              </div>
             </button>
 
-            {/* WiFi */}
-            <button
-              onClick={() => setPanel('wifi')}
-              className="card-light flex flex-col items-center justify-center gap-2 active:scale-95 transition-transform duration-150 p-3 min-h-[110px]"
-            >
-              <div className="w-12 h-12 rounded-full flex items-center justify-center neu-icon" style={{ background: iconGradient('#0ea5e9'), color: '#ffffff' }}>
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.288 15.038a5.25 5.25 0 017.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 011.06 0z"/>
-                </svg>
+            {/* スピードメニュー */}
+            <button onClick={() => openCat('speed')}
+              className="card-light flex items-center gap-3 p-3.5 active:scale-95 transition-transform duration-150"
+              style={{ background: '#fff7ed', borderColor: '#fed7aa' }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 neu-icon" style={{ background: iconGradient('#f97316'), color: '#fff' }}>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
               </div>
-              <p className="font-bold text-gray-800 text-xs leading-tight text-center">WiFi接続</p>
-              <p className="text-[10px] text-gray-400 text-center leading-tight">フリーWiFiに接続</p>
+              <div className="text-left">
+                <p className="font-bold text-gray-800 text-sm leading-tight">スピードメニュー</p>
+                <p className="text-[10px] text-gray-400 leading-tight">すぐ出てくる</p>
+              </div>
             </button>
 
-            {/* クーポン */}
-            <button
-              onClick={() => setPanel('coupons')}
-              className="card-light flex flex-col items-center justify-center gap-2 active:scale-95 transition-transform duration-150 p-3 min-h-[110px]"
-            >
-              <div className="w-12 h-12 rounded-full flex items-center justify-center neu-icon" style={{ background: iconGradient('#22c55e'), color: '#ffffff' }}>
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0c1.1.128 1.907 1.077 1.907 2.185zM9.75 9h.008v.008H9.75V9zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm4.125 4.5h.008v.008h-.008V13.5zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/>
-                </svg>
+            {/* 焼き物 */}
+            <button onClick={() => openCat('yaki')}
+              className="card-light flex items-center gap-3 p-3.5 active:scale-95 transition-transform duration-150"
+              style={{ background: '#fffbeb', borderColor: '#fde68a' }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 neu-icon" style={{ background: iconGradient('#b45309'), color: '#fff' }}>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z"/><path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z"/></svg>
               </div>
-              <p className="font-bold text-gray-800 text-xs leading-tight text-center">お得なクーポン</p>
-              <p className="text-[10px] text-gray-400 text-center leading-tight">割引クーポンを見る</p>
+              <div className="text-left">
+                <p className="font-bold text-gray-800 text-sm leading-tight">焼き物</p>
+                <p className="text-[10px] text-gray-400 leading-tight">炭火・鉄板焼き</p>
+              </div>
             </button>
 
-            {/* アプリダウンロード */}
-            <button
-              onClick={() => setPanel('app')}
-              className="card-light flex flex-col items-center justify-center gap-2 active:scale-95 transition-transform duration-150 p-3 min-h-[110px]"
-            >
-              <div className="w-12 h-12 rounded-full flex items-center justify-center neu-icon" style={{ background: iconGradient('#8b5cf6'), color: '#ffffff' }}>
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 15.75h3"/>
-                </svg>
+            {/* 揚げ物 */}
+            <button onClick={() => openCat('age')}
+              className="card-light flex items-center gap-3 p-3.5 active:scale-95 transition-transform duration-150"
+              style={{ background: '#fefce8', borderColor: '#fef08a' }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 neu-icon" style={{ background: iconGradient('#d97706'), color: '#fff' }}>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513M15 21H9m6 0h2.25A2.25 2.25 0 0019.5 18.75v-2.892c0-.595-.232-1.165-.645-1.591l-1.2-1.278a.75.75 0 00-1.093.033L15 14.25m0 6.75V14.25m-6 6.75V14.25m0 0l-1.562-1.228a.75.75 0 00-1.093.033l-1.2 1.278A2.254 2.254 0 004.5 15.858v2.892A2.25 2.25 0 006.75 21H9"/></svg>
               </div>
-              <p className="font-bold text-gray-800 text-xs leading-tight text-center">アプリダウンロード</p>
-              <p className="text-[10px] text-gray-400 text-center leading-tight">公式アプリを取得</p>
+              <div className="text-left">
+                <p className="font-bold text-gray-800 text-sm leading-tight">揚げ物</p>
+                <p className="text-[10px] text-gray-400 leading-tight">唐揚げ・フライ</p>
+              </div>
             </button>
 
-            {/* 店舗情報 */}
-            <button
-              onClick={() => setPanel('store')}
-              className="card-light flex flex-col items-center justify-center gap-2 active:scale-95 transition-transform duration-150 p-3 min-h-[110px]"
-            >
-              <div className="w-12 h-12 rounded-full flex items-center justify-center neu-icon" style={{ background: iconGradient('#14b8a6'), color: '#ffffff' }}>
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .415.336.75.75.75z"/>
-                </svg>
+            {/* 締め */}
+            <button onClick={() => openCat('shime')}
+              className="card-light flex items-center gap-3 p-3.5 active:scale-95 transition-transform duration-150"
+              style={{ background: '#eef2ff', borderColor: '#c7d2fe' }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 neu-icon" style={{ background: iconGradient('#6366f1'), color: '#fff' }}>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513M15 21H9m6 0h2.25A2.25 2.25 0 0019.5 18.75v-2.892c0-.595-.232-1.165-.645-1.591l-1.2-1.278a.75.75 0 00-1.093.033L15 14.25m0 6.75V14.25m-6 6.75V14.25m0 0l-1.562-1.228a.75.75 0 00-1.093.033l-1.2 1.278A2.254 2.254 0 004.5 15.858v2.892A2.25 2.25 0 006.75 21H9"/></svg>
               </div>
-              <p className="font-bold text-gray-800 text-xs leading-tight text-center">店舗情報</p>
-              <p className="text-[10px] text-gray-400 text-center leading-tight">住所・営業時間など</p>
+              <div className="text-left">
+                <p className="font-bold text-gray-800 text-sm leading-tight">締め</p>
+                <p className="text-[10px] text-gray-400 leading-tight">ラーメン・うどんなど</p>
+              </div>
+            </button>
+
+            {/* スタッフ呼び出し */}
+            <button onClick={() => setPanel('staff')}
+              className="card-light flex items-center gap-3 p-3.5 active:scale-95 transition-transform duration-150"
+              style={{ background: '#f0f9ff', borderColor: '#bae6fd' }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 neu-icon" style={{ background: iconGradient('#0ea5e9'), color: '#fff' }}>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
+              </div>
+              <div className="text-left">
+                <p className="font-bold text-gray-800 text-sm leading-tight">スタッフ呼び出し</p>
+                <p className="text-[10px] text-gray-400 leading-tight">スタッフを呼ぶ</p>
+              </div>
             </button>
           </div>
+
+          {/* お会計 — 全幅 */}
+          <button
+            onClick={() => setPanel('payment')}
+            className="card-light flex items-center justify-center gap-3 p-4 active:scale-95 transition-transform duration-150"
+            style={{ background: '#f0fdf4', borderColor: '#bbf7d0' }}
+          >
+            <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 neu-icon" style={{ background: iconGradient('#16a34a'), color: '#fff' }}>
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"/></svg>
+            </div>
+            <p className="font-black text-green-700 text-base">お会計</p>
+          </button>
 
           {/* 広告スペース */}
           <div className="col-span-2 rounded-2xl overflow-hidden aspect-video">
@@ -458,6 +545,51 @@ export default function RestaurantPage() {
                     </div>
                   </a>
                 </div>
+              </div>
+            )}
+
+            {/* ===== スタッフ呼び出し ===== */}
+            {panel === 'staff' && (
+              <div className="px-5 pb-8 flex flex-col items-center text-center">
+                <div className="w-20 h-20 rounded-full bg-sky-100 flex items-center justify-center mb-4 mt-2">
+                  <svg className="w-10 h-10 text-sky-500" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/>
+                  </svg>
+                </div>
+                <h2 className="font-black text-gray-900 text-xl mb-1">スタッフを呼びますか？</h2>
+                <p className="text-sm text-gray-400 mb-6">ボタンを押すとスタッフに通知が届きます</p>
+                <button
+                  onClick={() => { setPanel(null); setQuickAdded('スタッフに通知しました'); setTimeout(() => setQuickAdded(null), 2000) }}
+                  className="w-full py-4 rounded-2xl bg-sky-500 text-white font-black text-base active:scale-95 transition-transform shadow-md shadow-sky-200"
+                >
+                  呼び出す
+                </button>
+              </div>
+            )}
+
+            {/* ===== お会計 ===== */}
+            {panel === 'payment' && (
+              <div className="px-5 pb-8 flex flex-col items-center text-center">
+                <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mb-4 mt-2">
+                  <svg className="w-10 h-10 text-green-500" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"/>
+                  </svg>
+                </div>
+                <h2 className="font-black text-gray-900 text-xl mb-1">お会計</h2>
+                <p className="text-sm text-gray-400 mb-4">スタッフにお会計をお伝えします</p>
+                {cartCount > 0 && (
+                  <div className="w-full bg-green-50 border border-green-100 rounded-xl p-4 mb-4 text-left">
+                    <p className="text-xs text-green-600 font-semibold mb-1">注文合計</p>
+                    <p className="text-2xl font-black text-green-700">¥{cartTotal.toLocaleString()}</p>
+                    <p className="text-[10px] text-gray-400 mt-0.5">{cartCount}点のご注文</p>
+                  </div>
+                )}
+                <button
+                  onClick={() => { setPanel(null); setQuickAdded('お会計の準備をします'); setTimeout(() => setQuickAdded(null), 2000) }}
+                  className="w-full py-4 rounded-2xl bg-green-500 text-white font-black text-base active:scale-95 transition-transform shadow-md shadow-green-200"
+                >
+                  お会計をお願いする
+                </button>
               </div>
             )}
 
