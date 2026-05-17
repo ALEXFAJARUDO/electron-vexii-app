@@ -3,8 +3,8 @@ import { use, useState, useEffect, useCallback, useRef } from 'react'
 import { DEFAULT_CONFIG, STORAGE_KEY, getGenre, GENRE_IMAGE_DEFAULTS } from '@/lib/genreConfig'
 import type { GenreConfig, Coupon, MenuItem, FloorEntry, ScheduleEntry, GenreId } from '@/lib/genreConfig'
 import { notFound } from 'next/navigation'
-
-type Tab = 'info' | 'wifi' | 'coupons' | 'media' | 'menu' | 'floor' | 'schedule'
+import { useGenreEditor } from '@/components/GenreEditorProvider'
+import type { Tab } from '@/components/GenreEditorProvider'
 
 function uid() {
   return Math.random().toString(36).slice(2, 9)
@@ -16,26 +16,31 @@ export default function GenreEditorPage({ params }: { params: Promise<{ genre: s
   if (!genre) notFound()
 
   const [config, setConfig] = useState<GenreConfig>(DEFAULT_CONFIG)
-  const [tab, setTab] = useState<Tab>('info')
-  const [saved, setSaved] = useState(false)
+  const { setSaveFn, setSaved, tab, setTab, setAvailableTabs } = useGenreEditor()
 
   useEffect(() => {
     const imageDefaults = GENRE_IMAGE_DEFAULTS[genreId as GenreId] ?? {}
     const raw = localStorage.getItem(STORAGE_KEY(genreId))
     try {
-      const saved = raw ? JSON.parse(raw) : {}
-      setConfig({ ...DEFAULT_CONFIG, ...imageDefaults, ...saved })
+      const parsed = raw ? JSON.parse(raw) : {}
+      setConfig({ ...DEFAULT_CONFIG, ...imageDefaults, ...parsed })
     } catch {
       setConfig({ ...DEFAULT_CONFIG, ...imageDefaults })
     }
     setSaved(false)
-  }, [genreId])
+    setTab('info')
+  }, [genreId, setSaved, setTab])
 
   const save = useCallback(() => {
     localStorage.setItem(STORAGE_KEY(genreId), JSON.stringify(config))
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
-  }, [genreId, config])
+  }, [genreId, config, setSaved])
+
+  useEffect(() => {
+    setSaveFn(() => save)
+    return () => setSaveFn(null)
+  }, [save, setSaveFn])
 
   const set = <K extends keyof GenreConfig>(key: K, value: GenreConfig[K]) =>
     setConfig((prev) => ({ ...prev, [key]: value }))
@@ -50,54 +55,16 @@ export default function GenreEditorPage({ params }: { params: Promise<{ genre: s
     ...(genre.hasSchedule ? [{ id: 'schedule' as Tab, label: 'スケジュール' }] : []),
   ]
 
+  useEffect(() => {
+    setAvailableTabs(tabs)
+    return () => setAvailableTabs([])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [genreId])
+
   return (
     <div>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-xl"
-            style={{ background: `linear-gradient(135deg, ${genre.light}33, ${genre.color}33)` }}
-          >
-            {genre.emoji}
-          </div>
-          <div>
-            <h1 className="text-xl font-bold silver-gradient">{genre.label}</h1>
-            <p className="text-[#2d5a8e] text-xs">コンテンツを編集</p>
-          </div>
-        </div>
-        <button
-          onClick={save}
-          className="px-5 py-2 rounded-xl text-sm font-bold transition-colors"
-          style={{
-            background: saved ? 'rgba(74,222,128,0.15)' : `${genre.color}22`,
-            color: saved ? '#4ade80' : genre.light,
-            border: `1px solid ${saved ? '#4ade8055' : `${genre.color}44`}`,
-          }}
-        >
-          {saved ? '✓ 保存済み' : '保存する'}
-        </button>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex gap-1 mb-6 overflow-x-auto pb-1">
-        {tabs.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors ${
-              tab === t.id
-                ? 'bg-[#0d1f3c] silver-border text-[#bfdbfe]'
-                : 'text-[#2d5a8e] hover:text-[#7db4e8] hover:bg-[#060f1e]'
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-
       {/* Tab content */}
-      <div className="rounded-2xl bg-[#060f1e] silver-border card-glow p-6">
+      <div className="rounded-2xl bg-white shadow-sm border border-gray-100 p-6">
         {tab === 'info' && (
           <InfoTab config={config} set={set} />
         )}
@@ -128,13 +95,13 @@ export default function GenreEditorPage({ params }: { params: Promise<{ genre: s
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
-      <label className="text-xs font-semibold text-[#2d5a8e] tracking-wider uppercase">{label}</label>
+      <label className="text-xs font-semibold text-gray-400 tracking-wider uppercase">{label}</label>
       {children}
     </div>
   )
 }
 
-const inputCls = 'w-full bg-[#0a1628] border border-[#1e3c72] rounded-xl px-4 py-2.5 text-sm text-[#bfdbfe] placeholder:text-[#1e3c72] focus:outline-none focus:border-[#3b82f6] transition-colors'
+const inputCls = 'w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-300 focus:outline-none focus:border-blue-400 focus:bg-white transition-colors'
 
 // --- tabs ---
 
@@ -167,11 +134,11 @@ function WifiTab({ config, set }: TabProps) {
         <input className={inputCls} value={config.wifiPassword} onChange={(e) => set('wifiPassword', e.target.value)} placeholder="password123" />
       </Field>
       {config.wifiSsid && (
-        <div className="rounded-xl bg-[#0a1628] border border-[#1e3c72] p-4 space-y-2 text-sm">
-          <p className="text-[#1e3c72] text-xs uppercase tracking-wider font-semibold">プレビュー</p>
-          <p className="text-[#7db4e8]"><span className="text-[#2d5a8e]">SSID: </span>{config.wifiSsid}</p>
+        <div className="rounded-xl bg-gray-50 border border-gray-200 p-4 space-y-2 text-sm">
+          <p className="text-gray-300 text-xs uppercase tracking-wider font-semibold">プレビュー</p>
+          <p className="text-gray-600"><span className="text-gray-400">SSID: </span>{config.wifiSsid}</p>
           {config.wifiPassword && (
-            <p className="text-[#7db4e8]"><span className="text-[#2d5a8e]">パスワード: </span>{config.wifiPassword}</p>
+            <p className="text-gray-600"><span className="text-gray-400">パスワード: </span>{config.wifiPassword}</p>
           )}
         </div>
       )}
@@ -195,10 +162,10 @@ function CouponsTab({ config, set }: TabProps) {
   return (
     <div className="space-y-4">
       {config.coupons.map((c, i) => (
-        <div key={c.id} className="rounded-xl bg-[#0a1628] border border-[#1e3c72] p-4 space-y-3">
+        <div key={c.id} className="rounded-xl bg-gray-50 border border-gray-200 p-4 space-y-3">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-xs font-semibold text-[#2d5a8e]">クーポン {i + 1}</span>
-            <button onClick={() => remove(c.id)} className="text-[#1e3c72] hover:text-[#ef4444] text-xs transition-colors">削除</button>
+            <span className="text-xs font-semibold text-gray-400">クーポン {i + 1}</span>
+            <button onClick={() => remove(c.id)} className="text-gray-300 hover:text-red-400 text-xs transition-colors">削除</button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <Field label="タイトル">
@@ -218,7 +185,7 @@ function CouponsTab({ config, set }: TabProps) {
       ))}
       <button
         onClick={add}
-        className="w-full py-3 rounded-xl border border-dashed border-[#1e3c72] text-[#2d5a8e] hover:border-[#3b82f6] hover:text-[#60a5fa] text-sm font-semibold transition-colors"
+        className="w-full py-3 rounded-xl border border-dashed border-gray-200 text-gray-400 hover:border-blue-400 hover:text-blue-400 text-sm font-semibold transition-colors"
       >
         + クーポンを追加
       </button>
@@ -273,13 +240,13 @@ function ImageUploadField({
 
   return (
     <div className="space-y-3">
-      <label className="text-xs font-semibold text-[#2d5a8e] tracking-wider uppercase">{label}</label>
+      <label className="text-xs font-semibold text-gray-400 tracking-wider uppercase">{label}</label>
 
       <div className={`flex ${isLogo ? 'items-center gap-5' : 'flex-col gap-3'}`}>
         {/* Preview */}
         {value ? (
           <div
-            className={`rounded-xl overflow-hidden shrink-0 bg-[#0a1628] border border-[#1e3c72] flex items-center justify-center ${
+            className={`rounded-xl overflow-hidden shrink-0 bg-gray-50 border border-gray-200 flex items-center justify-center ${
               isLogo ? 'w-20 h-20' : 'w-full'
             }`}
             style={isLogo ? {} : { height: '180px' }}
@@ -292,13 +259,13 @@ function ImageUploadField({
           </div>
         ) : (
           <div
-            className={`rounded-xl border border-dashed border-[#1e3c72] bg-[#0a1628] flex flex-col items-center justify-center gap-1 shrink-0 ${
+            className={`rounded-xl border border-dashed border-gray-200 bg-gray-50 flex flex-col items-center justify-center gap-1 shrink-0 ${
               isLogo ? 'w-20 h-20' : 'w-full'
             }`}
             style={isLogo ? {} : { height: '180px' }}
           >
             <span className="text-2xl opacity-30">{isLogo ? '🏷️' : '🖼️'}</span>
-            <span className="text-[10px] text-[#1e3c72]">未設定</span>
+            <span className="text-[10px] text-gray-300">未設定</span>
           </div>
         )}
 
@@ -309,7 +276,7 @@ function ImageUploadField({
               type="button"
               disabled={uploading}
               onClick={() => fileRef.current?.click()}
-              className="px-3 py-2 rounded-lg bg-[#0d1f3c] silver-border text-[#7db4e8] text-xs font-semibold hover:text-[#bfdbfe] transition-colors whitespace-nowrap disabled:opacity-50"
+              className="px-3 py-2 rounded-lg bg-gray-100 border border-gray-200 text-gray-600 text-xs font-semibold hover:text-gray-800 transition-colors whitespace-nowrap disabled:opacity-50"
             >
               {uploading ? 'アップロード中…' : 'ファイルを選択'}
             </button>
@@ -317,13 +284,13 @@ function ImageUploadField({
               <button
                 type="button"
                 onClick={() => onChange('')}
-                className="px-3 py-2 rounded-lg bg-[#0a1628] border border-[#1e3c72] text-[#2d5a8e] text-xs font-semibold hover:text-[#ef4444] hover:border-[#ef4444] transition-colors"
+                className="px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-400 text-xs font-semibold hover:text-red-400 hover:border-[#ef4444] transition-colors"
               >
                 削除
               </button>
             )}
             {value && (
-              <span className="text-[10px] text-[#2d5a8e] font-mono truncate max-w-[200px]">{value}</span>
+              <span className="text-[10px] text-gray-400 font-mono truncate max-w-[200px]">{value}</span>
             )}
           </div>
 
@@ -346,7 +313,7 @@ function MediaTab({ config, set, genreId }: TabProps & { genreId: string }) {
   return (
     <div className="space-y-8">
       <div>
-        <p className="text-xs font-semibold text-[#3b82f6] tracking-widest uppercase mb-5">店舗画像</p>
+        <p className="text-xs font-semibold text-blue-500 tracking-widest uppercase mb-5">店舗画像</p>
         <div className="space-y-6">
           <ImageUploadField
             label="ロゴ"
@@ -367,10 +334,10 @@ function MediaTab({ config, set, genreId }: TabProps & { genreId: string }) {
         </div>
       </div>
 
-      <div className="border-t border-[#1e3c72]" />
+      <div className="border-t border-gray-200" />
 
       <div>
-        <p className="text-xs font-semibold text-[#3b82f6] tracking-widest uppercase mb-5">動画・広告</p>
+        <p className="text-xs font-semibold text-blue-500 tracking-widest uppercase mb-5">動画・広告</p>
         <div className="space-y-5">
           <Field label="YouTube動画ID（広告・プロモーション）">
             <input
@@ -416,17 +383,17 @@ function MenuTab({ config, set }: TabProps) {
       {categories.length > 0 && (
         <div className="flex gap-2 flex-wrap mb-2">
           {categories.map((cat) => (
-            <span key={cat} className="text-xs px-2.5 py-1 rounded-full bg-[#1e3c72] text-[#60a5fa] font-semibold">
+            <span key={cat} className="text-xs px-2.5 py-1 rounded-full bg-[#1e3c72] text-blue-400 font-semibold">
               {cat} ({config.menuItems.filter((m) => m.category === cat).length}件)
             </span>
           ))}
         </div>
       )}
       {config.menuItems.map((m, i) => (
-        <div key={m.id} className="rounded-xl bg-[#0a1628] border border-[#1e3c72] p-4 space-y-3">
+        <div key={m.id} className="rounded-xl bg-gray-50 border border-gray-200 p-4 space-y-3">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-xs font-semibold text-[#2d5a8e]">アイテム {i + 1}</span>
-            <button onClick={() => remove(m.id)} className="text-[#1e3c72] hover:text-[#ef4444] text-xs transition-colors">削除</button>
+            <span className="text-xs font-semibold text-gray-400">アイテム {i + 1}</span>
+            <button onClick={() => remove(m.id)} className="text-gray-300 hover:text-red-400 text-xs transition-colors">削除</button>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             <Field label="カテゴリ">
@@ -449,7 +416,7 @@ function MenuTab({ config, set }: TabProps) {
       ))}
       <button
         onClick={add}
-        className="w-full py-3 rounded-xl border border-dashed border-[#1e3c72] text-[#2d5a8e] hover:border-[#3b82f6] hover:text-[#60a5fa] text-sm font-semibold transition-colors"
+        className="w-full py-3 rounded-xl border border-dashed border-gray-200 text-gray-400 hover:border-blue-400 hover:text-blue-400 text-sm font-semibold transition-colors"
       >
         + メニューアイテムを追加
       </button>
@@ -473,10 +440,10 @@ function FloorTab({ config, set }: TabProps) {
   return (
     <div className="space-y-3">
       {config.floorEntries.map((f, i) => (
-        <div key={f.id} className="rounded-xl bg-[#0a1628] border border-[#1e3c72] p-4">
+        <div key={f.id} className="rounded-xl bg-gray-50 border border-gray-200 p-4">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-[#2d5a8e]">フロア {i + 1}</span>
-            <button onClick={() => remove(f.id)} className="text-[#1e3c72] hover:text-[#ef4444] text-xs transition-colors">削除</button>
+            <span className="text-xs font-semibold text-gray-400">フロア {i + 1}</span>
+            <button onClick={() => remove(f.id)} className="text-gray-300 hover:text-red-400 text-xs transition-colors">削除</button>
           </div>
           <div className="grid grid-cols-3 gap-3">
             <Field label="フロア名">
@@ -493,7 +460,7 @@ function FloorTab({ config, set }: TabProps) {
       ))}
       <button
         onClick={add}
-        className="w-full py-3 rounded-xl border border-dashed border-[#1e3c72] text-[#2d5a8e] hover:border-[#3b82f6] hover:text-[#60a5fa] text-sm font-semibold transition-colors"
+        className="w-full py-3 rounded-xl border border-dashed border-gray-200 text-gray-400 hover:border-blue-400 hover:text-blue-400 text-sm font-semibold transition-colors"
       >
         + フロアを追加
       </button>
@@ -517,10 +484,10 @@ function ScheduleTab({ config, set }: TabProps) {
   return (
     <div className="space-y-3">
       {config.scheduleEntries.map((s, i) => (
-        <div key={s.id} className="rounded-xl bg-[#0a1628] border border-[#1e3c72] p-4">
+        <div key={s.id} className="rounded-xl bg-gray-50 border border-gray-200 p-4">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-[#2d5a8e]">エントリー {i + 1}</span>
-            <button onClick={() => remove(s.id)} className="text-[#1e3c72] hover:text-[#ef4444] text-xs transition-colors">削除</button>
+            <span className="text-xs font-semibold text-gray-400">エントリー {i + 1}</span>
+            <button onClick={() => remove(s.id)} className="text-gray-300 hover:text-red-400 text-xs transition-colors">削除</button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <Field label="日時">
@@ -537,7 +504,7 @@ function ScheduleTab({ config, set }: TabProps) {
       ))}
       <button
         onClick={add}
-        className="w-full py-3 rounded-xl border border-dashed border-[#1e3c72] text-[#2d5a8e] hover:border-[#3b82f6] hover:text-[#60a5fa] text-sm font-semibold transition-colors"
+        className="w-full py-3 rounded-xl border border-dashed border-gray-200 text-gray-400 hover:border-blue-400 hover:text-blue-400 text-sm font-semibold transition-colors"
       >
         + エントリーを追加
       </button>

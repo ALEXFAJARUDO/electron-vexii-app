@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getChargerWithStore, getAds, getCoupons } from '@/lib/supabase'
 import StoreInfo from '@/components/StoreInfo'
@@ -18,18 +19,20 @@ export default async function ChargerPage({ params }: { params: Promise<{ charge
   ])
 
   return (
-    <main className="min-h-screen bg-gray-50 max-w-md mx-auto">
+    <main className="min-h-screen bg-[#edf1f7]">
       {/* Header */}
       <header className="sticky top-0 z-10 neu-header px-5 py-4 flex items-center justify-between">
-        <img
-          src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png"
-          alt="Vexii"
-          className="h-8 w-auto object-contain"
-        />
+        <Link href="/">
+          <img
+            src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png"
+            alt="Vexii"
+            className="h-8 w-auto object-contain"
+          />
+        </Link>
         <ChargerMenuButton store={store} />
       </header>
 
-      <div className="px-4 pt-4 pb-16 space-y-3">
+      <div className="max-w-lg mx-auto w-full px-4 pt-4 pb-16 space-y-3">
         {/* Charger Status */}
         <ChargerStatus charger={charger} />
 
