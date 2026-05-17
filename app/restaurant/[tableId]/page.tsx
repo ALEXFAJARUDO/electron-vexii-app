@@ -1,6 +1,7 @@
 'use client'
 import { use, useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
+import BarcodeModal from '@/components/BarcodeModal'
 import {
   MENU_SECTIONS, ALL_MENU_ITEMS, submitOrder, fetchOrders, subscribeOrders, timeAgo,
   type RestaurantOrder, type MenuEntry,
@@ -11,6 +12,16 @@ const QUICK_DRINKS = [
   { id: 502, label: 'ハイボール',           emoji: '🥃', color: '#475569', bg: '#f8fafc', border: '#e2e8f0' },
   { id: 506, label: 'レモンサワー',         emoji: '🍋', color: '#ca8a04', bg: '#fefce8', border: '#fef08a' },
 ]
+
+const DEMO_WIFI = { ssid: 'SUISHUN_WIFI', password: 'suishun2024' }
+
+const COUPONS = [
+  { id: 1, title: 'ランチセット 100円引き', code: 'LUNCH100', expires: '2026/05/31' },
+  { id: 2, title: 'ドリンク1杯無料',       code: 'DRINK',    expires: '2026/05/25' },
+  { id: 3, title: 'デザート 30%OFF',       code: 'DESSERT30', expires: '2026/06/30' },
+]
+
+type ServicePanel = 'coupon' | 'wifi' | 'store' | null
 
 const STATUS_COLOR: Record<string, string> = {
   '未対応': 'bg-red-100 text-red-700',
@@ -27,6 +38,9 @@ export default function TablePage({ params }: { params: Promise<{ tableId: strin
   const [toast, setToast] = useState<string | null>(null)
   const [history, setHistory] = useState<RestaurantOrder[]>([])
   const [showHistory, setShowHistory] = useState(false)
+  const [servicePanel, setServicePanel] = useState<ServicePanel>(null)
+  const [barcode, setBarcode] = useState<{ code: string; title: string } | null>(null)
+  const [wifiCopied, setWifiCopied] = useState(false)
 
   const cartItems = ALL_MENU_ITEMS.filter(i => (cart[i.id] ?? 0) > 0)
   const cartTotal = ALL_MENU_ITEMS.reduce((s, i) => s + (cart[i.id] ?? 0) * i.price, 0)
@@ -76,6 +90,12 @@ export default function TablePage({ params }: { params: Promise<{ tableId: strin
     } finally {
       setSubmitting(false)
     }
+  }
+
+  async function copyWifi() {
+    try { await navigator.clipboard.writeText(DEMO_WIFI.password) } catch {}
+    setWifiCopied(true)
+    setTimeout(() => setWifiCopied(false), 2000)
   }
 
   async function callStaff() {
@@ -210,6 +230,40 @@ export default function TablePage({ params }: { params: Promise<{ tableId: strin
                 <p className="text-xs text-gray-400 mt-0.5">タップするとスタッフに通知</p>
               </div>
             </button>
+
+            <button
+              onClick={() => setServicePanel('coupon')}
+              className="card-light flex items-center gap-4 p-5 rounded-2xl active:scale-95 transition-transform"
+            >
+              <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-2xl shrink-0">🎟</div>
+              <div className="text-left">
+                <p className="font-black text-gray-800 text-base">クーポン</p>
+                <p className="text-xs text-gray-400 mt-0.5">お得な割引クーポン</p>
+              </div>
+            </button>
+
+            <button
+              onClick={() => setServicePanel('wifi')}
+              className="card-light flex items-center gap-4 p-5 rounded-2xl active:scale-95 transition-transform"
+            >
+              <div className="w-12 h-12 rounded-full bg-sky-100 flex items-center justify-center text-2xl shrink-0">📶</div>
+              <div className="text-left">
+                <p className="font-black text-gray-800 text-base">WiFi接続</p>
+                <p className="text-xs text-gray-400 mt-0.5">フリーWiFiに接続する</p>
+              </div>
+            </button>
+
+            <button
+              onClick={() => setServicePanel('store')}
+              className="card-light flex items-center gap-4 p-5 rounded-2xl active:scale-95 transition-transform"
+            >
+              <div className="w-12 h-12 rounded-full bg-teal-100 flex items-center justify-center text-2xl shrink-0">🏪</div>
+              <div className="text-left">
+                <p className="font-black text-gray-800 text-base">店舗情報</p>
+                <p className="text-xs text-gray-400 mt-0.5">住所・営業時間など</p>
+              </div>
+            </button>
+
             <button
               onClick={requestPayment}
               className="card-light flex items-center gap-4 p-5 rounded-2xl active:scale-95 transition-transform"
@@ -280,6 +334,97 @@ export default function TablePage({ params }: { params: Promise<{ tableId: strin
           )}
         </div>
       </div>
+
+      {/* ── サービスパネル (モーダル) ── */}
+      {servicePanel && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-end justify-center" onClick={() => setServicePanel(null)}>
+          <div className="w-full max-w-lg bg-white rounded-t-3xl max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="w-8 h-1 bg-gray-200 rounded-full mx-auto mt-3 mb-4 cursor-pointer" onClick={() => setServicePanel(null)} />
+
+            {/* クーポン */}
+            {servicePanel === 'coupon' && (
+              <div className="px-5 pb-8">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center text-xl">🎟</div>
+                  <h2 className="font-bold text-gray-900 text-lg">お得なクーポン</h2>
+                </div>
+                <div className="space-y-2">
+                  {COUPONS.map(c => (
+                    <div
+                      key={c.id}
+                      className="bg-green-50 border border-green-100 rounded-xl p-4 flex items-center justify-between active:scale-95 transition-transform cursor-pointer"
+                      onClick={() => { setServicePanel(null); setBarcode({ code: c.code, title: c.title }) }}
+                    >
+                      <div>
+                        <p className="font-semibold text-gray-800 text-sm">{c.title}</p>
+                        <p className="text-xs text-gray-400 mt-0.5">{c.expires}まで</p>
+                      </div>
+                      <span className="text-xs px-3 py-1.5 rounded-lg bg-green-500 text-white font-semibold shrink-0 ml-3">使う</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* WiFi */}
+            {servicePanel === 'wifi' && (
+              <div className="px-5 pb-8">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 rounded-xl bg-sky-50 flex items-center justify-center text-xl">📶</div>
+                  <h2 className="font-bold text-gray-900 text-lg">WiFi接続情報</h2>
+                </div>
+                <div className="space-y-3">
+                  <div className="bg-sky-50 rounded-xl p-4">
+                    <p className="text-[10px] text-sky-400 uppercase tracking-wider font-semibold">SSID</p>
+                    <p className="font-mono font-semibold text-sky-900 mt-0.5">{DEMO_WIFI.ssid}</p>
+                  </div>
+                  <div className="bg-sky-50 rounded-xl p-4">
+                    <p className="text-[10px] text-sky-400 uppercase tracking-wider font-semibold">パスワード</p>
+                    <p className="font-mono font-semibold text-sky-900 mt-0.5">{DEMO_WIFI.password}</p>
+                  </div>
+                  <button
+                    onClick={copyWifi}
+                    className="w-full py-3 rounded-xl bg-sky-500 text-white font-bold text-sm active:bg-sky-700"
+                  >
+                    {wifiCopied ? '✓ コピーしました' : 'パスワードをコピー'}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* 店舗情報 */}
+            {servicePanel === 'store' && (
+              <div className="px-5 pb-8">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center text-xl">🏪</div>
+                  <h2 className="font-bold text-gray-900 text-lg">店舗情報</h2>
+                </div>
+                <div className="space-y-3">
+                  {[
+                    { icon: '📍', label: '住所', value: '東京都渋谷区恵比寿1-2-3\n翠旬ビル 2F', href: null },
+                    { icon: '📞', label: '電話番号', value: '03-1234-5678', href: 'tel:03-1234-5678' },
+                    { icon: '🕐', label: '営業時間', value: '月〜金 11:30–14:00 / 17:00–23:00\n土・日 11:30–23:00\n定休日：毎週月曜日', href: null },
+                    { icon: '🚉', label: 'アクセス', value: 'JR恵比寿駅 東口より徒歩3分', href: null },
+                  ].map(row => (
+                    <div key={row.label} className="flex items-start gap-3 bg-teal-50 rounded-xl p-4">
+                      <span className="text-lg shrink-0">{row.icon}</span>
+                      <div className="flex-1">
+                        <p className="text-[10px] text-teal-500 font-semibold uppercase tracking-wider mb-0.5">{row.label}</p>
+                        {row.href ? (
+                          <a href={row.href} className="text-sm text-gray-700 font-medium">{row.value}</a>
+                        ) : (
+                          <p className="text-sm text-gray-700 font-medium whitespace-pre-line">{row.value}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      {barcode && <BarcodeModal code={barcode.code} title={barcode.title} onClose={() => setBarcode(null)} />}
 
       {/* ── 固定カートバー ── */}
       {cartCount > 0 && (
