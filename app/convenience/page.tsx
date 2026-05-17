@@ -103,7 +103,7 @@ export default function ConveniencePage() {
 
   return (
     <>
-      <main className="h-dvh flex flex-col bg-[#edf1f7] overflow-hidden">
+      <main className="min-h-screen flex flex-col bg-[#edf1f7]">
         {/* Header */}
         <header className="neu-header shrink-0" style={{ height: '64px' }}>
           <div className="h-full max-w-lg mx-auto w-full px-3 flex items-center gap-2.5">
@@ -115,13 +115,13 @@ export default function ConveniencePage() {
         </header>
 
         {/* Feature grid — 3 rows × 2 cols, fills remaining height with no scroll */}
-        <div className="flex-1 min-h-0 overflow-y-auto max-w-lg mx-auto w-full p-3 pb-6 grid grid-cols-2 auto-rows-[minmax(110px,auto)] gap-[15px]">
+        <div className="max-w-lg mx-auto w-full p-3 pb-6 grid grid-cols-2 auto-rows-[minmax(110px,auto)] gap-[15px]">
           {/* ヒーロー画像 — 上下カットなし、ページの1/4 */}
           <div className="col-span-2 rounded-2xl overflow-hidden" style={{ height: '25vh' }}>
             <img
               src="/convenience-hero.png"
               alt="Ever Green Convenience Store"
-              className="w-full h-full object-contain"
+              className="w-full h-full object-cover"
             />
           </div>
 
@@ -133,7 +133,7 @@ export default function ConveniencePage() {
               style={{ borderColor: btn.border }}
             >
               <div
-                className="w-14 h-14 rounded-2xl flex items-center justify-center"
+                className="w-14 h-14 rounded-full flex items-center justify-center"
                 style={{ background: iconGradient(btn.color), color: '#ffffff' }}
               >
                 {btn.icon}
@@ -149,7 +149,7 @@ export default function ConveniencePage() {
             className="card-light flex flex-col items-center justify-center gap-2 active:scale-95 transition-transform duration-150 p-3"
             style={{ borderColor: '#fecdd3' }}
           >
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-red-50">
+            <div className="w-14 h-14 rounded-full flex items-center justify-center bg-red-50">
               <svg className="w-9 h-9 text-red-500" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
               </svg>
@@ -158,7 +158,7 @@ export default function ConveniencePage() {
             <p className="text-xs text-red-300 text-center leading-tight">緊急・避難情報を確認</p>
           </button>
           {/* 広告スペース */}
-          <div className="col-span-2 rounded-2xl overflow-hidden" style={{ height: '25vh' }}>
+          <div className="col-span-2 rounded-2xl overflow-hidden aspect-video">
             <iframe
               src="https://www.youtube.com/embed/vNVdeRkjT2Y?autoplay=1&mute=1&loop=1&playlist=vNVdeRkjT2Y&controls=0&modestbranding=1"
               title="Advertisement"

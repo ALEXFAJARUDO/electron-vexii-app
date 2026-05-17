@@ -22,11 +22,55 @@ const FLOOR2_SHOPS = [
   { name: 'ブック&カフェ', category: '書籍・雑貨', hours: '09:00〜22:00', open: true },
 ]
 
-const FOOD_MENU = [
-  { id: 1, name: 'ラーメン', shop: '麺屋さくら', price: '¥900', wait: 12 },
-  { id: 2, name: 'カレーライス', shop: 'スパイスキッチン', price: '¥850', wait: 8 },
-  { id: 3, name: 'ハンバーガーセット', shop: 'バーガーパーク', price: '¥1,100', wait: 10 },
-  { id: 4, name: 'パスタランチ', shop: 'イタリアーノ', price: '¥1,200', wait: 15 },
+type FoodItem = { id: number; name: string; price: number; tag?: string }
+type FoodStore = { id: string; name: string; emoji: string; color: string; bg: string; wait: number; image?: string; items: FoodItem[] }
+
+const FOOD_STORES: FoodStore[] = [
+  {
+    id: 'sakura', name: '麺屋さくら', emoji: '🍜', color: '#ef4444', bg: 'linear-gradient(135deg,#7f1d1d,#dc2626)', wait: 12,
+    items: [
+      { id: 1, name: '醤油ラーメン', price: 900, tag: '人気' },
+      { id: 2, name: '味噌ラーメン', price: 950 },
+      { id: 3, name: '塩ラーメン', price: 880 },
+      { id: 4, name: 'チャーシュー麺', price: 1200, tag: '特製' },
+    ],
+  },
+  {
+    id: 'spice', name: 'スパイスキッチン', emoji: '🍛', color: '#f97316', bg: 'linear-gradient(135deg,#7c2d12,#ea580c)', wait: 8,
+    items: [
+      { id: 5, name: 'ビーフカレー', price: 850, tag: '人気' },
+      { id: 6, name: 'チキンカレー', price: 800 },
+      { id: 7, name: 'ベジタブルカレー', price: 750 },
+      { id: 8, name: 'ナンセット', price: 980 },
+    ],
+  },
+  {
+    id: 'burger', name: 'バーガーパーク', emoji: '🍔', color: '#ca8a04', bg: 'linear-gradient(135deg,#78350f,#ca8a04)', wait: 10,
+    items: [
+      { id: 9, name: 'チーズバーガーセット', price: 1100, tag: '人気' },
+      { id: 10, name: 'テリヤキバーガーセット', price: 1050 },
+      { id: 11, name: 'フィッシュバーガーセット', price: 980 },
+      { id: 12, name: 'ポテト単品 (L)', price: 350 },
+    ],
+  },
+  {
+    id: 'italiano', name: 'イタリアーノ', emoji: '🍝', color: '#16a34a', bg: 'linear-gradient(135deg,#14532d,#16a34a)', wait: 15,
+    items: [
+      { id: 13, name: 'ナポリタン', price: 1100, tag: '人気' },
+      { id: 14, name: 'カルボナーラ', price: 1200 },
+      { id: 15, name: 'ペペロンチーノ', price: 1050 },
+      { id: 16, name: 'パスタランチセット', price: 1400, tag: 'おすすめ' },
+    ],
+  },
+  {
+    id: 'sushi', name: 'テイクアウト寿司', emoji: '🍣', color: '#0284c7', bg: 'linear-gradient(135deg,#0c4a6e,#0284c7)', wait: 5,
+    items: [
+      { id: 17, name: '特上にぎり (8貫)', price: 1800, tag: '人気' },
+      { id: 18, name: 'サーモン盛り (6貫)', price: 1200 },
+      { id: 19, name: '海鮮巻き', price: 980 },
+      { id: 20, name: 'いなり寿司セット', price: 650 },
+    ],
+  },
 ]
 
 const EVENTS = [
@@ -41,6 +85,7 @@ export default function MallPage() {
   const [orderStatus, setOrderStatus] = useState<OrderStatus>('idle')
   const [countdown, setCountdown] = useState(0)
   const [orderNumber, setOrderNumber] = useState<number | null>(null)
+  const [selectedStore, setSelectedStore] = useState<string>(FOOD_STORES[0].id)
   const [selectedFood, setSelectedFood] = useState<number | null>(null)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -54,7 +99,9 @@ export default function MallPage() {
 
     const canNotify = await requestPermission()
     const num = Math.floor(Math.random() * 900) + 100
-    const item = FOOD_MENU.find((f) => f.id === selectedFood)!
+    const store = FOOD_STORES.find((s) => s.id === selectedStore)!
+    const foodItem = store.items.find((i) => i.id === selectedFood)!
+    const item = { ...foodItem, wait: store.wait, price: `¥${foodItem.price.toLocaleString()}` }
     setOrderNumber(num)
     setOrderStatus('waiting')
 
@@ -189,7 +236,7 @@ export default function MallPage() {
               style={{ borderColor: btn.border }}
             >
               <div
-                className="w-14 h-14 rounded-2xl flex items-center justify-center"
+                className="w-14 h-14 rounded-full flex items-center justify-center"
                 style={{ background: iconGradient(btn.color), color: '#ffffff' }}
               >
                 {btn.icon}
@@ -199,7 +246,7 @@ export default function MallPage() {
             </button>
           ))}
           {/* 広告スペース */}
-          <div className="col-span-2 rounded-2xl overflow-hidden" style={{ height: '25vh' }}>
+          <div className="col-span-2 rounded-2xl overflow-hidden aspect-video">
             <iframe
               src="https://www.youtube.com/embed/vNVdeRkjT2Y?autoplay=1&mute=1&loop=1&playlist=vNVdeRkjT2Y&controls=0&modestbranding=1"
               title="Advertisement"
@@ -308,25 +355,66 @@ export default function MallPage() {
 
                 {orderStatus === 'idle' && (
                   <>
-                    <div className="space-y-2 mb-4">
-                      {FOOD_MENU.map((item) => (
-                        <button
-                          key={item.id}
-                          onClick={() => setSelectedFood(item.id)}
-                          className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all ${
-                            selectedFood === item.id
-                              ? 'bg-orange-50 border-orange-400 ring-2 ring-orange-300'
-                              : 'bg-white border-gray-100 hover:bg-orange-50'
-                          }`}
-                        >
-                          <div className="text-left">
-                            <p className="font-semibold text-gray-800 text-sm">{item.name}</p>
-                            <p className="text-xs text-gray-400 mt-0.5">{item.shop} · 待ち約{item.wait}分</p>
-                          </div>
-                          <p className="font-bold text-gray-700 text-sm">{item.price}</p>
-                        </button>
-                      ))}
+                    {/* 店舗カードグリッド */}
+                    <div className="grid grid-cols-2 gap-3 mb-4">
+                      {FOOD_STORES.map((store) => {
+                        const isSelected = selectedStore === store.id
+                        return (
+                          <button
+                            key={store.id}
+                            onClick={() => { setSelectedStore(store.id); setSelectedFood(null) }}
+                            className={`rounded-2xl overflow-hidden text-left transition-all active:scale-95 ${
+                              isSelected ? 'ring-2 ring-orange-400 shadow-md' : 'shadow-sm'
+                            }`}
+                          >
+                            {/* 画像エリア */}
+                            <div
+                              className="w-full flex items-center justify-center"
+                              style={{ background: store.bg, height: '80px' }}
+                            >
+                              {store.image
+                                ? <img src={store.image} alt={store.name} className="w-full h-full object-cover" />
+                                : <span className="text-5xl">{store.emoji}</span>
+                              }
+                            </div>
+                            {/* 店舗名 */}
+                            <div className={`px-3 py-2 ${isSelected ? 'bg-orange-50' : 'bg-white'}`}>
+                              <p className="font-bold text-gray-800 text-xs leading-tight">{store.name}</p>
+                              <p className="text-[10px] text-gray-400 mt-0.5">待ち約{store.wait}分</p>
+                            </div>
+                          </button>
+                        )
+                      })}
                     </div>
+
+                    {/* 選択中店舗のメニュー */}
+                    {FOOD_STORES.filter((s) => s.id === selectedStore).map((store) => (
+                      <div key={store.id} className="mb-4">
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{store.name} のメニュー</p>
+                        <div className="space-y-2">
+                          {store.items.map((item) => (
+                            <button
+                              key={item.id}
+                              onClick={() => setSelectedFood(item.id)}
+                              className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all ${
+                                selectedFood === item.id
+                                  ? 'bg-orange-50 border-orange-400 ring-2 ring-orange-300'
+                                  : 'bg-white border-gray-100 hover:bg-orange-50'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2">
+                                <p className="font-semibold text-gray-800 text-sm">{item.name}</p>
+                                {item.tag && (
+                                  <span className="text-[10px] font-bold text-orange-500 bg-orange-50 border border-orange-200 px-1.5 py-0.5 rounded-full">{item.tag}</span>
+                                )}
+                              </div>
+                              <p className="font-bold text-gray-700 text-sm">¥{item.price.toLocaleString()}</p>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+
                     <button
                       onClick={placeOrder}
                       disabled={selectedFood === null}

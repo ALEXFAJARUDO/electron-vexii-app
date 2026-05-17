@@ -187,7 +187,7 @@ export default function RestaurantPage() {
           </div>
 
           {/* 広告スペース */}
-          <div className="col-span-2 rounded-2xl overflow-hidden" style={{ height: '25vh' }}>
+          <div className="col-span-2 rounded-2xl overflow-hidden aspect-video">
             <iframe
               src="https://www.youtube.com/embed/vNVdeRkjT2Y?autoplay=1&mute=1&loop=1&playlist=vNVdeRkjT2Y&controls=0&modestbranding=1"
               title="Advertisement"
