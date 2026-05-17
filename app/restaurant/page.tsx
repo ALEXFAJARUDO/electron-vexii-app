@@ -287,6 +287,45 @@ export default function RestaurantPage() {
                 <p className="text-[10px] text-gray-400 leading-tight">スタッフを呼ぶ</p>
               </div>
             </button>
+
+            {/* クーポン */}
+            <button onClick={() => setPanel('coupons')}
+              className="card-light flex items-center gap-3 p-3.5 active:scale-95 transition-transform duration-150"
+              style={{ background: '#f0fdf4', borderColor: '#bbf7d0' }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 neu-icon" style={{ background: iconGradient('#22c55e'), color: '#fff' }}>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0c1.1.128 1.907 1.077 1.907 2.185zM9.75 9h.008v.008H9.75V9zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm4.125 4.5h.008v.008h-.008V13.5zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
+              </div>
+              <div className="text-left">
+                <p className="font-bold text-gray-800 text-sm leading-tight">クーポン</p>
+                <p className="text-[10px] text-gray-400 leading-tight">割引クーポンを見る</p>
+              </div>
+            </button>
+
+            {/* WiFi接続 */}
+            <button onClick={() => setPanel('wifi')}
+              className="card-light flex items-center gap-3 p-3.5 active:scale-95 transition-transform duration-150"
+              style={{ background: '#f0f9ff', borderColor: '#bae6fd' }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 neu-icon" style={{ background: iconGradient('#0ea5e9'), color: '#fff' }}>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.288 15.038a5.25 5.25 0 017.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 011.06 0z"/></svg>
+              </div>
+              <div className="text-left">
+                <p className="font-bold text-gray-800 text-sm leading-tight">WiFi接続</p>
+                <p className="text-[10px] text-gray-400 leading-tight">フリーWiFiに接続</p>
+              </div>
+            </button>
+
+            {/* 店舗情報 */}
+            <button onClick={() => setPanel('store')}
+              className="card-light col-span-2 flex items-center gap-3 p-3.5 active:scale-95 transition-transform duration-150"
+              style={{ background: '#f0fdfa', borderColor: '#99f6e4' }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 neu-icon" style={{ background: iconGradient('#14b8a6'), color: '#fff' }}>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .415.336.75.75.75z"/></svg>
+              </div>
+              <div className="text-left">
+                <p className="font-bold text-gray-800 text-sm leading-tight">店舗情報</p>
+                <p className="text-[10px] text-gray-400 leading-tight">住所・営業時間など</p>
+              </div>
+            </button>
           </div>
 
           {/* お会計 — 全幅 */}
