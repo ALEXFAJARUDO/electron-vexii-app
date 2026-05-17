@@ -265,7 +265,7 @@ export default function RacingPage() {
             </svg>
           </button>
           <div className="flex items-center gap-1.5">
-            <span className="text-lg">{selectedSport?.emoji}</span>
+            <span className="text-lg">{selectedSport?.icon}</span>
             <span className="font-bold text-sm text-gray-800">{selectedSport?.label}</span>
           </div>
           <div className="ml-auto flex items-center gap-1.5 bg-teal-50 border border-teal-200 rounded-lg px-2 py-1">

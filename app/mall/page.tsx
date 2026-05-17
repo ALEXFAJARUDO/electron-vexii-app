@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { registerSW, requestPermission, notify } from '@/lib/webNotify'
 
-type PanelId = 'floor1' | 'floor2' | 'food' | 'events' | 'map'
+type PanelId = 'floor1' | 'floor2' | 'food' | 'events' | 'map' | 'ad'
 type OrderStatus = 'idle' | 'waiting' | 'ready' | 'ad'
 
 const FLOOR1_SHOPS = [

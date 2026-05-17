@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { registerSW, requestPermission, notify } from '@/lib/webNotify'
 import BarcodeModal from '@/components/BarcodeModal'
 
-type PanelId = 'order' | 'app' | 'wifi' | 'coupon' | 'info' | 'points' | 'seat'
+type PanelId = 'order' | 'app' | 'wifi' | 'coupon' | 'info' | 'points' | 'seat' | 'ad'
 type DrinkTab = 'hot' | 'iced' | 'food'
 type MenuItem = { id: number; name: string; desc: string; price: number; tag?: string; photo: string; photoBg: string }
 
@@ -85,7 +85,7 @@ export default function CafePage() {
   const [wifiCopied, setWifiCopied] = useState(false)
   const [chargePercent] = useState(54)
 
-  const seatNo = 'A-05' | 'ad'
+  const seatNo = 'A-05'
 
   useEffect(() => { registerSW() }, [])
 
@@ -125,24 +125,13 @@ export default function CafePage() {
   return (
     <>
       <main className="min-h-dvh flex flex-col bg-[#edf1f7]">
-        <header className="neu-header px-4 py-3 flex items-center gap-2.5 shrink-0">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex items-center gap-2">
-              {/* アイコンバッジ */}
-              <div
-                className="w-8 h-8 rounded-xl flex items-center justify-center shadow-sm shrink-0"
-                style={{ background: 'linear-gradient(145deg, #fbbf24 0%, #d97706 45%, #92400e 100%)' }}
-              >
-                <svg className="w-[18px] h-[18px]" fill="none" stroke="white" strokeWidth={1.8} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 7.5h13.5v9A2.25 2.25 0 0116.5 18.75H7.5A2.25 2.25 0 015.25 16.5V7.5zm13.5 2.25h2.25a2.25 2.25 0 010 4.5H18.75M10 3.5l-.75 1.5M12 3v1.5M14 3.5l.75 1.5"/>
-                </svg>
-              </div>
-              {/* テキスト */}
-              <div className="flex flex-col leading-none">
-                <span className="text-[14px] font-black tracking-tight text-amber-900" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>Café</span>
-                <span className="text-[8px] font-bold tracking-[0.35em] text-amber-500 mt-0.5">VEXII</span>
-              </div>
-            </div>
+        <header className="neu-header px-4 flex items-center gap-2.5 shrink-0" style={{ height: '64px' }}>
+          <Link href="/" className="flex items-center">
+            <img
+              src="/uploads/cafe/logo.png"
+              alt="Cafe Vexii"
+              className="h-10 w-auto object-contain"
+            />
           </Link>
           <span className="ml-auto text-sm font-semibold text-gray-500">☕ カフェ</span>
           {cartCount > 0 && (
@@ -156,7 +145,7 @@ export default function CafePage() {
           {/* ヒーロー画像 — 角丸・固定サイズ */}
           <div className="col-span-2 rounded-2xl overflow-hidden" style={{ height: '25vh' }}>
             <img
-              src="/cafe-hero.png"
+              src="/uploads/cafe/kv.png"
               alt="Cafe Vexii"
               className="w-full h-full object-cover"
             />

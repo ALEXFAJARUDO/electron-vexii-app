@@ -10,19 +10,15 @@ export default async function MapPage() {
   return (
     <div className="flex flex-col h-screen bg-[#020c1b]">
       {/* Header */}
-      <header className="shrink-0 border-b border-[#1e3c72] px-5 py-3 flex items-center justify-between z-10">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-[#0d1f3c] silver-border flex items-center justify-center p-1">
-            <img src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png" alt="Vexii" className="w-full h-full object-contain" />
-          </div>
-          <div>
-            <span className="font-bold silver-gradient">Vexii</span>
-            <span className="text-[#2d5a8e] text-xs ml-2">充電スポットマップ</span>
-          </div>
-        </div>
+      <header className="shrink-0 neu-header px-5 py-4 flex items-center justify-between z-10">
+        <img
+          src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png"
+          alt="Vexii"
+          className="h-8 w-auto object-contain"
+        />
         <div className="flex items-center gap-4">
-          <span className="text-[#2d5a8e] text-xs">
-            <span className="text-[#60a5fa] font-semibold">{mapped.length}</span> スポット
+          <span className="text-gray-400 text-xs">
+            <span className="text-blue-500 font-semibold">{mapped.length}</span> スポット
           </span>
           <MenuButton />
         </div>

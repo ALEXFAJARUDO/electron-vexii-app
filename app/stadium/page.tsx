@@ -337,7 +337,7 @@ export default function StadiumPage() {
                   </div>
                   <div>
                     <h2 className="font-bold text-gray-900 text-lg">試合情報</h2>
-                    <p className="text-xs text-gray-400">{selectedSport?.emoji} {selectedSport?.label}</p>
+                    <p className="text-xs text-gray-400">{selectedSport?.icon} {selectedSport?.label}</p>
                   </div>
                 </div>
 

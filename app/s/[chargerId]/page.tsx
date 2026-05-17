@@ -20,15 +20,12 @@ export default async function ChargerPage({ params }: { params: Promise<{ charge
   return (
     <main className="min-h-screen bg-gray-50 max-w-md mx-auto">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <img
-            src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png"
-            alt="Vexii"
-            className="h-7 w-auto object-contain"
-          />
-          <span className="font-bold text-sm silver-gradient">Vexii</span>
-        </div>
+      <header className="sticky top-0 z-10 neu-header px-5 py-4 flex items-center justify-between">
+        <img
+          src="https://e-vexii.com/wordpress/wp-content/uploads/2018/12/logo_mini.png"
+          alt="Vexii"
+          className="h-8 w-auto object-contain"
+        />
         <ChargerMenuButton store={store} />
       </header>
 
