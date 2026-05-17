@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import BarcodeModal from '@/components/BarcodeModal'
 
-type PanelId = 'wifi' | 'coupons' | 'order' | 'ad'
+type PanelId = 'wifi' | 'coupons' | 'order' | 'ad' | 'app' | 'store'
 type OrderItem = { id: number; name: string; desc: string; price: number; photo: string; photoBg: string; tag?: string }
 
 const DEMO_WIFI = { ssid: 'RESTAURANT_WIFI', password: 'dinner2024' }
@@ -183,6 +183,34 @@ export default function RestaurantPage() {
               </div>
               <p className="font-bold text-gray-800 text-xs leading-tight text-center">お得なクーポン</p>
               <p className="text-[10px] text-gray-400 text-center leading-tight">割引クーポンを見る</p>
+            </button>
+
+            {/* アプリダウンロード */}
+            <button
+              onClick={() => setPanel('app')}
+              className="card-light flex flex-col items-center justify-center gap-2 active:scale-95 transition-transform duration-150 p-3 min-h-[110px]"
+            >
+              <div className="w-12 h-12 rounded-full flex items-center justify-center neu-icon" style={{ background: iconGradient('#8b5cf6'), color: '#ffffff' }}>
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 15.75h3"/>
+                </svg>
+              </div>
+              <p className="font-bold text-gray-800 text-xs leading-tight text-center">アプリダウンロード</p>
+              <p className="text-[10px] text-gray-400 text-center leading-tight">公式アプリを取得</p>
+            </button>
+
+            {/* 店舗情報 */}
+            <button
+              onClick={() => setPanel('store')}
+              className="card-light flex flex-col items-center justify-center gap-2 active:scale-95 transition-transform duration-150 p-3 min-h-[110px]"
+            >
+              <div className="w-12 h-12 rounded-full flex items-center justify-center neu-icon" style={{ background: iconGradient('#14b8a6'), color: '#ffffff' }}>
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .415.336.75.75.75z"/>
+                </svg>
+              </div>
+              <p className="font-bold text-gray-800 text-xs leading-tight text-center">店舗情報</p>
+              <p className="text-[10px] text-gray-400 text-center leading-tight">住所・営業時間など</p>
             </button>
           </div>
 
@@ -384,6 +412,107 @@ export default function RestaurantPage() {
                   />
                 </div>
                 <p className="text-xs text-gray-400 text-center">広告掲載のお問い合わせは Vexii までご連絡ください</p>
+              </div>
+            )}
+            {/* ===== アプリダウンロード ===== */}
+            {panel === 'app' && (
+              <div className="px-5 pb-8">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-violet-500" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 15.75h3"/>
+                    </svg>
+                  </div>
+                  <h2 className="font-bold text-gray-900 text-lg">アプリダウンロード</h2>
+                </div>
+                <div className="bg-violet-50 rounded-2xl p-5 mb-4 flex flex-col items-center gap-2">
+                  <div className="w-20 h-20 rounded-2xl bg-white flex items-center justify-center shadow-sm mb-1">
+                    <img src="/restaurant-logo.png" alt="アプリアイコン" className="w-14 h-14 object-contain rounded-xl" />
+                  </div>
+                  <p className="font-bold text-gray-800 text-base">翠旬 Suishun</p>
+                  <p className="text-xs text-gray-400 text-center">公式アプリでクーポンや最新情報をいつでもチェック</p>
+                </div>
+                <div className="space-y-3">
+                  <a
+                    href="#"
+                    className="flex items-center gap-3 w-full bg-black text-white rounded-xl px-5 py-3.5 active:opacity-75 transition-opacity"
+                  >
+                    <svg className="w-7 h-7 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                    </svg>
+                    <div>
+                      <p className="text-[10px] opacity-70 leading-none mb-0.5">Download on the</p>
+                      <p className="font-bold text-sm leading-tight">App Store</p>
+                    </div>
+                  </a>
+                  <a
+                    href="#"
+                    className="flex items-center gap-3 w-full bg-[#01875f] text-white rounded-xl px-5 py-3.5 active:opacity-75 transition-opacity"
+                  >
+                    <svg className="w-7 h-7 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M3.18 23.76c.3.17.64.22.98.14l12.09-6.98-2.55-2.55-10.52 9.39zm-1.14-20.4C1.73 3.7 1.5 4.08 1.5 4.59v14.82c0 .51.23.89.54 1.14l.07.06 8.3-8.3v-.19L2.11 3.3l-.07.06zM20.62 10.5l-2.38-1.37-2.7 2.7 2.7 2.7 2.4-1.38c.68-.39.68-1.27-.02-1.65zM4.16.38L16.25 7.36l-2.55 2.55L3.18.52c.3-.18.66-.2.98-.14z"/>
+                    </svg>
+                    <div>
+                      <p className="text-[10px] opacity-80 leading-none mb-0.5">GET IT ON</p>
+                      <p className="font-bold text-sm leading-tight">Google Play</p>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            )}
+
+            {/* ===== 店舗情報 ===== */}
+            {panel === 'store' && (
+              <div className="px-5 pb-8">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .415.336.75.75.75z"/>
+                    </svg>
+                  </div>
+                  <h2 className="font-bold text-gray-900 text-lg">店舗情報</h2>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3 bg-teal-50 rounded-xl p-4">
+                    <svg className="w-5 h-5 text-teal-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/>
+                    </svg>
+                    <div>
+                      <p className="text-[10px] text-teal-500 font-semibold uppercase tracking-wider mb-0.5">住所</p>
+                      <p className="text-sm text-gray-700 font-medium">東京都渋谷区恵比寿1-2-3<br/>翠旬ビル 2F</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 bg-teal-50 rounded-xl p-4">
+                    <svg className="w-5 h-5 text-teal-400 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
+                    </svg>
+                    <div>
+                      <p className="text-[10px] text-teal-500 font-semibold uppercase tracking-wider mb-0.5">電話番号</p>
+                      <a href="tel:03-1234-5678" className="text-sm text-gray-700 font-medium">03-1234-5678</a>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 bg-teal-50 rounded-xl p-4">
+                    <svg className="w-5 h-5 text-teal-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <div>
+                      <p className="text-[10px] text-teal-500 font-semibold uppercase tracking-wider mb-0.5">営業時間</p>
+                      <p className="text-sm text-gray-700 font-medium">月〜金　11:30 – 14:00 / 17:00 – 23:00</p>
+                      <p className="text-sm text-gray-700 font-medium">土・日　11:30 – 23:00</p>
+                      <p className="text-xs text-gray-400 mt-1">定休日：毎週月曜日</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 bg-teal-50 rounded-xl p-4">
+                    <svg className="w-5 h-5 text-teal-400 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z"/>
+                    </svg>
+                    <div>
+                      <p className="text-[10px] text-teal-500 font-semibold uppercase tracking-wider mb-0.5">アクセス</p>
+                      <p className="text-sm text-gray-700 font-medium">JR恵比寿駅 東口より徒歩3分</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
