@@ -227,7 +227,7 @@ export default function RestaurantPage() {
           </Link>
 
           {/* ━━ 飲み会サポートバナー ━━ */}
-          <Link href="/restaurant/1?tab=support">
+          <Link href="/restaurant/nfc">
             <div className="rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-700 flex items-center gap-3 px-4 py-4 active:scale-95 transition-transform">
               <span className="text-3xl">🎉</span>
               <div className="flex-1">

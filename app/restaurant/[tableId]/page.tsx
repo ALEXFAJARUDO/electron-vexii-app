@@ -1,8 +1,9 @@
 'use client'
 import { use, useState, useEffect, useCallback } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import BarcodeModal from '@/components/BarcodeModal'
+import { useSession, formatRemaining } from '@/lib/restaurantSession'
 import OrderRecommendation from '@/components/restaurant/OrderRecommendation'
 import PartyGames from '@/components/restaurant/PartyGames'
 import OrganizerSupport from '@/components/restaurant/OrganizerSupport'
@@ -56,8 +57,16 @@ const BOTTOM_TABS: { id: MainTab; label: string; emoji: string }[] = [
 export default function TablePage({ params }: { params: Promise<{ tableId: string }> }) {
   const { tableId } = use(params)
   const searchParams = useSearchParams()
+  const router = useRouter()
   const initialTab = (searchParams.get('tab') as MainTab | null) ?? 'order'
 
+  const {
+    session, isLoading, endSession,
+    remainingSec, showLogoutModal, setShowLogoutModal,
+    isExpiringSoon, isCritical,
+  } = useSession()
+
+  const [expired, setExpired] = useState(false)
   const [mainTab, setMainTab] = useState<MainTab>(initialTab)
   const [supportFeature, setSupportFeature] = useState<SupportFeature>('top')
   const [activeSection, setActiveSection] = useState('drink')
@@ -69,6 +78,23 @@ export default function TablePage({ params }: { params: Promise<{ tableId: strin
   const [servicePanel, setServicePanel] = useState<ServicePanel>(null)
   const [barcode, setBarcode] = useState<{ code: string; title: string } | null>(null)
   const [wifiCopied, setWifiCopied] = useState(false)
+
+  // ── セッションガード ──
+  useEffect(() => {
+    if (isLoading) return
+    if (!session) {
+      router.replace('/restaurant/nfc')
+    } else if (session.tableId !== tableId) {
+      router.replace('/restaurant/nfc')
+    }
+  }, [isLoading, session, tableId, router])
+
+  // ── セッション自動ログアウト検知 ──
+  useEffect(() => {
+    if (!isLoading && !session && !expired) {
+      setExpired(true)
+    }
+  }, [isLoading, session, expired])
 
   const cartItems = ALL_MENU_ITEMS.filter(i => (cart[i.id] ?? 0) > 0)
   const cartTotal = ALL_MENU_ITEMS.reduce((s, i) => s + (cart[i.id] ?? 0) * i.price, 0)
@@ -136,6 +162,16 @@ export default function TablePage({ params }: { params: Promise<{ tableId: strin
     await submitOrder({ table_id: tableId, items: [], status: '未対応', type: 'payment', total: 0 })
     showToast('お会計の準備をします')
     loadHistory()
+    // 会計完了でセッション終了
+    setTimeout(() => {
+      endSession()
+      router.push('/restaurant/nfc')
+    }, 2000)
+  }
+
+  function handleLogoutConfirm() {
+    endSession()
+    router.push('/restaurant/nfc')
   }
 
   const currentSection = MENU_SECTIONS.find(s => s.id === activeSection)
@@ -148,22 +184,40 @@ export default function TablePage({ params }: { params: Promise<{ tableId: strin
 
       {/* ── Header ── */}
       <header className="neu-header py-3 shrink-0 sticky top-0 z-30">
-        <div className="max-w-lg mx-auto w-full px-3 flex items-center gap-2.5">
+        <div className="max-w-lg mx-auto w-full px-3 flex items-center gap-2">
           <Link href="/restaurant">
-            <img src="/restaurant-logo.png" alt="翠旬" style={{ height: 36, width: 'auto' }} />
+            <img src="/restaurant-logo.png" alt="翠旬" style={{ height: 32, width: 'auto' }} />
           </Link>
+          {/* セッションタイマー */}
+          {session && (
+            <div className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-black tabular-nums ${
+              isCritical       ? 'bg-red-500 text-white animate-pulse' :
+              isExpiringSoon   ? 'bg-amber-400 text-white animate-pulse' :
+                                 'bg-gray-100 text-gray-600'
+            }`}>
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              {formatRemaining(remainingSec)}
+            </div>
+          )}
           <span className="ml-auto text-xs font-semibold text-gray-500">飲食店</span>
           <span className="bg-orange-500 text-white text-xs font-black px-2.5 py-1 rounded-lg">
             テーブル {tableId}
           </span>
           {cartCount > 0 && (
-            <button
-              onClick={() => setMainTab('order')}
-              className="flex items-center gap-1 bg-orange-50 border border-orange-300 rounded-lg px-2.5 py-1"
-            >
+            <button onClick={() => setMainTab('order')} className="flex items-center gap-1 bg-orange-50 border border-orange-300 rounded-lg px-2.5 py-1">
               <span className="text-xs font-black text-orange-700">🛒 {cartCount}</span>
             </button>
           )}
+          <button
+            onClick={() => setShowLogoutModal(true)}
+            className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center shrink-0"
+          >
+            <svg className="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/>
+            </svg>
+          </button>
         </div>
       </header>
 
@@ -564,6 +618,64 @@ export default function TablePage({ params }: { params: Promise<{ tableId: strin
       )}
 
       {barcode && <BarcodeModal code={barcode.code} title={barcode.title} onClose={() => setBarcode(null)} />}
+
+      {/* ── ログアウト確認モーダル ── */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 z-[60] bg-black/60 flex items-center justify-center px-6">
+          <div className="w-full max-w-sm bg-white rounded-3xl p-6 shadow-2xl">
+            <div className="text-center mb-5">
+              <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-3">
+                <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/>
+                </svg>
+              </div>
+              <h2 className="font-black text-gray-900 text-lg">ログアウトしますか？</h2>
+              <p className="text-sm text-gray-400 mt-1">セッションが終了します。<br/>再度NFCタッチが必要になります。</p>
+              {session && (
+                <div className="mt-3 bg-gray-50 rounded-xl px-4 py-2 inline-flex items-center gap-2 text-xs text-gray-500">
+                  <span>残り時間</span>
+                  <span className="font-black text-gray-700">{formatRemaining(remainingSec)}</span>
+                </div>
+              )}
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                className="flex-1 py-3 rounded-xl bg-gray-100 text-gray-700 font-bold text-sm active:bg-gray-200"
+              >
+                キャンセル
+              </button>
+              <button
+                onClick={handleLogoutConfirm}
+                className="flex-1 py-3 rounded-xl bg-red-500 text-white font-black text-sm active:bg-red-600"
+              >
+                ログアウト
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── セッション期限切れモーダル ── */}
+      {expired && !session && (
+        <div className="fixed inset-0 z-[70] bg-black/80 flex items-center justify-center px-6">
+          <div className="w-full max-w-sm bg-gray-900 border border-gray-700 rounded-3xl p-6 shadow-2xl text-center">
+            <div className="w-16 h-16 rounded-full bg-amber-500/20 flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-amber-400" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <h2 className="font-black text-white text-xl mb-2">セッションが終了しました</h2>
+            <p className="text-gray-400 text-sm mb-6">30分間の無操作により<br/>自動的にログアウトされました。</p>
+            <button
+              onClick={() => router.push('/restaurant/nfc')}
+              className="w-full py-4 rounded-2xl bg-emerald-500 text-white font-black text-base active:bg-emerald-600"
+            >
+              NFCタッチに戻る
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ── Cart bar (above bottom tabs) ── */}
       {cartCount > 0 && mainTab === 'order' && (
