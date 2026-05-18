@@ -210,6 +210,36 @@ export default function RestaurantPage() {
             />
           </div>
 
+          {/* ━━ テーブルページへ誘導 ━━ */}
+          <Link href="/restaurant/1">
+            <div className="rounded-2xl bg-gray-900 flex items-center gap-3 px-4 py-3.5 active:scale-95 transition-transform">
+              <div className="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center text-white font-black text-sm shrink-0">
+                1
+              </div>
+              <div className="flex-1">
+                <p className="text-white font-black text-sm">席 1 のモバイルオーダー</p>
+                <p className="text-gray-400 text-[10px]">注文 / 飲み会サポート / お会計</p>
+              </div>
+              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
+              </svg>
+            </div>
+          </Link>
+
+          {/* ━━ 飲み会サポートバナー ━━ */}
+          <Link href="/restaurant/1?tab=support">
+            <div className="rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-700 flex items-center gap-3 px-4 py-4 active:scale-95 transition-transform">
+              <span className="text-3xl">🎉</span>
+              <div className="flex-1">
+                <p className="text-white font-black text-sm">飲み会サポート</p>
+                <p className="text-white/70 text-[10px]">ゲーム・割り勘・話題・相性診断など6機能</p>
+              </div>
+              <svg className="w-4 h-4 text-white/60" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
+              </svg>
+            </div>
+          </Link>
+
           {/* クイック追加トースト */}
           {quickAdded && (
             <div className="fixed top-20 left-1/2 -translate-x-1/2 z-40 bg-gray-900 text-white text-sm font-bold px-4 py-2.5 rounded-xl shadow-lg">
