@@ -6,7 +6,7 @@ import VoiceOrderButton from '@/components/restaurant/VoiceOrderButton'
 import { type ParsedItem } from '@/lib/voiceCommandParser'
 
 type PanelId = 'wifi' | 'coupons' | 'order' | 'ad' | 'app' | 'store' | 'staff' | 'payment'
-type OrderItem = { id: number; name: string; desc: string; price: number; photo: string; photoBg: string; tag?: string }
+type OrderItem = { id: number; name: string; desc: string; price: number; photo: string; photoBg: string; photoUrl?: string; tag?: string }
 
 const DEMO_WIFI = { ssid: 'HAKUUNDAI_WIFI', password: 'hakuundai2024' }
 
@@ -16,45 +16,47 @@ const COUPONS = [
   { id: 3, title: 'デザート 30%OFF', code: 'DESSERT30', expires: '2026/06/30' },
 ]
 
+const HP = 'https://www.hakuundai.net/img/'
+
 const ORDER_MENU: Record<string, OrderItem[]> = {
   menu01: [
-    { id: 101, name: '白雲台コース',       desc: '人気No.1コース',               price: 5000,  photo: '🍽', photoBg: 'linear-gradient(135deg,#b45309,#92400e)', tag: '人気' },
-    { id: 102, name: '肉三昧コース',       desc: 'ガッツリ！肉三昧',             price: 6000,  photo: '🥩', photoBg: 'linear-gradient(135deg,#dc2626,#b91c1c)' },
-    { id: 103, name: 'お手軽コース',       desc: '気軽に楽しめるコース',          price: 3700,  photo: '🍴', photoBg: 'linear-gradient(135deg,#d97706,#b45309)' },
-    { id: 104, name: '贅沢コース',         desc: 'プレミアムな贅沢コース',        price: 8000,  photo: '✨', photoBg: 'linear-gradient(135deg,#92400e,#78350f)', tag: '特選' },
-    { id: 105, name: 'ファミリーセット',   desc: 'みんなで楽しむファミリー向け',  price: 4950,  photo: '👨‍👩‍👧‍👦', photoBg: 'linear-gradient(135deg,#16a34a,#15803d)' },
-    { id: 106, name: '黄金カルビ定食',     desc: 'カルビ150g・ライス・スープ付き', price: 1500, photo: '🍱', photoBg: 'linear-gradient(135deg,#ca8a04,#a16207)', tag: 'ランチ' },
-    { id: 107, name: 'ハラミ・カルビ定食', desc: 'ハラミ＋カルビ150g',           price: 1600,  photo: '🍱', photoBg: 'linear-gradient(135deg,#b91c1c,#991b1b)', tag: 'ランチ' },
-    { id: 108, name: 'ハラミ定食',         desc: 'ハラミ120g・ライス・スープ付き', price: 1500, photo: '🍱', photoBg: 'linear-gradient(135deg,#78350f,#6b2a0e)', tag: 'ランチ' },
+    { id: 101, name: '白雲台コース',       desc: '人気No.1コース',               price: 5000,  photo: '🍽', photoBg: 'linear-gradient(135deg,#b45309,#92400e)', photoUrl: `${HP}img_menu02.jpg`, tag: '人気' },
+    { id: 102, name: '肉三昧コース',       desc: 'ガッツリ！肉三昧',             price: 6000,  photo: '🥩', photoBg: 'linear-gradient(135deg,#dc2626,#b91c1c)', photoUrl: `${HP}nikuzanmai.jpg` },
+    { id: 103, name: 'お手軽コース',       desc: '気軽に楽しめるコース',          price: 3700,  photo: '🍴', photoBg: 'linear-gradient(135deg,#d97706,#b45309)', photoUrl: `${HP}img_menu01.jpg` },
+    { id: 104, name: '贅沢コース',         desc: 'プレミアムな贅沢コース',        price: 8000,  photo: '✨', photoBg: 'linear-gradient(135deg,#92400e,#78350f)', photoUrl: `${HP}img_menu04.jpg`, tag: '特選' },
+    { id: 105, name: 'ファミリーセット',   desc: 'みんなで楽しむファミリー向け',  price: 4950,  photo: '👨‍👩‍👧‍👦', photoBg: 'linear-gradient(135deg,#16a34a,#15803d)', photoUrl: `${HP}img_menu12.jpg` },
+    { id: 106, name: '黄金カルビ定食',     desc: 'カルビ150g・ライス・スープ付き', price: 1500, photo: '🍱', photoBg: 'linear-gradient(135deg,#ca8a04,#a16207)', photoUrl: `${HP}img_lunch01.webp`, tag: 'ランチ' },
+    { id: 107, name: 'ハラミ・カルビ定食', desc: 'ハラミ＋カルビ150g',           price: 1600,  photo: '🍱', photoBg: 'linear-gradient(135deg,#b91c1c,#991b1b)', photoUrl: `${HP}img_lunch02.jpg`, tag: 'ランチ' },
+    { id: 108, name: 'ハラミ定食',         desc: 'ハラミ120g・ライス・スープ付き', price: 1500, photo: '🍱', photoBg: 'linear-gradient(135deg,#78350f,#6b2a0e)', photoUrl: `${HP}img_lunch03.jpg`, tag: 'ランチ' },
   ],
   menu02: [
-    { id: 201, name: '特撰バラ',           desc: 'とろける旨みの最高峰',            price: 2900,  photo: '🥩', photoBg: 'linear-gradient(135deg,#b45309,#92400e)', tag: '人気' },
-    { id: 202, name: '特撰ロース',          desc: '柔らか上質ロース',               price: 3000,  photo: '🥩', photoBg: 'linear-gradient(135deg,#dc2626,#991b1b)' },
-    { id: 203, name: '特撰厚切り牛タン',   desc: '厚切りでジューシー',              price: 3000,  photo: '🥩', photoBg: 'linear-gradient(135deg,#d97706,#b45309)' },
-    { id: 204, name: 'シャトーブリアン',   desc: '最高部位・フィレ肉の王様',        price: 6800,  photo: '🥩', photoBg: 'linear-gradient(135deg,#92400e,#78350f)', tag: '特選' },
-    { id: 205, name: '骨付きカルビ',       desc: '骨付きカルビ・甘口たれ',          price: 1400,  photo: '🥩', photoBg: 'linear-gradient(135deg,#b91c1c,#991b1b)', tag: '人気' },
-    { id: 206, name: '中落ちカルビ',       desc: 'ジューシーな中落ちカルビ',        price: 1000,  photo: '🥩', photoBg: 'linear-gradient(135deg,#b45309,#92400e)' },
-    { id: 207, name: 'ロース',              desc: '厚切りロース',                   price: 2300,  photo: '🥩', photoBg: 'linear-gradient(135deg,#92400e,#78350f)' },
-    { id: 208, name: 'ネギ塩牛タン',       desc: 'ネギ塩ダレ・香ばしい牛タン',      price: 2000,  photo: '🥩', photoBg: 'linear-gradient(135deg,#d97706,#b45309)' },
-    { id: 209, name: '薄切り牛タン',       desc: 'やわらか薄切りタン',              price: 1800,  photo: '🥩', photoBg: 'linear-gradient(135deg,#ca8a04,#a16207)' },
-    { id: 210, name: '上ミノ',              desc: '第一胃・コリコリ食感',            price: 950,   photo: '🐄', photoBg: 'linear-gradient(135deg,#0284c7,#0369a1)', tag: '人気' },
-    { id: 211, name: 'しまちょう',          desc: '大腸・とろける旨み',              price: 960,   photo: '🐄', photoBg: 'linear-gradient(135deg,#7c3aed,#6d28d9)' },
-    { id: 212, name: 'ハツ',               desc: '心臓・コリコリ食感',              price: 800,   photo: '🐄', photoBg: 'linear-gradient(135deg,#6d28d9,#5b21b6)' },
-    { id: 213, name: '焼きレバー',          desc: '新鮮レバー・ごまだれ',            price: 800,   photo: '🐄', photoBg: 'linear-gradient(135deg,#9d174d,#831843)' },
+    { id: 201, name: '特撰バラ',           desc: 'とろける旨みの最高峰',            price: 2900,  photo: '🥩', photoBg: 'linear-gradient(135deg,#b45309,#92400e)', photoUrl: `${HP}img_yaki01.jpg`, tag: '人気' },
+    { id: 202, name: '特撰ロース',          desc: '柔らか上質ロース',               price: 3000,  photo: '🥩', photoBg: 'linear-gradient(135deg,#dc2626,#991b1b)', photoUrl: `${HP}img_yaki02.jpg` },
+    { id: 203, name: '特撰厚切り牛タン',   desc: '厚切りでジューシー',              price: 3000,  photo: '🥩', photoBg: 'linear-gradient(135deg,#d97706,#b45309)', photoUrl: `${HP}img_yaki03.jpg` },
+    { id: 204, name: 'シャトーブリアン',   desc: '最高部位・フィレ肉の王様',        price: 6800,  photo: '🥩', photoBg: 'linear-gradient(135deg,#92400e,#78350f)', photoUrl: `${HP}img_yaki04.jpg`, tag: '特選' },
+    { id: 205, name: '骨付きカルビ',       desc: '骨付きカルビ・甘口たれ',          price: 1400,  photo: '🥩', photoBg: 'linear-gradient(135deg,#b91c1c,#991b1b)', photoUrl: `${HP}img_yaki05.jpg`, tag: '人気' },
+    { id: 206, name: '中落ちカルビ',       desc: 'ジューシーな中落ちカルビ',        price: 1000,  photo: '🥩', photoBg: 'linear-gradient(135deg,#b45309,#92400e)', photoUrl: `${HP}img_yaki06.jpg` },
+    { id: 207, name: 'ロース',              desc: '厚切りロース',                   price: 2300,  photo: '🥩', photoBg: 'linear-gradient(135deg,#92400e,#78350f)', photoUrl: `${HP}img_yaki07.jpg` },
+    { id: 208, name: 'ネギ塩牛タン',       desc: 'ネギ塩ダレ・香ばしい牛タン',      price: 2000,  photo: '🥩', photoBg: 'linear-gradient(135deg,#d97706,#b45309)', photoUrl: `${HP}img_yaki_gyu3type.jpg` },
+    { id: 209, name: '薄切り牛タン',       desc: 'やわらか薄切りタン',              price: 1800,  photo: '🥩', photoBg: 'linear-gradient(135deg,#ca8a04,#a16207)', photoUrl: `${HP}img_yaki03.jpg` },
+    { id: 210, name: '上ミノ',              desc: '第一胃・コリコリ食感',            price: 950,   photo: '🐄', photoBg: 'linear-gradient(135deg,#0284c7,#0369a1)', photoUrl: `${HP}img_horumon01.jpg`, tag: '人気' },
+    { id: 211, name: 'しまちょう',          desc: '大腸・とろける旨み',              price: 960,   photo: '🐄', photoBg: 'linear-gradient(135deg,#7c3aed,#6d28d9)', photoUrl: `${HP}img_horumon_shimacho.jpg` },
+    { id: 212, name: 'ハツ',               desc: '心臓・コリコリ食感',              price: 800,   photo: '🐄', photoBg: 'linear-gradient(135deg,#6d28d9,#5b21b6)', photoUrl: `${HP}img_horumon02.jpg` },
+    { id: 213, name: '焼きレバー',          desc: '新鮮レバー・ごまだれ',            price: 800,   photo: '🐄', photoBg: 'linear-gradient(135deg,#9d174d,#831843)', photoUrl: `${HP}img_horumon03.jpg` },
     { id: 214, name: '白雲台サラダ',       desc: '特製ドレッシング',                price: 800,   photo: '🥗', photoBg: 'linear-gradient(135deg,#16a34a,#15803d)' },
     { id: 215, name: 'キムチ盛り合わせ',   desc: '白菜・カクテキ・オイキムチ',       price: 740,   photo: '🥬', photoBg: 'linear-gradient(135deg,#dc2626,#b91c1c)' },
     { id: 216, name: 'ナムル4種盛り',      desc: 'ほうれん草・もやし・ぜんまい',     price: 580,   photo: '🥗', photoBg: 'linear-gradient(135deg,#65a30d,#4d7c0f)' },
   ],
   menu03: [
-    { id: 301, name: '手打ち冷麺',          desc: '牛骨スープ・さっぱり',            price: 1130,  photo: '🍜', photoBg: 'linear-gradient(135deg,#0284c7,#0369a1)', tag: '人気' },
-    { id: 302, name: '全州石鍋ビビンバ',   desc: 'おこげが香ばしい本格ビビンバ',    price: 1350,  photo: '🍳', photoBg: 'linear-gradient(135deg,#dc2626,#b91c1c)' },
-    { id: 303, name: 'クッパ',              desc: '牛骨スープのおじや',              price: 800,   photo: '🍲', photoBg: 'linear-gradient(135deg,#d97706,#b45309)' },
-    { id: 304, name: 'チゲ',               desc: 'キムチorホルモンチゲ',            price: 960,   photo: '🫕', photoBg: 'linear-gradient(135deg,#b91c1c,#991b1b)' },
-    { id: 305, name: 'テールスープ',       desc: '濃厚牛テールスープ',              price: 960,   photo: '🍵', photoBg: 'linear-gradient(135deg,#92400e,#78350f)' },
-    { id: 306, name: '海鮮チヂミ',          desc: '海鮮たっぷりチヂミ',              price: 1100,  photo: '🦑', photoBg: 'linear-gradient(135deg,#0369a1,#1e40af)' },
-    { id: 307, name: '炙りユッケ',          desc: '新鮮牛肉の炙りユッケ',            price: 800,   photo: '🥚', photoBg: 'linear-gradient(135deg,#ca8a04,#a16207)' },
-    { id: 308, name: '生センマイ',          desc: '新鮮センマイ・ごまだれ',          price: 690,   photo: '🐄', photoBg: 'linear-gradient(135deg,#6d28d9,#5b21b6)' },
-    { id: 309, name: '桜ハラミ刺し',       desc: '新鮮ハラミ刺し',                  price: 1000,  photo: '🥩', photoBg: 'linear-gradient(135deg,#e11d48,#be123c)' },
+    { id: 301, name: '手打ち冷麺',          desc: '牛骨スープ・さっぱり',            price: 1130,  photo: '🍜', photoBg: 'linear-gradient(135deg,#0284c7,#0369a1)', photoUrl: `${HP}img_ippin01.jpg`, tag: '人気' },
+    { id: 302, name: '全州石鍋ビビンバ',   desc: 'おこげが香ばしい本格ビビンバ',    price: 1350,  photo: '🍳', photoBg: 'linear-gradient(135deg,#dc2626,#b91c1c)', photoUrl: `${HP}img_ippin02.jpg` },
+    { id: 303, name: 'クッパ',              desc: '牛骨スープのおじや',              price: 800,   photo: '🍲', photoBg: 'linear-gradient(135deg,#d97706,#b45309)', photoUrl: `${HP}img_ippin03.jpg` },
+    { id: 304, name: 'チゲ',               desc: 'キムチorホルモンチゲ',            price: 960,   photo: '🫕', photoBg: 'linear-gradient(135deg,#b91c1c,#991b1b)', photoUrl: `${HP}img_ippin05.jpg` },
+    { id: 305, name: 'テールスープ',       desc: '濃厚牛テールスープ',              price: 960,   photo: '🍵', photoBg: 'linear-gradient(135deg,#92400e,#78350f)', photoUrl: `${HP}img_ippin06.jpg` },
+    { id: 306, name: '海鮮チヂミ',          desc: '海鮮たっぷりチヂミ',              price: 1100,  photo: '🦑', photoBg: 'linear-gradient(135deg,#0369a1,#1e40af)', photoUrl: `${HP}img_ippin11.jpg` },
+    { id: 307, name: '炙りユッケ',          desc: '新鮮牛肉の炙りユッケ',            price: 800,   photo: '🥚', photoBg: 'linear-gradient(135deg,#ca8a04,#a16207)', photoUrl: `${HP}img_ippin09.jpg` },
+    { id: 308, name: '生センマイ',          desc: '新鮮センマイ・ごまだれ',          price: 690,   photo: '🐄', photoBg: 'linear-gradient(135deg,#6d28d9,#5b21b6)', photoUrl: `${HP}img_ippin04.jpg` },
+    { id: 309, name: '桜ハラミ刺し',       desc: '新鮮ハラミ刺し',                  price: 1000,  photo: '🥩', photoBg: 'linear-gradient(135deg,#e11d48,#be123c)', photoUrl: `${HP}img_ippin10.jpg` },
   ],
   menu04: [
     { id: 401, name: 'ザ・プレミアムモルツ', desc: '中ジョッキ・キンキン冷え',      price: 680,   photo: '🍺', photoBg: 'linear-gradient(135deg,#d97706,#b45309)', tag: '人気' },
@@ -398,11 +400,14 @@ export default function YakinikuPage() {
                     <div className="space-y-3 mb-4">
                       {(ORDER_MENU[orderCat] ?? []).map((item) => (
                         <div key={item.id} className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-100 rounded-2xl">
-                          <div
-                            className="w-16 h-16 rounded-xl flex items-center justify-center text-3xl shrink-0"
-                            style={{ background: item.photoBg }}
-                          >
-                            {item.photo}
+                          <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0">
+                            {item.photoUrl ? (
+                              <img src={item.photoUrl} alt={item.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-3xl" style={{ background: item.photoBg }}>
+                                {item.photo}
+                              </div>
+                            )}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-1.5 mb-0.5">
