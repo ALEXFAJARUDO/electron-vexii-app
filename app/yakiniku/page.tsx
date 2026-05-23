@@ -502,7 +502,7 @@ export default function YakinikuPage() {
                         <button
                           disabled={cartTotal === 0}
                           onClick={placeOrder}
-                          className="shrink-0 px-3 py-2 rounded-xl bg-red-500 text-white font-bold text-xs disabled:opacity-30 active:scale-95 transition-transform leading-tight text-center"
+                          className={`shrink-0 px-3 py-2 rounded-xl font-bold text-xs active:scale-95 transition-transform leading-tight text-center ${cartTotal > 0 ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-400'}`}
                         >
                           <span className="block">注文する</span>
                           {cartTotal > 0 && <span className="block text-[10px] text-red-200">¥{cartTotal.toLocaleString()}</span>}
