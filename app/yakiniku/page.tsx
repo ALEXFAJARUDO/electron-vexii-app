@@ -495,7 +495,19 @@ export default function YakinikuPage() {
                           <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
                         </svg>
                       </button>
-                      <h2 className="font-bold text-gray-900 text-lg">{CAT_LABEL[orderCat]}</h2>
+                      <h2 className="font-bold text-gray-900 text-lg flex-1">{CAT_LABEL[orderCat]}</h2>
+                      {orderPlaced ? (
+                        <span className="text-xs font-bold text-green-600 shrink-0">✓ 注文済み</span>
+                      ) : (
+                        <button
+                          disabled={cartTotal === 0}
+                          onClick={placeOrder}
+                          className="shrink-0 px-3 py-2 rounded-xl bg-red-500 text-white font-bold text-xs disabled:opacity-30 active:scale-95 transition-transform leading-tight text-center"
+                        >
+                          <span className="block">注文する</span>
+                          {cartTotal > 0 && <span className="block text-[10px] text-red-200">¥{cartTotal.toLocaleString()}</span>}
+                        </button>
+                      )}
                     </div>
 
                     <div className="space-y-3 mb-4">
@@ -529,19 +541,6 @@ export default function YakinikuPage() {
                       ))}
                     </div>
 
-                    {orderPlaced ? (
-                      <div className="w-full py-4 rounded-xl bg-green-500 text-white font-bold text-sm text-center">
-                        ✓ ご注文を受け付けました！
-                      </div>
-                    ) : (
-                      <button
-                        disabled={cartTotal === 0}
-                        onClick={placeOrder}
-                        className="w-full py-3.5 rounded-xl bg-red-500 text-white font-bold text-sm disabled:opacity-40 active:scale-95 transition-transform"
-                      >
-                        注文する{cartTotal > 0 ? `　¥${cartTotal.toLocaleString()}` : ''}
-                      </button>
-                    )}
                   </div>
                 )}
               </div>
