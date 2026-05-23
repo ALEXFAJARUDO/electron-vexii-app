@@ -84,10 +84,23 @@ export default function CafePage() {
   const [orderPlaced, setOrderPlaced] = useState(false)
   const [wifiCopied, setWifiCopied] = useState(false)
   const [chargePercent] = useState(54)
+  const [logoImage, setLogoImage] = useState('/uploads/cafe/logo.png')
+  const [kvImage, setKvImage] = useState('/uploads/cafe/kv.png')
 
   const seatNo = 'A-05'
 
   useEffect(() => { registerSW() }, [])
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('genreConfig_cafe')
+      if (raw) {
+        const cfg = JSON.parse(raw)
+        if (cfg.logoImage) setLogoImage(cfg.logoImage)
+        if (cfg.kvImage) setKvImage(cfg.kvImage)
+      }
+    } catch {}
+  }, [])
 
   const allItems = Object.values(MENU).flat()
   const cartTotal = allItems.reduce((s, i) => s + (cart[i.id] ?? 0) * i.price, 0)
@@ -128,7 +141,7 @@ export default function CafePage() {
         <header className="neu-header px-4 flex items-center gap-2.5 shrink-0" style={{ height: '64px' }}>
           <Link href="/" className="flex items-center">
             <img
-              src="/uploads/cafe/logo.png"
+              src={logoImage}
               alt="Cafe Vexii"
               className="h-10 w-auto object-contain"
             />
@@ -145,7 +158,7 @@ export default function CafePage() {
           {/* ヒーロー画像 — 角丸・固定サイズ */}
           <div className="col-span-2 rounded-2xl overflow-hidden" style={{ height: '25vh' }}>
             <img
-              src="/uploads/cafe/kv.png"
+              src={kvImage}
               alt="Cafe Vexii"
               className="w-full h-full object-cover"
             />
