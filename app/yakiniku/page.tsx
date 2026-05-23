@@ -348,7 +348,7 @@ export default function YakinikuPage() {
           <div className="bg-gray-900 border border-gray-700 rounded-2xl px-4 py-3 flex items-center gap-3">
             <div className="flex-1 min-w-0">
               <p className="text-xs font-black text-gray-200">🎤 音声でかんたん注文</p>
-              <p className="text-[10px] text-gray-500 mt-0.5">「カルビ2つとレモンサワー」と話してください</p>
+              <p className="text-[10px] text-gray-500 mt-0.5">例）「カルビ2つとレモンサワー」と話してください。</p>
             </div>
             <VoiceOrderButton
               menu={ALL_ITEMS}
