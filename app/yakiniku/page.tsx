@@ -1,5 +1,4 @@
 'use client'
-import { iconGradient } from '@/lib/colorLight'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import BarcodeModal from '@/components/BarcodeModal'
@@ -18,102 +17,71 @@ const COUPONS = [
 ]
 
 const ORDER_MENU: Record<string, OrderItem[]> = {
-  speed: [
-    { id: 101, name: 'キムチ盛り合わせ', desc: '白菜・カクテキ・オイキムチ',         price: 740,  photo: '🥬', photoBg: 'linear-gradient(135deg,#dc2626,#b91c1c)' },
-    { id: 102, name: '白菜キムチ',       desc: '自家製白菜キムチ',                   price: 470,  photo: '🥬', photoBg: 'linear-gradient(135deg,#b91c1c,#991b1b)' },
-    { id: 103, name: 'ナムル4種盛り',    desc: 'ほうれん草・もやし・ぜんまい・わらび', price: 580, photo: '🥗', photoBg: 'linear-gradient(135deg,#16a34a,#15803d)' },
-    { id: 104, name: 'チョレギサラダ',   desc: 'ごまドレッシング',                   price: 690,  photo: '🥗', photoBg: 'linear-gradient(135deg,#65a30d,#4d7c0f)' },
+  menu01: [
+    { id: 101, name: '白雲台コース',       desc: '人気No.1コース',               price: 5000,  photo: '🍽', photoBg: 'linear-gradient(135deg,#b45309,#92400e)', tag: '人気' },
+    { id: 102, name: '肉三昧コース',       desc: 'ガッツリ！肉三昧',             price: 6000,  photo: '🥩', photoBg: 'linear-gradient(135deg,#dc2626,#b91c1c)' },
+    { id: 103, name: 'お手軽コース',       desc: '気軽に楽しめるコース',          price: 3700,  photo: '🍴', photoBg: 'linear-gradient(135deg,#d97706,#b45309)' },
+    { id: 104, name: '贅沢コース',         desc: 'プレミアムな贅沢コース',        price: 8000,  photo: '✨', photoBg: 'linear-gradient(135deg,#92400e,#78350f)', tag: '特選' },
+    { id: 105, name: 'ファミリーセット',   desc: 'みんなで楽しむファミリー向け',  price: 4950,  photo: '👨‍👩‍👧‍👦', photoBg: 'linear-gradient(135deg,#16a34a,#15803d)' },
+    { id: 106, name: '黄金カルビ定食',     desc: 'カルビ150g・ライス・スープ付き', price: 1500, photo: '🍱', photoBg: 'linear-gradient(135deg,#ca8a04,#a16207)', tag: 'ランチ' },
+    { id: 107, name: 'ハラミ・カルビ定食', desc: 'ハラミ＋カルビ150g',           price: 1600,  photo: '🍱', photoBg: 'linear-gradient(135deg,#b91c1c,#991b1b)', tag: 'ランチ' },
+    { id: 108, name: 'ハラミ定食',         desc: 'ハラミ120g・ライス・スープ付き', price: 1500, photo: '🍱', photoBg: 'linear-gradient(135deg,#78350f,#6b2a0e)', tag: 'ランチ' },
   ],
-  recommend: [
-    { id: 201, name: '特撰バラ',           desc: 'とろける旨みの最高峰',               price: 2900,  photo: '🥩', photoBg: 'linear-gradient(135deg,#b45309,#92400e)', tag: '人気' },
-    { id: 202, name: '特撰ロース',          desc: '柔らか上質ロース',                   price: 3000,  photo: '🥩', photoBg: 'linear-gradient(135deg,#dc2626,#991b1b)' },
-    { id: 203, name: '特撰厚切り牛タン',    desc: '厚切りでジューシー',                 price: 3000,  photo: '🥩', photoBg: 'linear-gradient(135deg,#d97706,#b45309)' },
-    { id: 204, name: 'シャトーブリアン',    desc: '最高部位・フィレ肉の王様',           price: 6800,  photo: '🥩', photoBg: 'linear-gradient(135deg,#92400e,#78350f)', tag: '特選' },
-    { id: 205, name: '神戸牛3種盛り合わせ', desc: 'A5神戸牛の贅沢な盛り合わせ',        price: 15000, photo: '🥩', photoBg: 'linear-gradient(135deg,#b91c1c,#7f1d1d)', tag: '最高級' },
+  menu02: [
+    { id: 201, name: '特撰バラ',           desc: 'とろける旨みの最高峰',            price: 2900,  photo: '🥩', photoBg: 'linear-gradient(135deg,#b45309,#92400e)', tag: '人気' },
+    { id: 202, name: '特撰ロース',          desc: '柔らか上質ロース',               price: 3000,  photo: '🥩', photoBg: 'linear-gradient(135deg,#dc2626,#991b1b)' },
+    { id: 203, name: '特撰厚切り牛タン',   desc: '厚切りでジューシー',              price: 3000,  photo: '🥩', photoBg: 'linear-gradient(135deg,#d97706,#b45309)' },
+    { id: 204, name: 'シャトーブリアン',   desc: '最高部位・フィレ肉の王様',        price: 6800,  photo: '🥩', photoBg: 'linear-gradient(135deg,#92400e,#78350f)', tag: '特選' },
+    { id: 205, name: '骨付きカルビ',       desc: '骨付きカルビ・甘口たれ',          price: 1400,  photo: '🥩', photoBg: 'linear-gradient(135deg,#b91c1c,#991b1b)', tag: '人気' },
+    { id: 206, name: '中落ちカルビ',       desc: 'ジューシーな中落ちカルビ',        price: 1000,  photo: '🥩', photoBg: 'linear-gradient(135deg,#b45309,#92400e)' },
+    { id: 207, name: 'ロース',              desc: '厚切りロース',                   price: 2300,  photo: '🥩', photoBg: 'linear-gradient(135deg,#92400e,#78350f)' },
+    { id: 208, name: 'ネギ塩牛タン',       desc: 'ネギ塩ダレ・香ばしい牛タン',      price: 2000,  photo: '🥩', photoBg: 'linear-gradient(135deg,#d97706,#b45309)' },
+    { id: 209, name: '薄切り牛タン',       desc: 'やわらか薄切りタン',              price: 1800,  photo: '🥩', photoBg: 'linear-gradient(135deg,#ca8a04,#a16207)' },
+    { id: 210, name: '上ミノ',              desc: '第一胃・コリコリ食感',            price: 950,   photo: '🐄', photoBg: 'linear-gradient(135deg,#0284c7,#0369a1)', tag: '人気' },
+    { id: 211, name: 'しまちょう',          desc: '大腸・とろける旨み',              price: 960,   photo: '🐄', photoBg: 'linear-gradient(135deg,#7c3aed,#6d28d9)' },
+    { id: 212, name: 'ハツ',               desc: '心臓・コリコリ食感',              price: 800,   photo: '🐄', photoBg: 'linear-gradient(135deg,#6d28d9,#5b21b6)' },
+    { id: 213, name: '焼きレバー',          desc: '新鮮レバー・ごまだれ',            price: 800,   photo: '🐄', photoBg: 'linear-gradient(135deg,#9d174d,#831843)' },
+    { id: 214, name: '白雲台サラダ',       desc: '特製ドレッシング',                price: 800,   photo: '🥗', photoBg: 'linear-gradient(135deg,#16a34a,#15803d)' },
+    { id: 215, name: 'キムチ盛り合わせ',   desc: '白菜・カクテキ・オイキムチ',       price: 740,   photo: '🥬', photoBg: 'linear-gradient(135deg,#dc2626,#b91c1c)' },
+    { id: 216, name: 'ナムル4種盛り',      desc: 'ほうれん草・もやし・ぜんまい',     price: 580,   photo: '🥗', photoBg: 'linear-gradient(135deg,#65a30d,#4d7c0f)' },
   ],
-  beef: [
-    { id: 301, name: '骨付きカルビ',   desc: '骨付きカルビ・甘口たれ',         price: 1400, photo: '🥩', photoBg: 'linear-gradient(135deg,#dc2626,#b91c1c)', tag: '人気' },
-    { id: 302, name: '中落ちカルビ',   desc: 'ジューシーな中落ちカルビ',        price: 1000, photo: '🥩', photoBg: 'linear-gradient(135deg,#b45309,#92400e)' },
-    { id: 303, name: 'ロース',          desc: '厚切りロース',                   price: 2300, photo: '🥩', photoBg: 'linear-gradient(135deg,#92400e,#78350f)' },
-    { id: 304, name: '壺漬けカルビ',   desc: '特製壺漬けダレ',                 price: 1300, photo: '🥩', photoBg: 'linear-gradient(135deg,#b91c1c,#991b1b)' },
-    { id: 305, name: 'ネギ塩牛タン',   desc: 'ネギ塩ダレ・香ばしい牛タン',     price: 2000, photo: '🥩', photoBg: 'linear-gradient(135deg,#d97706,#b45309)' },
-    { id: 306, name: '薄切り牛タン',   desc: 'やわらか薄切りタン',              price: 1800, photo: '🥩', photoBg: 'linear-gradient(135deg,#ca8a04,#a16207)' },
-    { id: 307, name: '黒毛牛ハラミ',   desc: '黒毛牛のやわらかハラミ',          price: 1000, photo: '🥩', photoBg: 'linear-gradient(135deg,#78350f,#6b2a0e)' },
-    { id: 308, name: '壺漬けハラミ',   desc: '特製壺漬けハラミ',               price: 1650, photo: '🥩', photoBg: 'linear-gradient(135deg,#7c2d12,#6b2a0e)' },
+  menu03: [
+    { id: 301, name: '手打ち冷麺',          desc: '牛骨スープ・さっぱり',            price: 1130,  photo: '🍜', photoBg: 'linear-gradient(135deg,#0284c7,#0369a1)', tag: '人気' },
+    { id: 302, name: '全州石鍋ビビンバ',   desc: 'おこげが香ばしい本格ビビンバ',    price: 1350,  photo: '🍳', photoBg: 'linear-gradient(135deg,#dc2626,#b91c1c)' },
+    { id: 303, name: 'クッパ',              desc: '牛骨スープのおじや',              price: 800,   photo: '🍲', photoBg: 'linear-gradient(135deg,#d97706,#b45309)' },
+    { id: 304, name: 'チゲ',               desc: 'キムチorホルモンチゲ',            price: 960,   photo: '🫕', photoBg: 'linear-gradient(135deg,#b91c1c,#991b1b)' },
+    { id: 305, name: 'テールスープ',       desc: '濃厚牛テールスープ',              price: 960,   photo: '🍵', photoBg: 'linear-gradient(135deg,#92400e,#78350f)' },
+    { id: 306, name: '海鮮チヂミ',          desc: '海鮮たっぷりチヂミ',              price: 1100,  photo: '🦑', photoBg: 'linear-gradient(135deg,#0369a1,#1e40af)' },
+    { id: 307, name: '炙りユッケ',          desc: '新鮮牛肉の炙りユッケ',            price: 800,   photo: '🥚', photoBg: 'linear-gradient(135deg,#ca8a04,#a16207)' },
+    { id: 308, name: '生センマイ',          desc: '新鮮センマイ・ごまだれ',          price: 690,   photo: '🐄', photoBg: 'linear-gradient(135deg,#6d28d9,#5b21b6)' },
+    { id: 309, name: '桜ハラミ刺し',       desc: '新鮮ハラミ刺し',                  price: 1000,  photo: '🥩', photoBg: 'linear-gradient(135deg,#e11d48,#be123c)' },
   ],
-  horumon: [
-    { id: 401, name: '上ミノ',       desc: '第一胃・コリコリ食感',         price: 950, photo: '🐄', photoBg: 'linear-gradient(135deg,#0284c7,#0369a1)', tag: '人気' },
-    { id: 402, name: 'しまちょう',   desc: '大腸・とろける旨み',           price: 960, photo: '🐄', photoBg: 'linear-gradient(135deg,#b91c1c,#991b1b)' },
-    { id: 403, name: 'ハツ',         desc: '心臓・コリコリ食感',           price: 800, photo: '🐄', photoBg: 'linear-gradient(135deg,#dc2626,#b91c1c)' },
-    { id: 404, name: '焼きレバー',   desc: '新鮮レバー・ごまだれ',         price: 800, photo: '🐄', photoBg: 'linear-gradient(135deg,#7c3aed,#6d28d9)' },
-    { id: 405, name: 'アカセン',     desc: '第二胃・歯ごたえ抜群',         price: 800, photo: '🐄', photoBg: 'linear-gradient(135deg,#6d28d9,#5b21b6)' },
-    { id: 406, name: 'とろコリコリ', desc: 'とろける食感のホルモン',        price: 800, photo: '🐄', photoBg: 'linear-gradient(135deg,#9d174d,#831843)' },
-  ],
-  drink: [
-    { id: 501, name: 'ザ・プレミアムモルツ', desc: '中ジョッキ・キンキン冷え',    price: 680, photo: '🍺', photoBg: 'linear-gradient(135deg,#d97706,#b45309)', tag: '人気' },
-    { id: 502, name: '角ハイボール',          desc: 'サントリー角・ソーダ割り',    price: 580, photo: '🥃', photoBg: 'linear-gradient(135deg,#475569,#334155)' },
-    { id: 503, name: 'レモンサワー',          desc: 'さっぱり爽快レモン',          price: 530, photo: '🍋', photoBg: 'linear-gradient(135deg,#ca8a04,#a16207)', tag: '人気' },
-    { id: 504, name: 'ソウルマッコリ',        desc: '韓国伝統のお酒',              price: 560, photo: '🍶', photoBg: 'linear-gradient(135deg,#6d28d9,#5b21b6)' },
-    { id: 505, name: '翠ジンソーダ',          desc: '爽やかジンソーダ',            price: 530, photo: '🥤', photoBg: 'linear-gradient(135deg,#059669,#047857)' },
-    { id: 506, name: 'ウーロン茶',            desc: 'ソフトドリンク',              price: 450, photo: '🍵', photoBg: 'linear-gradient(135deg,#92400e,#78350f)' },
-  ],
-  side: [
-    { id: 601, name: '白雲台サラダ',     desc: '特製ドレッシング',             price: 800,  photo: '🥗', photoBg: 'linear-gradient(135deg,#16a34a,#15803d)', tag: '人気' },
-    { id: 602, name: '海鮮チヂミ',       desc: '海鮮たっぷりチヂミ',           price: 1100, photo: '🦑', photoBg: 'linear-gradient(135deg,#0284c7,#0369a1)' },
-    { id: 603, name: '炙りユッケ',       desc: '新鮮牛肉の炙りユッケ',         price: 800,  photo: '🥚', photoBg: 'linear-gradient(135deg,#ca8a04,#a16207)' },
-    { id: 604, name: 'サンチュ',         desc: '新鮮サンチュ',                 price: 580,  photo: '🥬', photoBg: 'linear-gradient(135deg,#15803d,#166534)' },
-    { id: 605, name: '焼き野菜盛り合わせ', desc: '季節野菜の盛り合わせ',       price: 520,  photo: '🫑', photoBg: 'linear-gradient(135deg,#65a30d,#4d7c0f)' },
-    { id: 606, name: '焼きにんにく',     desc: '香ばしい焼きにんにく',         price: 580,  photo: '🧄', photoBg: 'linear-gradient(135deg,#d97706,#b45309)' },
-  ],
-  shime: [
-    { id: 701, name: '手打ち冷麺',       desc: '牛骨スープ・さっぱり',         price: 1130, photo: '🍜', photoBg: 'linear-gradient(135deg,#0284c7,#0369a1)', tag: '人気' },
-    { id: 702, name: '全州石鍋ビビンバ', desc: 'おこげが香ばしい本格ビビンバ',  price: 1350, photo: '🍳', photoBg: 'linear-gradient(135deg,#dc2626,#b91c1c)' },
-    { id: 703, name: 'クッパ',           desc: '牛骨スープのおじや',           price: 800,  photo: '🍲', photoBg: 'linear-gradient(135deg,#d97706,#b45309)' },
-    { id: 704, name: 'チゲ',             desc: 'キムチorホルモンチゲ',         price: 960,  photo: '🫕', photoBg: 'linear-gradient(135deg,#dc2626,#991b1b)' },
-    { id: 705, name: 'テールスープ',     desc: '濃厚牛テールスープ',           price: 960,  photo: '🍵', photoBg: 'linear-gradient(135deg,#92400e,#78350f)' },
+  menu04: [
+    { id: 401, name: 'ザ・プレミアムモルツ', desc: '中ジョッキ・キンキン冷え',      price: 680,   photo: '🍺', photoBg: 'linear-gradient(135deg,#d97706,#b45309)', tag: '人気' },
+    { id: 402, name: '角ハイボール',        desc: 'サントリー角・ソーダ割り',        price: 580,   photo: '🥃', photoBg: 'linear-gradient(135deg,#475569,#334155)' },
+    { id: 403, name: 'レモンサワー',        desc: 'さっぱり爽快レモン',              price: 530,   photo: '🍋', photoBg: 'linear-gradient(135deg,#ca8a04,#a16207)', tag: '人気' },
+    { id: 404, name: 'ソウルマッコリ',      desc: '韓国伝統のお酒',                  price: 560,   photo: '🍶', photoBg: 'linear-gradient(135deg,#6d28d9,#5b21b6)' },
+    { id: 405, name: '翠ジンソーダ',        desc: '爽やかジンソーダ',                price: 530,   photo: '🥤', photoBg: 'linear-gradient(135deg,#059669,#047857)' },
+    { id: 406, name: 'ウーロン茶',          desc: 'ソフトドリンク',                  price: 450,   photo: '🍵', photoBg: 'linear-gradient(135deg,#92400e,#78350f)' },
+    { id: 407, name: 'オレンジシャーベット', desc: 'さっぱりデザート',               price: 450,   photo: '🍊', photoBg: 'linear-gradient(135deg,#ea580c,#c2410c)' },
+    { id: 408, name: 'マンゴーシャーベット', desc: '南国の甘みたっぷり',             price: 550,   photo: '🥭', photoBg: 'linear-gradient(135deg,#d97706,#b45309)' },
   ],
 }
 
 const ALL_ITEMS = Object.values(ORDER_MENU).flat()
 
 const ORDER_CATEGORIES = [
-  {
-    id: 'speed', label: 'スピードメニュー', color: '#dc2626', bg: '#fff1f2', border: '#fecdd3',
-    icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>,
-  },
-  {
-    id: 'recommend', label: 'おすすめ', color: '#eab308', bg: '#fefce8', border: '#fde68a',
-    icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>,
-  },
-  {
-    id: 'beef', label: '牛肉', color: '#b91c1c', bg: '#fff1f2', border: '#fecdd3',
-    icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z"/><path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z"/></svg>,
-  },
-  {
-    id: 'horumon', label: 'ホルモン', color: '#7c3aed', bg: '#f5f3ff', border: '#ddd6fe',
-    icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1 1 .03 2.798-1.16 2.798H3.96c-1.19 0-2.16-1.798-1.16-2.798L4 15.3"/></svg>,
-  },
-  {
-    id: 'drink', label: 'ドリンク', color: '#0ea5e9', bg: '#f0f9ff', border: '#bae6fd',
-    icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1 1 .03 2.798-1.16 2.798H3.96c-1.19 0-2.16-1.798-1.16-2.798L4 15.3"/></svg>,
-  },
-  {
-    id: 'side', label: 'サイドメニュー', color: '#d97706', bg: '#fefce8', border: '#fef08a',
-    icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513M15 21H9m6 0h2.25A2.25 2.25 0 0019.5 18.75v-2.892c0-.595-.232-1.165-.645-1.591l-1.2-1.278a.75.75 0 00-1.093.033L15 14.25m0 6.75V14.25m-6 6.75V14.25m0 0l-1.562-1.228a.75.75 0 00-1.093.033l-1.2 1.278A2.254 2.254 0 004.5 15.858v2.892A2.25 2.25 0 006.75 21H9"/></svg>,
-  },
-  {
-    id: 'shime', label: '締め', color: '#6366f1', bg: '#eef2ff', border: '#c7d2fe',
-    icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513M15 21H9m6 0h2.25A2.25 2.25 0 0019.5 18.75v-2.892c0-.595-.232-1.165-.645-1.591l-1.2-1.278a.75.75 0 00-1.093.033L15 14.25m0 6.75V14.25m-6 6.75V14.25m0 0l-1.562-1.228a.75.75 0 00-1.093.033l-1.2 1.278A2.254 2.254 0 004.5 15.858v2.892A2.25 2.25 0 006.75 21H9"/></svg>,
-  },
-  {
-    id: 'history', label: '注文履歴', color: '#6b7280', bg: '#f9fafb', border: '#e5e7eb',
-    icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>,
-  },
+  { id: 'menu01', label: 'コース・セット・ランチ', img: 'https://www.hakuundai.net/img/menu_list01.png' },
+  { id: 'menu02', label: '焼肉・ホルモン・その他', img: 'https://www.hakuundai.net/img/menu_list02.png' },
+  { id: 'menu03', label: '手打ち冷麺・一品メニュー', img: 'https://www.hakuundai.net/img/menu_list03.png' },
+  { id: 'menu04', label: 'ドリンク・デザート', img: 'https://www.hakuundai.net/img/menu_list04.png' },
 ]
 
 const CAT_LABEL: Record<string, string> = {
-  speed: 'スピードメニュー', recommend: '本日のおすすめ', beef: '牛肉',
-  horumon: 'ホルモン', drink: 'ドリンク', side: 'サイドメニュー', shime: '締め',
+  menu01: 'コース・セット・ランチ',
+  menu02: '焼肉・ホルモン・その他',
+  menu03: '手打ち冷麺・一品メニュー',
+  menu04: 'ドリンク・デザート',
 }
 
 export default function YakinikuPage() {
@@ -187,8 +155,8 @@ export default function YakinikuPage() {
 
   return (
     <>
-      <main className="min-h-dvh flex flex-col bg-[#edf1f7]">
-        <header className="neu-header py-3 shrink-0">
+      <main className="min-h-dvh flex flex-col bg-black">
+        <header className="bg-black border-b border-gray-800 py-3 shrink-0">
           <div className="max-w-lg mx-auto w-full px-3 flex items-center gap-2.5">
             <Link href="/" className="flex items-center gap-2">
               <img src={logoImage} alt="焼肉屋" style={{ height: '40px', width: 'auto' }} />
@@ -225,10 +193,10 @@ export default function YakinikuPage() {
           </div>
 
           {/* ━━ 音声注文 ━━ */}
-          <div className="card-light rounded-2xl px-4 py-3 flex items-center gap-3">
+          <div className="bg-gray-900 border border-gray-700 rounded-2xl px-4 py-3 flex items-center gap-3">
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-black text-gray-700">🎤 音声でかんたん注文</p>
-              <p className="text-[10px] text-gray-400 mt-0.5">「カルビ2つとレモンサワー」と話してください</p>
+              <p className="text-xs font-black text-gray-200">🎤 音声でかんたん注文</p>
+              <p className="text-[10px] text-gray-500 mt-0.5">「カルビ2つとレモンサワー」と話してください</p>
             </div>
             <VoiceOrderButton
               menu={ALL_ITEMS}
@@ -252,139 +220,91 @@ export default function YakinikuPage() {
           {/* ━━ クイックドリンク ━━ */}
           <div className="grid grid-cols-3 gap-[10px]">
             {[
-              { id: 501, label: 'とりあえず\nプレモル', emoji: '🍺', color: '#d97706', bg: '#fffbeb', border: '#fde68a' },
-              { id: 502, label: '角ハイボール', emoji: '🥃', color: '#475569', bg: '#f8fafc', border: '#e2e8f0' },
-              { id: 503, label: 'レモンサワー', emoji: '🍋', color: '#ca8a04', bg: '#fefce8', border: '#fef08a' },
+              { id: 501, label: 'とりあえず\nプレモル', emoji: '🍺', color: '#fbbf24', bg: '#1c1007', border: '#92400e' },
+              { id: 502, label: '角ハイボール', emoji: '🥃', color: '#94a3b8', bg: '#0f172a', border: '#334155' },
+              { id: 503, label: 'レモンサワー', emoji: '🍋', color: '#fde047', bg: '#1a1500', border: '#854d0e' },
             ].map((d) => (
               <button
                 key={d.id}
                 onClick={() => quickAdd(d.id, d.label.replace('\n', ''))}
-                className="card-light flex flex-col items-center justify-center gap-1.5 active:scale-95 transition-transform duration-150 py-3 px-1 min-h-[90px]"
+                className="rounded-[20px] border flex flex-col items-center justify-center gap-1.5 active:scale-95 transition-transform duration-150 py-3 px-1 min-h-[90px]"
                 style={{ background: d.bg, borderColor: d.border }}
               >
                 <span className="text-3xl leading-none">{d.emoji}</span>
                 <p className="font-bold text-[11px] leading-tight text-center whitespace-pre-line" style={{ color: d.color }}>{d.label}</p>
-                <span className="text-[9px] text-gray-400 font-semibold bg-white/70 px-1.5 py-0.5 rounded-full">1タップ注文</span>
+                <span className="text-[9px] text-gray-500 font-semibold px-1.5 py-0.5 rounded-full">1タップ注文</span>
               </button>
             ))}
           </div>
 
           {/* ━━ メニュー & サービス ━━ */}
           <div className="grid grid-cols-2 gap-[10px]">
-            {/* 本日のおすすめ */}
-            <button onClick={() => openCat('recommend')}
-              className="card-light flex items-center gap-3 p-3.5 active:scale-95 transition-transform duration-150"
-              style={{ background: '#fefce8', borderColor: '#fde68a' }}>
-              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 neu-icon" style={{ background: iconGradient('#eab308'), color: '#fff' }}>
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>
-              </div>
-              <div className="text-left">
-                <p className="font-bold text-gray-800 text-sm leading-tight">本日のおすすめ</p>
-                <p className="text-[10px] text-gray-400 leading-tight">今日の一品</p>
-              </div>
-            </button>
-
-            {/* スピードメニュー */}
-            <button onClick={() => openCat('speed')}
-              className="card-light flex items-center gap-3 p-3.5 active:scale-95 transition-transform duration-150"
-              style={{ background: '#fff1f2', borderColor: '#fecdd3' }}>
-              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 neu-icon" style={{ background: iconGradient('#dc2626'), color: '#fff' }}>
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
-              </div>
-              <div className="text-left">
-                <p className="font-bold text-gray-800 text-sm leading-tight">スピードメニュー</p>
-                <p className="text-[10px] text-gray-400 leading-tight">すぐ出てくる</p>
-              </div>
-            </button>
-
-            {/* 牛肉 */}
-            <button onClick={() => openCat('beef')}
-              className="card-light flex items-center gap-3 p-3.5 active:scale-95 transition-transform duration-150"
-              style={{ background: '#fff1f2', borderColor: '#fecdd3' }}>
-              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 neu-icon" style={{ background: iconGradient('#b91c1c'), color: '#fff' }}>
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z"/><path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z"/></svg>
-              </div>
-              <div className="text-left">
-                <p className="font-bold text-gray-800 text-sm leading-tight">牛肉</p>
-                <p className="text-[10px] text-gray-400 leading-tight">カルビ・ロース・タンなど</p>
-              </div>
-            </button>
-
-            {/* ホルモン */}
-            <button onClick={() => openCat('horumon')}
-              className="card-light flex items-center gap-3 p-3.5 active:scale-95 transition-transform duration-150"
-              style={{ background: '#f5f3ff', borderColor: '#ddd6fe' }}>
-              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 neu-icon" style={{ background: iconGradient('#7c3aed'), color: '#fff' }}>
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1 1 .03 2.798-1.16 2.798H3.96c-1.19 0-2.16-1.798-1.16-2.798L4 15.3"/></svg>
-              </div>
-              <div className="text-left">
-                <p className="font-bold text-gray-800 text-sm leading-tight">ホルモン</p>
-                <p className="text-[10px] text-gray-400 leading-tight">シマチョウ・ミノなど</p>
-              </div>
-            </button>
-
-            {/* 締め */}
-            <button onClick={() => openCat('shime')}
-              className="card-light flex items-center gap-3 p-3.5 active:scale-95 transition-transform duration-150"
-              style={{ background: '#eef2ff', borderColor: '#c7d2fe' }}>
-              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 neu-icon" style={{ background: iconGradient('#6366f1'), color: '#fff' }}>
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513M15 21H9m6 0h2.25A2.25 2.25 0 0019.5 18.75v-2.892c0-.595-.232-1.165-.645-1.591l-1.2-1.278a.75.75 0 00-1.093.033L15 14.25m0 6.75V14.25m-6 6.75V14.25m0 0l-1.562-1.228a.75.75 0 00-1.093.033l-1.2 1.278A2.254 2.254 0 004.5 15.858v2.892A2.25 2.25 0 006.75 21H9"/></svg>
-              </div>
-              <div className="text-left">
-                <p className="font-bold text-gray-800 text-sm leading-tight">締め</p>
-                <p className="text-[10px] text-gray-400 leading-tight">冷麺・ビビンバなど</p>
-              </div>
-            </button>
+            {/* 4カテゴリ画像ボタン */}
+            {ORDER_CATEGORIES.map(cat => (
+              <button
+                key={cat.id}
+                onClick={() => openCat(cat.id)}
+                className="rounded-xl overflow-hidden active:scale-95 transition-transform duration-150 border border-gray-700 flex flex-col"
+                style={{ aspectRatio: '1/1' }}
+              >
+                <div className="bg-black px-2 py-3 shrink-0 border-b border-gray-700">
+                  <p className="text-[#cc2200] font-bold text-[22px] text-center leading-tight tracking-wide">{cat.label}</p>
+                </div>
+                <div className="flex-1 overflow-hidden">
+                  <img src={cat.img} alt={cat.label} className="w-full h-full object-cover object-bottom" />
+                </div>
+              </button>
+            ))}
 
             {/* スタッフ呼び出し */}
             <button onClick={() => setPanel('staff')}
-              className="card-light flex items-center gap-3 p-3.5 active:scale-95 transition-transform duration-150"
-              style={{ background: '#f0f9ff', borderColor: '#bae6fd' }}>
-              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 neu-icon" style={{ background: iconGradient('#0ea5e9'), color: '#fff' }}>
+              className="rounded-[20px] border flex items-center gap-3 p-3.5 active:scale-95 transition-transform duration-150"
+              style={{ background: '#0c1a2e', borderColor: '#1e3a5f' }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg,#0ea5e9,#0369a1)', color: '#fff' }}>
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
               </div>
               <div className="text-left">
-                <p className="font-bold text-gray-800 text-sm leading-tight">スタッフ呼び出し</p>
-                <p className="text-[10px] text-gray-400 leading-tight">スタッフを呼ぶ</p>
+                <p className="font-bold text-gray-200 text-sm leading-tight">スタッフ呼び出し</p>
+                <p className="text-[10px] text-gray-500 leading-tight">スタッフを呼ぶ</p>
               </div>
             </button>
 
             {/* クーポン */}
             <button onClick={() => setPanel('coupons')}
-              className="card-light flex items-center gap-3 p-3.5 active:scale-95 transition-transform duration-150"
-              style={{ background: '#f0fdf4', borderColor: '#bbf7d0' }}>
-              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 neu-icon" style={{ background: iconGradient('#22c55e'), color: '#fff' }}>
+              className="rounded-[20px] border flex items-center gap-3 p-3.5 active:scale-95 transition-transform duration-150"
+              style={{ background: '#0a1f0a', borderColor: '#1a4d1a' }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg,#22c55e,#15803d)', color: '#fff' }}>
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0c1.1.128 1.907 1.077 1.907 2.185zM9.75 9h.008v.008H9.75V9zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm4.125 4.5h.008v.008h-.008V13.5zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
               </div>
               <div className="text-left">
-                <p className="font-bold text-gray-800 text-sm leading-tight">クーポン</p>
-                <p className="text-[10px] text-gray-400 leading-tight">割引クーポンを見る</p>
+                <p className="font-bold text-gray-200 text-sm leading-tight">クーポン</p>
+                <p className="text-[10px] text-gray-500 leading-tight">割引クーポンを見る</p>
               </div>
             </button>
 
             {/* WiFi接続 */}
             <button onClick={() => setPanel('wifi')}
-              className="card-light flex items-center gap-3 p-3.5 active:scale-95 transition-transform duration-150"
-              style={{ background: '#f0f9ff', borderColor: '#bae6fd' }}>
-              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 neu-icon" style={{ background: iconGradient('#0ea5e9'), color: '#fff' }}>
+              className="rounded-[20px] border flex items-center gap-3 p-3.5 active:scale-95 transition-transform duration-150"
+              style={{ background: '#0c1a2e', borderColor: '#1e3a5f' }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg,#0ea5e9,#0369a1)', color: '#fff' }}>
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.288 15.038a5.25 5.25 0 017.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 011.06 0z"/></svg>
               </div>
               <div className="text-left">
-                <p className="font-bold text-gray-800 text-sm leading-tight">WiFi接続</p>
-                <p className="text-[10px] text-gray-400 leading-tight">フリーWiFiに接続</p>
+                <p className="font-bold text-gray-200 text-sm leading-tight">WiFi接続</p>
+                <p className="text-[10px] text-gray-500 leading-tight">フリーWiFiに接続</p>
               </div>
             </button>
 
             {/* 店舗情報 */}
             <button onClick={() => setPanel('store')}
-              className="card-light col-span-2 flex items-center gap-3 p-3.5 active:scale-95 transition-transform duration-150"
-              style={{ background: '#f0fdfa', borderColor: '#99f6e4' }}>
-              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 neu-icon" style={{ background: iconGradient('#14b8a6'), color: '#fff' }}>
+              className="rounded-[20px] border col-span-2 flex items-center gap-3 p-3.5 active:scale-95 transition-transform duration-150"
+              style={{ background: '#0a1f1e', borderColor: '#134e4a' }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg,#14b8a6,#0f766e)', color: '#fff' }}>
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .415.336.75.75.75z"/></svg>
               </div>
               <div className="text-left">
-                <p className="font-bold text-gray-800 text-sm leading-tight">店舗情報</p>
-                <p className="text-[10px] text-gray-400 leading-tight">住所・営業時間など</p>
+                <p className="font-bold text-gray-200 text-sm leading-tight">店舗情報</p>
+                <p className="text-[10px] text-gray-500 leading-tight">住所・営業時間など</p>
               </div>
             </button>
           </div>
@@ -392,13 +312,13 @@ export default function YakinikuPage() {
           {/* お会計 — 全幅 */}
           <button
             onClick={() => setPanel('payment')}
-            className="card-light flex items-center justify-center gap-3 p-4 active:scale-95 transition-transform duration-150"
-            style={{ background: '#f0fdf4', borderColor: '#bbf7d0' }}
+            className="rounded-[20px] border flex items-center justify-center gap-3 p-4 active:scale-95 transition-transform duration-150"
+            style={{ background: '#0a1f0a', borderColor: '#1a4d1a' }}
           >
-            <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 neu-icon" style={{ background: iconGradient('#16a34a'), color: '#fff' }}>
+            <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg,#16a34a,#15803d)', color: '#fff' }}>
               <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"/></svg>
             </div>
-            <p className="font-black text-green-700 text-base">お会計</p>
+            <p className="font-black text-green-400 text-base">お会計</p>
           </button>
 
           {/* 広告スペース */}
@@ -440,12 +360,16 @@ export default function YakinikuPage() {
                       {ORDER_CATEGORIES.map((cat) => (
                         <button
                           key={cat.id}
-                          onClick={() => cat.id !== 'history' && setOrderCat(cat.id)}
-                          className="flex items-center gap-3 p-3 rounded-xl border active:scale-95 transition-transform duration-150 text-left"
-                          style={{ background: cat.bg, borderColor: cat.border }}
+                          onClick={() => setOrderCat(cat.id)}
+                          className="rounded-xl overflow-hidden active:scale-95 transition-transform duration-150 border border-gray-700 flex flex-col"
+                          style={{ aspectRatio: '1/1' }}
                         >
-                          <span style={{ color: cat.color }}>{cat.icon}</span>
-                          <span className="font-semibold text-gray-800 text-sm leading-tight">{cat.label}</span>
+                          <div className="bg-black px-2 py-3 shrink-0 border-b border-gray-700">
+                            <p className="text-[#cc2200] font-bold text-[22px] text-center leading-tight tracking-wide">{cat.label}</p>
+                          </div>
+                          <div className="flex-1 overflow-hidden">
+                            <img src={cat.img} alt={cat.label} className="w-full h-full object-cover object-bottom" />
+                          </div>
                         </button>
                       ))}
                     </div>
