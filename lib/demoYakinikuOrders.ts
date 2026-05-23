@@ -16,6 +16,7 @@ export type DemoOrder = {
   status: OrderStatus
   placedAt: number
   total: number
+  checkedItemIds: string[]
 }
 
 export function getDemoOrders(): DemoOrder[] {
@@ -34,6 +35,7 @@ export function getDemoOrders(): DemoOrder[] {
       status: 'new',
       placedAt: ago(2),
       total: 5960,
+      checkedItemIds: [],
     },
     {
       id: 'ord-002',
@@ -47,6 +49,7 @@ export function getDemoOrders(): DemoOrder[] {
       status: 'cooking',
       placedAt: ago(8),
       total: 7990,
+      checkedItemIds: [],
     },
     {
       id: 'ord-003',
@@ -58,6 +61,7 @@ export function getDemoOrders(): DemoOrder[] {
       status: 'new',
       placedAt: ago(1),
       total: 1480,
+      checkedItemIds: [],
     },
     {
       id: 'ord-004',
@@ -71,6 +75,7 @@ export function getDemoOrders(): DemoOrder[] {
       status: 'served',
       placedAt: ago(20),
       total: 5190,
+      checkedItemIds: [],
     },
     {
       id: 'ord-005',
@@ -85,6 +90,7 @@ export function getDemoOrders(): DemoOrder[] {
       status: 'new',
       placedAt: ago(3),
       total: 13940,
+      checkedItemIds: [],
     },
     {
       id: 'ord-006',
@@ -97,6 +103,7 @@ export function getDemoOrders(): DemoOrder[] {
       status: 'cooking',
       placedAt: ago(12),
       total: 3310,
+      checkedItemIds: [],
     },
     {
       id: 'ord-007',
@@ -109,6 +116,7 @@ export function getDemoOrders(): DemoOrder[] {
       status: 'new',
       placedAt: ago(4),
       total: 2630,
+      checkedItemIds: [],
     },
   ]
 }

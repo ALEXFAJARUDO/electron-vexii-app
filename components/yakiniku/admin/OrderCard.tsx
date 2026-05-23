@@ -41,13 +41,16 @@ const BORDER_BY_STATUS: Record<OrderStatus, string> = {
 export default function OrderCard({
   order,
   onUpdateStatus,
+  onToggleItem,
 }: {
   order: DemoOrder
   onUpdateStatus: (id: string, status: OrderStatus) => void
+  onToggleItem: (orderId: string, itemId: string) => void
 }) {
   const foodItems  = order.items.filter(i => i.category === 'food')
   const drinkItems = order.items.filter(i => i.category === 'drink')
   const actions    = NEXT_STATUS[order.status] ?? []
+  const checked    = order.checkedItemIds ?? []
 
   return (
     <div className={`rounded-2xl border bg-[#111] flex flex-col gap-0 overflow-hidden ${BORDER_BY_STATUS[order.status]}`}>
@@ -67,23 +70,47 @@ export default function OrderCard({
         {foodItems.length > 0 && (
           <>
             <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">🍖 フード</p>
-            {foodItems.map(item => (
-              <div key={item.id} className="flex justify-between text-sm">
-                <span className="text-gray-200">{item.name} <span className="text-gray-400">×{item.qty}</span></span>
-                <span className="text-gray-400">¥{(item.price * item.qty).toLocaleString()}</span>
-              </div>
-            ))}
+            {foodItems.map(item => {
+              const done = checked.includes(item.id)
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => onToggleItem(order.id, item.id)}
+                  className="w-full flex items-center justify-between text-sm gap-2 py-0.5 group"
+                >
+                  <span className={`flex items-center gap-2 ${done ? 'line-through text-gray-600' : 'text-gray-200'}`}>
+                    <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${done ? 'bg-green-600 border-green-600' : 'border-gray-500 group-hover:border-green-400'}`}>
+                      {done && <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>}
+                    </span>
+                    {item.name} <span className="text-gray-500">×{item.qty}</span>
+                  </span>
+                  <span className={done ? 'text-gray-600' : 'text-gray-400'}>¥{(item.price * item.qty).toLocaleString()}</span>
+                </button>
+              )
+            })}
           </>
         )}
         {drinkItems.length > 0 && (
           <>
             <p className="text-[10px] text-gray-500 uppercase tracking-wider mt-2 mb-1">🍺 ドリンク</p>
-            {drinkItems.map(item => (
-              <div key={item.id} className="flex justify-between text-sm">
-                <span className="text-gray-200">{item.name} <span className="text-gray-400">×{item.qty}</span></span>
-                <span className="text-gray-400">¥{(item.price * item.qty).toLocaleString()}</span>
-              </div>
-            ))}
+            {drinkItems.map(item => {
+              const done = checked.includes(item.id)
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => onToggleItem(order.id, item.id)}
+                  className="w-full flex items-center justify-between text-sm gap-2 py-0.5 group"
+                >
+                  <span className={`flex items-center gap-2 ${done ? 'line-through text-gray-600' : 'text-gray-200'}`}>
+                    <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${done ? 'bg-green-600 border-green-600' : 'border-gray-500 group-hover:border-green-400'}`}>
+                      {done && <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>}
+                    </span>
+                    {item.name} <span className="text-gray-500">×{item.qty}</span>
+                  </span>
+                  <span className={done ? 'text-gray-600' : 'text-gray-400'}>¥{(item.price * item.qty).toLocaleString()}</span>
+                </button>
+              )
+            })}
           </>
         )}
       </div>

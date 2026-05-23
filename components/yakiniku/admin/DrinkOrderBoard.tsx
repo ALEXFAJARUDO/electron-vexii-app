@@ -19,12 +19,15 @@ function MinAgo({ placedAt }: { placedAt: number }) {
 function DrinkCard({
   order,
   onUpdateStatus,
+  onToggleItem,
 }: {
   order: DemoOrder
   onUpdateStatus: (id: string, status: OrderStatus) => void
+  onToggleItem: (orderId: string, itemId: string) => void
 }) {
   const drinkItems = order.items.filter(i => i.category === 'drink')
-  const isNew = order.status === 'new'
+  const isNew    = order.status === 'new'
+  const checked  = order.checkedItemIds ?? []
 
   return (
     <div className={`rounded-2xl border flex items-stretch gap-0 overflow-hidden
@@ -38,18 +41,30 @@ function DrinkCard({
         <span className="text-[10px] text-gray-500 mt-0.5">席</span>
       </div>
 
-      {/* Drink items */}
-      <div className="flex-1 px-4 py-3 flex flex-col justify-center gap-1">
+      {/* Drink items with checkboxes */}
+      <div className="flex-1 px-4 py-3 flex flex-col justify-center gap-2">
         <div className="flex items-center gap-2 mb-1">
           <OrderStatusBadge status={order.status} />
           <span className="text-xs text-gray-500"><MinAgo placedAt={order.placedAt} /></span>
         </div>
-        {drinkItems.map(item => (
-          <div key={item.id} className="flex items-center justify-between">
-            <span className="text-base font-bold text-white">{item.name}</span>
-            <span className={`text-lg font-black ml-3 ${isNew ? 'text-amber-300' : 'text-blue-300'}`}>×{item.qty}</span>
-          </div>
-        ))}
+        {drinkItems.map(item => {
+          const done = checked.includes(item.id)
+          return (
+            <button
+              key={item.id}
+              onClick={() => onToggleItem(order.id, item.id)}
+              className="flex items-center justify-between gap-3 group"
+            >
+              <span className={`flex items-center gap-2 text-base font-bold transition-colors ${done ? 'line-through text-gray-600' : 'text-white'}`}>
+                <span className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${done ? 'bg-green-600 border-green-600' : 'border-gray-500 group-hover:border-green-400'}`}>
+                  {done && <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>}
+                </span>
+                {item.name}
+              </span>
+              <span className={`text-lg font-black ml-3 shrink-0 ${done ? 'text-gray-600' : isNew ? 'text-amber-300' : 'text-blue-300'}`}>×{item.qty}</span>
+            </button>
+          )
+        })}
       </div>
 
       {/* Actions */}
@@ -76,7 +91,7 @@ function DrinkCard({
 }
 
 export default function DrinkOrderBoard() {
-  const { orders, updateStatus, loaded } = useYakinikuOrders()
+  const { orders, updateStatus, toggleItemChecked, loaded } = useYakinikuOrders()
 
   const drinkOrders = orders
     .filter(o => o.status === 'new' || o.status === 'cooking')
@@ -130,7 +145,7 @@ export default function DrinkOrderBoard() {
         ) : (
           <div className="flex flex-col gap-3 max-w-3xl mx-auto">
             {drinkOrders.map(order => (
-              <DrinkCard key={order.id} order={order} onUpdateStatus={updateStatus} />
+              <DrinkCard key={order.id} order={order} onUpdateStatus={updateStatus} onToggleItem={toggleItemChecked} />
             ))}
           </div>
         )}

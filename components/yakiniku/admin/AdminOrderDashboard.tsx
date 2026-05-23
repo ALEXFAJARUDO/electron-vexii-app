@@ -17,7 +17,7 @@ const FILTERS: { value: Filter; label: string }[] = [
 ]
 
 export default function AdminOrderDashboard() {
-  const { orders, updateStatus, resetToDemo, loaded } = useYakinikuOrders()
+  const { orders, updateStatus, toggleItemChecked, resetToDemo, loaded } = useYakinikuOrders()
   const [filter, setFilter] = useState<Filter>('all')
 
   const filtered = filter === 'all' ? orders : orders.filter(o => o.status === filter)
@@ -85,7 +85,7 @@ export default function AdminOrderDashboard() {
         ) : (
           <div className="grid grid-cols-3 gap-4">
             {sorted.map(order => (
-              <OrderCard key={order.id} order={order} onUpdateStatus={updateStatus} />
+              <OrderCard key={order.id} order={order} onUpdateStatus={updateStatus} onToggleItem={toggleItemChecked} />
             ))}
           </div>
         )}

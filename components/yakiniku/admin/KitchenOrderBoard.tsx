@@ -26,12 +26,15 @@ function ElapsedTimer({ placedAt }: { placedAt: number }) {
 function KitchenCard({
   order,
   onUpdateStatus,
+  onToggleItem,
 }: {
   order: DemoOrder
   onUpdateStatus: (id: string, status: OrderStatus) => void
+  onToggleItem: (orderId: string, itemId: string) => void
 }) {
   const foodItems = order.items.filter(i => i.category === 'food')
   const isNew     = order.status === 'new'
+  const checked   = order.checkedItemIds ?? []
 
   return (
     <div className={`rounded-2xl border flex flex-col overflow-hidden transition-all
@@ -49,14 +52,26 @@ function KitchenCard({
         <ElapsedTimer placedAt={order.placedAt} />
       </div>
 
-      {/* Food items */}
-      <div className="px-5 py-4 flex-1 space-y-2">
-        {foodItems.map(item => (
-          <div key={item.id} className="flex items-center justify-between">
-            <span className="text-xl font-bold text-white">{item.name}</span>
-            <span className={`text-2xl font-black ${isNew ? 'text-red-300' : 'text-blue-300'}`}>×{item.qty}</span>
-          </div>
-        ))}
+      {/* Food items with checkboxes */}
+      <div className="px-5 py-4 flex-1 space-y-3">
+        {foodItems.map(item => {
+          const done = checked.includes(item.id)
+          return (
+            <button
+              key={item.id}
+              onClick={() => onToggleItem(order.id, item.id)}
+              className="w-full flex items-center justify-between gap-3 group"
+            >
+              <span className={`flex items-center gap-3 text-xl font-bold transition-colors ${done ? 'line-through text-gray-600' : 'text-white'}`}>
+                <span className={`w-6 h-6 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${done ? 'bg-green-600 border-green-600' : 'border-gray-500 group-hover:border-green-400'}`}>
+                  {done && <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>}
+                </span>
+                {item.name}
+              </span>
+              <span className={`text-2xl font-black shrink-0 ${done ? 'text-gray-600' : isNew ? 'text-red-300' : 'text-blue-300'}`}>×{item.qty}</span>
+            </button>
+          )
+        })}
       </div>
 
       {/* Actions */}
@@ -91,7 +106,7 @@ function KitchenCard({
 }
 
 export default function KitchenOrderBoard() {
-  const { orders, updateStatus, loaded } = useYakinikuOrders()
+  const { orders, updateStatus, toggleItemChecked, loaded } = useYakinikuOrders()
 
   const kitchenOrders = orders
     .filter(o => o.status === 'new' || o.status === 'cooking')
@@ -145,7 +160,7 @@ export default function KitchenOrderBoard() {
         ) : (
           <div className="grid grid-cols-3 gap-5">
             {kitchenOrders.map(order => (
-              <KitchenCard key={order.id} order={order} onUpdateStatus={updateStatus} />
+              <KitchenCard key={order.id} order={order} onUpdateStatus={updateStatus} onToggleItem={toggleItemChecked} />
             ))}
           </div>
         )}
