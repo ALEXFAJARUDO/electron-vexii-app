@@ -477,8 +477,9 @@ export default function YakinikuPage() {
                       ))}
                     </div>
                     {orderPlaced && (
-                      <div className="mt-4 w-full py-4 rounded-xl bg-green-500 text-white font-bold text-sm text-center">
-                        ✓ ご注文を受け付けました！
+                      <div className="mt-4 w-full py-4 rounded-xl bg-green-500 text-white font-bold text-sm text-center space-y-1">
+                        <p>✓ ご注文を受け付けました！</p>
+                        <p className="text-xs text-green-100 font-normal">店舗側のiPadに送信されました 🍳</p>
                       </div>
                     )}
                   </div>
