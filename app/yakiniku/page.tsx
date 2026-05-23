@@ -206,7 +206,46 @@ export default function YakinikuPage() {
   function remItem(id: number) { setCart(p => ({ ...p, [id]: Math.max(0, (p[id] ?? 0) - 1) })) }
 
   function quickAdd(id: number, name: string) {
-    addItem(id)
+    const item = ALL_ITEMS.find(i => i.id === id)
+    if (!item) return
+
+    const now = Date.now()
+    const orderId = `q-${now}`
+    const adminItem = {
+      id: `${orderId}-${id}`,
+      name: item.name,
+      qty: 1,
+      price: item.price,
+      category: id >= 400 && id < 500 ? 'drink' : 'food',
+    }
+    const adminOrder = {
+      id: orderId,
+      tableId,
+      items: [adminItem],
+      status: 'new',
+      placedAt: now,
+      total: item.price,
+      checkedItemIds: [],
+    }
+    try {
+      const raw = localStorage.getItem('yakiniku_admin_orders')
+      const current = raw ? JSON.parse(raw) : []
+      localStorage.setItem('yakiniku_admin_orders', JSON.stringify([...current, adminOrder]))
+    } catch {}
+
+    const entry: HistoryEntry = {
+      id: orderId,
+      tableId,
+      items: [{ name: item.name, price: item.price, qty: 1 }],
+      total: item.price,
+      placedAt: now,
+    }
+    setOrderHistory(prev => {
+      const next = [entry, ...prev]
+      try { localStorage.setItem('yakiniku_order_history', JSON.stringify(next)) } catch {}
+      return next
+    })
+
     setQuickAdded(name)
     setTimeout(() => setQuickAdded(null), 1800)
   }
@@ -326,7 +365,7 @@ export default function YakinikuPage() {
           {/* クイック追加トースト */}
           {quickAdded && (
             <div className="fixed top-20 left-1/2 -translate-x-1/2 z-40 bg-gray-900 text-white text-sm font-bold px-4 py-2.5 rounded-xl shadow-lg">
-              🥩 {quickAdded} をカートに追加しました
+              🍹 {quickAdded} を注文しました
             </div>
           )}
 
