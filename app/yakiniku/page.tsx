@@ -5,8 +5,9 @@ import BarcodeModal from '@/components/BarcodeModal'
 import VoiceOrderButton from '@/components/restaurant/VoiceOrderButton'
 import { type ParsedItem } from '@/lib/voiceCommandParser'
 
-type PanelId = 'wifi' | 'coupons' | 'order' | 'ad' | 'app' | 'store' | 'staff' | 'payment'
+type PanelId = 'wifi' | 'coupons' | 'order' | 'ad' | 'app' | 'store' | 'staff' | 'payment' | 'history'
 type OrderItem = { id: number; name: string; desc: string; price: number; photo: string; photoBg: string; photoUrl?: string; keywords?: string[]; tag?: string }
+type HistoryEntry = { id: string; tableId: string; items: { name: string; price: number; qty: number }[]; total: number; placedAt: number }
 
 const DEMO_WIFI = { ssid: 'HAKUUNDAI_WIFI', password: 'hakuundai2024' }
 
@@ -159,6 +160,7 @@ export default function YakinikuPage() {
   const [cart, setCart] = useState<Record<number, number>>({})
   const [orderPlaced, setOrderPlaced] = useState(false)
   const [quickAdded, setQuickAdded] = useState<string | null>(null)
+  const [orderHistory, setOrderHistory] = useState<HistoryEntry[]>([])
   const [tableId, setTableId] = useState<string>('')
   const [showTableModal, setShowTableModal] = useState(false)
   const [tableInput, setTableInput] = useState('')
@@ -179,6 +181,13 @@ export default function YakinikuPage() {
         if (cfg.logoImage) setLogoImage(cfg.logoImage)
         if (cfg.kvImage) setKvImage(cfg.kvImage)
       }
+    } catch {}
+  }, [])
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('yakiniku_order_history')
+      if (raw) setOrderHistory(JSON.parse(raw))
     } catch {}
   }, [])
 
@@ -205,6 +214,20 @@ export default function YakinikuPage() {
   function openCat(cat: string) { setPanel('order'); setOrderCat(cat) }
 
   async function placeOrder() {
+    const orderedItems = ALL_ITEMS
+      .filter(i => (cart[i.id] ?? 0) > 0)
+      .map(i => ({ name: i.name, price: i.price, qty: cart[i.id] }))
+    const entry: HistoryEntry = {
+      id: Date.now().toString(),
+      tableId,
+      items: orderedItems,
+      total: cartTotal,
+      placedAt: Date.now(),
+    }
+    const newHistory = [entry, ...orderHistory]
+    setOrderHistory(newHistory)
+    localStorage.setItem('yakiniku_order_history', JSON.stringify(newHistory))
+
     setOrderPlaced(true)
     setTimeout(() => {
       setCart({})
@@ -359,6 +382,19 @@ export default function YakinikuPage() {
               <div className="text-left">
                 <p className="font-bold text-gray-200 text-sm leading-tight">WiFi接続</p>
                 <p className="text-[10px] text-gray-500 leading-tight">フリーWiFiに接続</p>
+              </div>
+            </button>
+
+            {/* 注文履歴 */}
+            <button onClick={() => setPanel('history')}
+              className="rounded-[20px] border flex items-center gap-3 p-3.5 active:scale-95 transition-transform duration-150"
+              style={{ background: '#0f0a2e', borderColor: '#2d1f6e' }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg,#7c3aed,#5b21b6)', color: '#fff' }}>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </div>
+              <div className="text-left">
+                <p className="font-bold text-gray-200 text-sm leading-tight">注文履歴</p>
+                <p className="text-[10px] text-gray-500 leading-tight">過去の注文を確認</p>
               </div>
             </button>
 
@@ -609,6 +645,56 @@ export default function YakinikuPage() {
                 >
                   お会計をお願いする
                 </button>
+              </div>
+            )}
+
+            {/* ===== 注文履歴 ===== */}
+            {panel === 'history' && (
+              <div className="px-5 pb-8">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-violet-500" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                  </div>
+                  <h2 className="font-bold text-gray-900 text-lg">注文履歴</h2>
+                </div>
+                {orderHistory.length === 0 ? (
+                  <p className="text-center text-gray-400 text-sm py-10">まだ注文履歴はありません</p>
+                ) : (
+                  <div className="space-y-3">
+                    {orderHistory.map((entry) => (
+                      <div key={entry.id} className="bg-gray-50 border border-gray-100 rounded-2xl p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-xs text-gray-400">
+                            {new Date(entry.placedAt).toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                          {entry.tableId && (
+                            <span className="text-[10px] bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-bold">席 {entry.tableId}</span>
+                          )}
+                        </div>
+                        <div className="space-y-1 mb-3">
+                          {entry.items.map((it, i) => (
+                            <div key={i} className="flex justify-between text-xs">
+                              <span className="text-gray-700">{it.name} × {it.qty}</span>
+                              <span className="text-gray-500">¥{(it.price * it.qty).toLocaleString()}</span>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="flex justify-between border-t border-gray-200 pt-2">
+                          <span className="text-xs font-bold text-gray-600">合計</span>
+                          <span className="text-sm font-black text-red-600">¥{entry.total.toLocaleString()}</span>
+                        </div>
+                      </div>
+                    ))}
+                    <button
+                      onClick={() => { setOrderHistory([]); localStorage.removeItem('yakiniku_order_history') }}
+                      className="w-full py-2.5 rounded-xl border border-gray-200 text-gray-400 text-xs font-bold active:bg-gray-50"
+                    >
+                      履歴をすべてクリア
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 
