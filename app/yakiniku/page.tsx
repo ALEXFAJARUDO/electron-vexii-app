@@ -9,7 +9,7 @@ import { type ParsedItem } from '@/lib/voiceCommandParser'
 type PanelId = 'wifi' | 'coupons' | 'order' | 'ad' | 'app' | 'store' | 'staff' | 'payment'
 type OrderItem = { id: number; name: string; desc: string; price: number; photo: string; photoBg: string; tag?: string }
 
-const DEMO_WIFI = { ssid: 'YAKINIKU_WIFI', password: 'yakiniku2024' }
+const DEMO_WIFI = { ssid: 'HAKUUNDAI_WIFI', password: 'hakuundai2024' }
 
 const COUPONS = [
   { id: 1, title: 'カルビ1皿無料', code: 'KARUBI1', expires: '2026/05/31' },
@@ -19,49 +19,58 @@ const COUPONS = [
 
 const ORDER_MENU: Record<string, OrderItem[]> = {
   speed: [
-    { id: 101, name: 'キムチ',     desc: '自家製白菜キムチ',                 price: 380, photo: '🥬', photoBg: 'linear-gradient(135deg,#dc2626,#b91c1c)' },
-    { id: 102, name: 'ナムル盛り', desc: 'ほうれん草・もやし・ぜんまい',     price: 380, photo: '🥗', photoBg: 'linear-gradient(135deg,#16a34a,#15803d)' },
-    { id: 103, name: 'チャンジャ', desc: 'タラの塩辛・ピリ辛',               price: 480, photo: '🌶️', photoBg: 'linear-gradient(135deg,#dc2626,#991b1b)' },
-    { id: 104, name: 'センマイ刺し', desc: '新鮮なセンマイ・ごまだれ',       price: 480, photo: '🐄', photoBg: 'linear-gradient(135deg,#7c3aed,#6d28d9)' },
+    { id: 101, name: 'キムチ盛り合わせ', desc: '白菜・カクテキ・オイキムチ',         price: 740,  photo: '🥬', photoBg: 'linear-gradient(135deg,#dc2626,#b91c1c)' },
+    { id: 102, name: '白菜キムチ',       desc: '自家製白菜キムチ',                   price: 470,  photo: '🥬', photoBg: 'linear-gradient(135deg,#b91c1c,#991b1b)' },
+    { id: 103, name: 'ナムル4種盛り',    desc: 'ほうれん草・もやし・ぜんまい・わらび', price: 580, photo: '🥗', photoBg: 'linear-gradient(135deg,#16a34a,#15803d)' },
+    { id: 104, name: 'チョレギサラダ',   desc: 'ごまドレッシング',                   price: 690,  photo: '🥗', photoBg: 'linear-gradient(135deg,#65a30d,#4d7c0f)' },
   ],
   recommend: [
-    { id: 201, name: '厚切りタン塩',   desc: '国産牛タン・レモン添え',         price: 1680, photo: '🥩', photoBg: 'linear-gradient(135deg,#b45309,#92400e)', tag: '人気' },
-    { id: 202, name: '上カルビ',        desc: 'A5黒毛和牛・特製たれ',          price: 1980, photo: '🥩', photoBg: 'linear-gradient(135deg,#dc2626,#991b1b)', tag: 'NEW' },
-    { id: 203, name: '特選ハラミ',      desc: '柔らか外国産ハラミ',             price: 1280, photo: '🥩', photoBg: 'linear-gradient(135deg,#92400e,#78350f)' },
-    { id: 204, name: '神戸牛サーロイン', desc: 'A5ランク神戸牛',                price: 4800, photo: '🥩', photoBg: 'linear-gradient(135deg,#b91c1c,#991b1b)', tag: '特選' },
-    { id: 205, name: 'ユッケ',          desc: '新鮮牛肉・卵黄のせ',             price: 980,  photo: '🥚', photoBg: 'linear-gradient(135deg,#ca8a04,#a16207)' },
+    { id: 201, name: '特撰バラ',           desc: 'とろける旨みの最高峰',               price: 2900,  photo: '🥩', photoBg: 'linear-gradient(135deg,#b45309,#92400e)', tag: '人気' },
+    { id: 202, name: '特撰ロース',          desc: '柔らか上質ロース',                   price: 3000,  photo: '🥩', photoBg: 'linear-gradient(135deg,#dc2626,#991b1b)' },
+    { id: 203, name: '特撰厚切り牛タン',    desc: '厚切りでジューシー',                 price: 3000,  photo: '🥩', photoBg: 'linear-gradient(135deg,#d97706,#b45309)' },
+    { id: 204, name: 'シャトーブリアン',    desc: '最高部位・フィレ肉の王様',           price: 6800,  photo: '🥩', photoBg: 'linear-gradient(135deg,#92400e,#78350f)', tag: '特選' },
+    { id: 205, name: '神戸牛3種盛り合わせ', desc: 'A5神戸牛の贅沢な盛り合わせ',        price: 15000, photo: '🥩', photoBg: 'linear-gradient(135deg,#b91c1c,#7f1d1d)', tag: '最高級' },
   ],
   beef: [
-    { id: 301, name: 'カルビ',       desc: '骨付きカルビ・甘口たれ',           price: 980,  photo: '🥩', photoBg: 'linear-gradient(135deg,#dc2626,#b91c1c)', tag: '人気' },
-    { id: 302, name: 'ロース',       desc: '厚切りロース・塩/たれ',             price: 1080, photo: '🥩', photoBg: 'linear-gradient(135deg,#b45309,#92400e)' },
-    { id: 303, name: 'ハラミ',       desc: '外国産ハラミ・塩/たれ',             price: 880,  photo: '🥩', photoBg: 'linear-gradient(135deg,#92400e,#78350f)' },
-    { id: 304, name: 'タン塩',       desc: '国産牛タン・レモン',                price: 1280, photo: '🥩', photoBg: 'linear-gradient(135deg,#d97706,#b45309)' },
+    { id: 301, name: '骨付きカルビ',   desc: '骨付きカルビ・甘口たれ',         price: 1400, photo: '🥩', photoBg: 'linear-gradient(135deg,#dc2626,#b91c1c)', tag: '人気' },
+    { id: 302, name: '中落ちカルビ',   desc: 'ジューシーな中落ちカルビ',        price: 1000, photo: '🥩', photoBg: 'linear-gradient(135deg,#b45309,#92400e)' },
+    { id: 303, name: 'ロース',          desc: '厚切りロース',                   price: 2300, photo: '🥩', photoBg: 'linear-gradient(135deg,#92400e,#78350f)' },
+    { id: 304, name: '壺漬けカルビ',   desc: '特製壺漬けダレ',                 price: 1300, photo: '🥩', photoBg: 'linear-gradient(135deg,#b91c1c,#991b1b)' },
+    { id: 305, name: 'ネギ塩牛タン',   desc: 'ネギ塩ダレ・香ばしい牛タン',     price: 2000, photo: '🥩', photoBg: 'linear-gradient(135deg,#d97706,#b45309)' },
+    { id: 306, name: '薄切り牛タン',   desc: 'やわらか薄切りタン',              price: 1800, photo: '🥩', photoBg: 'linear-gradient(135deg,#ca8a04,#a16207)' },
+    { id: 307, name: '黒毛牛ハラミ',   desc: '黒毛牛のやわらかハラミ',          price: 1000, photo: '🥩', photoBg: 'linear-gradient(135deg,#78350f,#6b2a0e)' },
+    { id: 308, name: '壺漬けハラミ',   desc: '特製壺漬けハラミ',               price: 1650, photo: '🥩', photoBg: 'linear-gradient(135deg,#7c2d12,#6b2a0e)' },
   ],
   horumon: [
-    { id: 401, name: 'シマチョウ',   desc: '大腸・塩/たれ・ぷりぷり食感',     price: 680, photo: '🐄', photoBg: 'linear-gradient(135deg,#b91c1c,#991b1b)', tag: '人気' },
-    { id: 402, name: 'テッチャン',   desc: '大腸・みそだれ',                   price: 680, photo: '🐄', photoBg: 'linear-gradient(135deg,#7c3aed,#5b21b6)' },
-    { id: 403, name: 'ミノ',         desc: '第一胃・コリコリ食感',              price: 580, photo: '🐄', photoBg: 'linear-gradient(135deg,#0284c7,#0369a1)' },
-    { id: 404, name: 'レバー',       desc: '新鮮レバー・塩だれ',               price: 680, photo: '🐄', photoBg: 'linear-gradient(135deg,#dc2626,#b91c1c)' },
+    { id: 401, name: '上ミノ',       desc: '第一胃・コリコリ食感',         price: 950, photo: '🐄', photoBg: 'linear-gradient(135deg,#0284c7,#0369a1)', tag: '人気' },
+    { id: 402, name: 'しまちょう',   desc: '大腸・とろける旨み',           price: 960, photo: '🐄', photoBg: 'linear-gradient(135deg,#b91c1c,#991b1b)' },
+    { id: 403, name: 'ハツ',         desc: '心臓・コリコリ食感',           price: 800, photo: '🐄', photoBg: 'linear-gradient(135deg,#dc2626,#b91c1c)' },
+    { id: 404, name: '焼きレバー',   desc: '新鮮レバー・ごまだれ',         price: 800, photo: '🐄', photoBg: 'linear-gradient(135deg,#7c3aed,#6d28d9)' },
+    { id: 405, name: 'アカセン',     desc: '第二胃・歯ごたえ抜群',         price: 800, photo: '🐄', photoBg: 'linear-gradient(135deg,#6d28d9,#5b21b6)' },
+    { id: 406, name: 'とろコリコリ', desc: 'とろける食感のホルモン',        price: 800, photo: '🐄', photoBg: 'linear-gradient(135deg,#9d174d,#831843)' },
   ],
   drink: [
-    { id: 501, name: '生ビール',    desc: '中ジョッキ・キンキン冷え',           price: 580, photo: '🍺', photoBg: 'linear-gradient(135deg,#d97706,#b45309)', tag: '人気' },
-    { id: 502, name: 'ハイボール',  desc: 'ウイスキーソーダ割り',               price: 480, photo: '🥃', photoBg: 'linear-gradient(135deg,#475569,#334155)' },
-    { id: 506, name: 'レモンサワー', desc: '生レモン搾りたて',                  price: 480, photo: '🍋', photoBg: 'linear-gradient(135deg,#ca8a04,#a16207)', tag: '人気' },
-    { id: 503, name: '酎ハイ',      desc: 'グレープフルーツ・梅',               price: 480, photo: '🍹', photoBg: 'linear-gradient(135deg,#0284c7,#0369a1)' },
-    { id: 504, name: '日本酒',      desc: '季節の地酒・1合',                   price: 680, photo: '🍶', photoBg: 'linear-gradient(135deg,#6d28d9,#5b21b6)' },
-    { id: 505, name: '焼酎',        desc: '芋/麦/米・ロック/水割り',           price: 580, photo: '🥃', photoBg: 'linear-gradient(135deg,#1e40af,#1d4ed8)' },
+    { id: 501, name: 'ザ・プレミアムモルツ', desc: '中ジョッキ・キンキン冷え',    price: 680, photo: '🍺', photoBg: 'linear-gradient(135deg,#d97706,#b45309)', tag: '人気' },
+    { id: 502, name: '角ハイボール',          desc: 'サントリー角・ソーダ割り',    price: 580, photo: '🥃', photoBg: 'linear-gradient(135deg,#475569,#334155)' },
+    { id: 503, name: 'レモンサワー',          desc: 'さっぱり爽快レモン',          price: 530, photo: '🍋', photoBg: 'linear-gradient(135deg,#ca8a04,#a16207)', tag: '人気' },
+    { id: 504, name: 'ソウルマッコリ',        desc: '韓国伝統のお酒',              price: 560, photo: '🍶', photoBg: 'linear-gradient(135deg,#6d28d9,#5b21b6)' },
+    { id: 505, name: '翠ジンソーダ',          desc: '爽やかジンソーダ',            price: 530, photo: '🥤', photoBg: 'linear-gradient(135deg,#059669,#047857)' },
+    { id: 506, name: 'ウーロン茶',            desc: 'ソフトドリンク',              price: 450, photo: '🍵', photoBg: 'linear-gradient(135deg,#92400e,#78350f)' },
   ],
   side: [
-    { id: 601, name: 'クッパ',         desc: '牛骨スープのおじや',             price: 680, photo: '🍲', photoBg: 'linear-gradient(135deg,#d97706,#b45309)', tag: '人気' },
-    { id: 602, name: 'ライス',         desc: '白米・大/中/小',                 price: 220, photo: '🍚', photoBg: 'linear-gradient(135deg,#65a30d,#4d7c0f)' },
-    { id: 603, name: 'クッパスープ',   desc: '牛骨だし・具たくさん',           price: 380, photo: '🍜', photoBg: 'linear-gradient(135deg,#b45309,#92400e)' },
-    { id: 604, name: 'ナムルサラダ',   desc: '野菜たっぷり・ごまドレ',         price: 480, photo: '🥗', photoBg: 'linear-gradient(135deg,#16a34a,#15803d)' },
+    { id: 601, name: '白雲台サラダ',     desc: '特製ドレッシング',             price: 800,  photo: '🥗', photoBg: 'linear-gradient(135deg,#16a34a,#15803d)', tag: '人気' },
+    { id: 602, name: '海鮮チヂミ',       desc: '海鮮たっぷりチヂミ',           price: 1100, photo: '🦑', photoBg: 'linear-gradient(135deg,#0284c7,#0369a1)' },
+    { id: 603, name: '炙りユッケ',       desc: '新鮮牛肉の炙りユッケ',         price: 800,  photo: '🥚', photoBg: 'linear-gradient(135deg,#ca8a04,#a16207)' },
+    { id: 604, name: 'サンチュ',         desc: '新鮮サンチュ',                 price: 580,  photo: '🥬', photoBg: 'linear-gradient(135deg,#15803d,#166534)' },
+    { id: 605, name: '焼き野菜盛り合わせ', desc: '季節野菜の盛り合わせ',       price: 520,  photo: '🫑', photoBg: 'linear-gradient(135deg,#65a30d,#4d7c0f)' },
+    { id: 606, name: '焼きにんにく',     desc: '香ばしい焼きにんにく',         price: 580,  photo: '🧄', photoBg: 'linear-gradient(135deg,#d97706,#b45309)' },
   ],
   shime: [
-    { id: 701, name: '冷麺',     desc: '牛骨スープ・さっぱり',                  price: 780, photo: '🍜', photoBg: 'linear-gradient(135deg,#0284c7,#0369a1)', tag: '人気' },
-    { id: 702, name: '石焼ビビンバ', desc: 'おこげが香ばしい一品',             price: 780, photo: '🍳', photoBg: 'linear-gradient(135deg,#dc2626,#b91c1c)' },
-    { id: 703, name: 'チャーハン', desc: '牛肉入り・半熟卵のせ',               price: 680, photo: '🍳', photoBg: 'linear-gradient(135deg,#92400e,#78350f)' },
-    { id: 704, name: 'クッパ締め', desc: '残りのたれで作るだし茶漬け',         price: 580, photo: '🍵', photoBg: 'linear-gradient(135deg,#059669,#047857)' },
+    { id: 701, name: '手打ち冷麺',       desc: '牛骨スープ・さっぱり',         price: 1130, photo: '🍜', photoBg: 'linear-gradient(135deg,#0284c7,#0369a1)', tag: '人気' },
+    { id: 702, name: '全州石鍋ビビンバ', desc: 'おこげが香ばしい本格ビビンバ',  price: 1350, photo: '🍳', photoBg: 'linear-gradient(135deg,#dc2626,#b91c1c)' },
+    { id: 703, name: 'クッパ',           desc: '牛骨スープのおじや',           price: 800,  photo: '🍲', photoBg: 'linear-gradient(135deg,#d97706,#b45309)' },
+    { id: 704, name: 'チゲ',             desc: 'キムチorホルモンチゲ',         price: 960,  photo: '🫕', photoBg: 'linear-gradient(135deg,#dc2626,#991b1b)' },
+    { id: 705, name: 'テールスープ',     desc: '濃厚牛テールスープ',           price: 960,  photo: '🍵', photoBg: 'linear-gradient(135deg,#92400e,#78350f)' },
   ],
 }
 
@@ -243,9 +252,9 @@ export default function YakinikuPage() {
           {/* ━━ クイックドリンク ━━ */}
           <div className="grid grid-cols-3 gap-[10px]">
             {[
-              { id: 501, label: 'とりあえず\n生ビール', emoji: '🍺', color: '#d97706', bg: '#fffbeb', border: '#fde68a' },
-              { id: 502, label: 'ハイボール', emoji: '🥃', color: '#475569', bg: '#f8fafc', border: '#e2e8f0' },
-              { id: 506, label: 'レモンサワー', emoji: '🍋', color: '#ca8a04', bg: '#fefce8', border: '#fef08a' },
+              { id: 501, label: 'とりあえず\nプレモル', emoji: '🍺', color: '#d97706', bg: '#fffbeb', border: '#fde68a' },
+              { id: 502, label: '角ハイボール', emoji: '🥃', color: '#475569', bg: '#f8fafc', border: '#e2e8f0' },
+              { id: 503, label: 'レモンサワー', emoji: '🍋', color: '#ca8a04', bg: '#fefce8', border: '#fef08a' },
             ].map((d) => (
               <button
                 key={d.id}
