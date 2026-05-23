@@ -75,7 +75,7 @@ export default function GenreEditorPage({ params }: { params: Promise<{ genre: s
           <CouponsTab config={config} set={set} />
         )}
         {tab === 'media' && (
-          <MediaTab config={config} set={set} genreId={genreId} />
+          <MediaTab config={config} set={set} />
         )}
         {tab === 'menu' && genre.hasMenu && (
           <MenuTab config={config} set={set} />
@@ -198,42 +198,42 @@ function ImageUploadField({
   value,
   onChange,
   aspect,
-  genreId,
   placeholder,
 }: {
   label: string
   value: string
   onChange: (v: string) => void
   aspect: 'logo' | 'kv'
-  genreId: string
   placeholder?: string
 }) {
   const fileRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
 
-  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
 
+    const allowed = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'image/svg+xml']
+    if (!allowed.includes(file.type)) {
+      setError('PNG / JPG / GIF / WebP / SVG のみ対応しています')
+      return
+    }
+
     setUploading(true)
     setError('')
-    try {
-      const fd = new FormData()
-      fd.append('file', file)
-      fd.append('genre', genreId)
-      fd.append('type', aspect)
-
-      const res = await fetch('/api/upload', { method: 'POST', body: fd })
-      const json = await res.json()
-      if (!res.ok) throw new Error(json.error ?? 'upload failed')
-      onChange(json.url)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'アップロードに失敗しました')
-    } finally {
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      const dataUrl = ev.target?.result as string
+      onChange(dataUrl)
       setUploading(false)
       if (fileRef.current) fileRef.current.value = ''
     }
+    reader.onerror = () => {
+      setError('ファイルの読み込みに失敗しました')
+      setUploading(false)
+    }
+    reader.readAsDataURL(file)
   }
 
   const isLogo = aspect === 'logo'
@@ -309,7 +309,7 @@ function ImageUploadField({
   )
 }
 
-function MediaTab({ config, set, genreId }: TabProps & { genreId: string }) {
+function MediaTab({ config, set }: TabProps) {
   return (
     <div className="space-y-8">
       <div>
@@ -318,7 +318,6 @@ function MediaTab({ config, set, genreId }: TabProps & { genreId: string }) {
           <ImageUploadField
             label="ロゴ"
             aspect="logo"
-            genreId={genreId}
             value={config.logoImage}
             onChange={(v) => set('logoImage', v)}
             placeholder="https://example.com/logo.png"
@@ -326,7 +325,6 @@ function MediaTab({ config, set, genreId }: TabProps & { genreId: string }) {
           <ImageUploadField
             label="KV（キービジュアル）"
             aspect="kv"
-            genreId={genreId}
             value={config.kvImage}
             onChange={(v) => set('kvImage', v)}
             placeholder="https://example.com/kv.jpg"
