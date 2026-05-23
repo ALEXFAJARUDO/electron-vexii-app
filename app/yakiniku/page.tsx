@@ -214,19 +214,42 @@ export default function YakinikuPage() {
   function openCat(cat: string) { setPanel('order'); setOrderCat(cat) }
 
   async function placeOrder() {
-    const orderedItems = ALL_ITEMS
-      .filter(i => (cart[i.id] ?? 0) > 0)
-      .map(i => ({ name: i.name, price: i.price, qty: cart[i.id] }))
+    const cartItemsList = ALL_ITEMS.filter(i => (cart[i.id] ?? 0) > 0)
+    const now = Date.now()
+    const orderId = now.toString()
+
     const entry: HistoryEntry = {
-      id: Date.now().toString(),
+      id: orderId,
       tableId,
-      items: orderedItems,
+      items: cartItemsList.map(i => ({ name: i.name, price: i.price, qty: cart[i.id] })),
       total: cartTotal,
-      placedAt: Date.now(),
+      placedAt: now,
     }
     const newHistory = [entry, ...orderHistory]
     setOrderHistory(newHistory)
     localStorage.setItem('yakiniku_order_history', JSON.stringify(newHistory))
+
+    // Push to admin order board (cross-tab sync via storage event)
+    const adminOrder = {
+      id: orderId,
+      tableId,
+      items: cartItemsList.map(i => ({
+        id: `${orderId}-${i.id}`,
+        name: i.name,
+        qty: cart[i.id],
+        price: i.price,
+        category: i.id >= 400 && i.id < 500 ? 'drink' : 'food',
+      })),
+      status: 'new',
+      placedAt: now,
+      total: cartTotal,
+      checkedItemIds: [],
+    }
+    try {
+      const raw = localStorage.getItem('yakiniku_admin_orders')
+      const current = raw ? JSON.parse(raw) : []
+      localStorage.setItem('yakiniku_admin_orders', JSON.stringify([...current, adminOrder]))
+    } catch {}
 
     setOrderPlaced(true)
     setTimeout(() => {
