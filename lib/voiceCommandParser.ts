@@ -6,6 +6,7 @@ export interface VoiceMenuItem {
   price: number
   photo: string
   photoBg: string
+  keywords?: string[]
 }
 
 export type ParsedItem = {
@@ -46,14 +47,18 @@ export function parseVoiceCommand(
   const seen = new Set<number>()
 
   for (const item of menu) {
-    if (transcript.includes(item.name) && !seen.has(item.id)) {
-      seen.add(item.id)
-      const idx = transcript.indexOf(item.name)
-      const surrounding = transcript.slice(
-        Math.max(0, idx - 12),
-        idx + item.name.length + 12,
-      )
-      results.push({ item, qty: extractQty(surrounding) })
+    const candidates = [item.name, ...(item.keywords ?? [])]
+    for (const kw of candidates) {
+      if (transcript.includes(kw) && !seen.has(item.id)) {
+        seen.add(item.id)
+        const idx = transcript.indexOf(kw)
+        const surrounding = transcript.slice(
+          Math.max(0, idx - 12),
+          idx + kw.length + 12,
+        )
+        results.push({ item, qty: extractQty(surrounding) })
+        break
+      }
     }
   }
 

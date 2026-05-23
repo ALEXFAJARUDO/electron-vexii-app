@@ -6,7 +6,7 @@ import VoiceOrderButton from '@/components/restaurant/VoiceOrderButton'
 import { type ParsedItem } from '@/lib/voiceCommandParser'
 
 type PanelId = 'wifi' | 'coupons' | 'order' | 'ad' | 'app' | 'store' | 'staff' | 'payment'
-type OrderItem = { id: number; name: string; desc: string; price: number; photo: string; photoBg: string; photoUrl?: string; tag?: string }
+type OrderItem = { id: number; name: string; desc: string; price: number; photo: string; photoBg: string; photoUrl?: string; keywords?: string[]; tag?: string }
 
 const DEMO_WIFI = { ssid: 'HAKUUNDAI_WIFI', password: 'hakuundai2024' }
 
@@ -29,7 +29,7 @@ const ORDER_MENU: Record<string, OrderItem[]> = {
     { id: 107, name: '極みコース',         desc: '要予約・一人前', price: 20000, photo: '🌟', photoBg: 'linear-gradient(135deg,#713f12,#451a03)', tag: '要予約' },
   ],
   menu02: [
-    { id: 201, name: '神戸牛3種盛り合わせ', desc: '神戸牛の最高3部位',    price: 15000, photo: '🥩', photoBg: 'linear-gradient(135deg,#92400e,#78350f)', photoUrl: `${HP}img_yaki01.jpg`, tag: '特選' },
+    { id: 201, name: '神戸牛3種盛り合わせ', desc: '神戸牛の最高3部位',    price: 15000, photo: '🥩', photoBg: 'linear-gradient(135deg,#92400e,#78350f)', photoUrl: `${HP}img_yaki01.jpg`, keywords: ['神戸牛3種', '神戸牛盛り', '神戸牛三種'], tag: '特選' },
     { id: 202, name: '特撰バラ',            desc: 'とろける旨みの最高峰', price: 2900,  photo: '🥩', photoBg: 'linear-gradient(135deg,#b45309,#92400e)', photoUrl: `${HP}img_yaki02.jpg`, tag: '人気' },
     { id: 203, name: '特撰ロース',           desc: '柔らか上質ロース',    price: 3000,  photo: '🥩', photoBg: 'linear-gradient(135deg,#dc2626,#991b1b)', photoUrl: `${HP}img_yaki03.jpg` },
     { id: 204, name: '特撰焼きしゃぶ',      desc: '薄切り・旨みが引き立つ', price: 3000, photo: '🥩', photoBg: 'linear-gradient(135deg,#d97706,#b45309)', photoUrl: `${HP}img_yaki04.jpg` },
@@ -40,11 +40,11 @@ const ORDER_MENU: Record<string, OrderItem[]> = {
     { id: 209, name: '上撰赤身',            desc: '赤身のうまみをシンプルに', price: 1760, photo: '🥩', photoBg: 'linear-gradient(135deg,#dc2626,#b91c1c)' },
     { id: 210, name: 'ネギ塩牛タン',        desc: 'ネギ塩ダレ・香ばしい牛タン', price: 2000, photo: '🥩', photoBg: 'linear-gradient(135deg,#d97706,#b45309)', photoUrl: `${HP}img_yaki_gyu3type.jpg` },
     { id: 211, name: '薄切り牛タン',        desc: 'やわらか薄切りタン',   price: 1800,  photo: '🥩', photoBg: 'linear-gradient(135deg,#ca8a04,#a16207)' },
-    { id: 212, name: '牛タン3種食べ比べ',   desc: '3種のタンを食べ比べ',  price: 1300,  photo: '🥩', photoBg: 'linear-gradient(135deg,#ca8a04,#a16207)' },
+    { id: 212, name: '牛タン3種食べ比べ',   desc: '3種のタンを食べ比べ',  price: 1300,  photo: '🥩', photoBg: 'linear-gradient(135deg,#ca8a04,#a16207)', keywords: ['タン3種', '牛タン3種', 'タン三種'] },
     { id: 213, name: '和牛上撰ハラミ',      desc: '柔らかジューシー',     price: 2000,  photo: '🥩', photoBg: 'linear-gradient(135deg,#b91c1c,#991b1b)' },
     { id: 214, name: 'ロース',              desc: '厚切りロース',         price: 2300,  photo: '🥩', photoBg: 'linear-gradient(135deg,#92400e,#78350f)', photoUrl: `${HP}img_yaki07.jpg` },
     { id: 215, name: '壺漬けカルビ',        desc: '特製壺漬けダレのカルビ', price: 1300, photo: '🥩', photoBg: 'linear-gradient(135deg,#b91c1c,#991b1b)' },
-    { id: 216, name: '牛タン4種食べ比べ',   desc: '4種のタンを食べ比べ',  price: 1800,  photo: '🥩', photoBg: 'linear-gradient(135deg,#ca8a04,#a16207)' },
+    { id: 216, name: '牛タン4種食べ比べ',   desc: '4種のタンを食べ比べ',  price: 1800,  photo: '🥩', photoBg: 'linear-gradient(135deg,#ca8a04,#a16207)', keywords: ['タン4種', '牛タン4種', 'タン四種'] },
     { id: 217, name: '和牛ハラミ',          desc: '和牛のやわらかハラミ', price: 1850,  photo: '🥩', photoBg: 'linear-gradient(135deg,#b91c1c,#991b1b)' },
     { id: 218, name: '黒毛牛ハラミ',        desc: '黒毛牛のハラミ',       price: 1000,  photo: '🥩', photoBg: 'linear-gradient(135deg,#78350f,#451a03)' },
     { id: 219, name: '壺漬けハラミ',        desc: '壺漬けダレのハラミ',   price: 1650,  photo: '🥩', photoBg: 'linear-gradient(135deg,#b45309,#92400e)' },
@@ -85,9 +85,9 @@ const ORDER_MENU: Record<string, OrderItem[]> = {
     { id: 319, name: '桜ハラミ刺し',       desc: '新鮮ハラミ刺し',                 price: 1000,  photo: '🥩', photoBg: 'linear-gradient(135deg,#e11d48,#be123c)' },
   ],
   menu04: [
-    { id: 401, name: 'ザ・プレミアムモルツ［小］', desc: '小ジョッキ',              price: 530,   photo: '🍺', photoBg: 'linear-gradient(135deg,#d97706,#b45309)' },
-    { id: 402, name: 'ザ・プレミアムモルツ［中］', desc: '中ジョッキ・キンキン冷え', price: 680,  photo: '🍺', photoBg: 'linear-gradient(135deg,#d97706,#b45309)', tag: '人気' },
-    { id: 403, name: 'ザ・プレミアムモルツ［中瓶］', desc: '中瓶ビール',            price: 730,   photo: '🍺', photoBg: 'linear-gradient(135deg,#b45309,#92400e)' },
+    { id: 401, name: 'ザ・プレミアムモルツ［小］', desc: '小ジョッキ',              price: 530,   photo: '🍺', photoBg: 'linear-gradient(135deg,#d97706,#b45309)', keywords: ['プレモル小', 'モルツ小'] },
+    { id: 402, name: 'ザ・プレミアムモルツ［中］', desc: '中ジョッキ・キンキン冷え', price: 680,  photo: '🍺', photoBg: 'linear-gradient(135deg,#d97706,#b45309)', keywords: ['プレモル', 'モルツ', 'プレミアムモルツ', 'ビール'], tag: '人気' },
+    { id: 403, name: 'ザ・プレミアムモルツ［中瓶］', desc: '中瓶ビール',            price: 730,   photo: '🍺', photoBg: 'linear-gradient(135deg,#b45309,#92400e)', keywords: ['プレモル中瓶', 'モルツ中瓶'] },
     { id: 404, name: 'オールフリー',             desc: 'ノンアルコールビール',      price: 530,   photo: '🍺', photoBg: 'linear-gradient(135deg,#65a30d,#4d7c0f)' },
     { id: 405, name: 'ソウルマッコリ',           desc: '韓国伝統のお酒',            price: 560,   photo: '🍶', photoBg: 'linear-gradient(135deg,#6d28d9,#5b21b6)' },
     { id: 406, name: '虎マッコリ',              desc: '濃厚虎マッコリ',            price: 680,   photo: '🍶', photoBg: 'linear-gradient(135deg,#7c3aed,#6d28d9)' },
@@ -96,9 +96,9 @@ const ORDER_MENU: Record<string, OrderItem[]> = {
     { id: 409, name: 'シャンディーガフ',        desc: 'ビールジンジャー割り',      price: 630,   photo: '🍺', photoBg: 'linear-gradient(135deg,#d97706,#b45309)' },
     { id: 410, name: 'ファジーネーブル',        desc: 'カクテル',                  price: 630,   photo: '🍑', photoBg: 'linear-gradient(135deg,#ea580c,#c2410c)' },
     { id: 411, name: 'ピーチウーロン',          desc: '桃の香りウーロン割り',      price: 630,   photo: '🍑', photoBg: 'linear-gradient(135deg,#b45309,#92400e)' },
-    { id: 412, name: '松竹梅（燗・冷）［小］',  desc: '日本酒',                    price: 530,   photo: '🍶', photoBg: 'linear-gradient(135deg,#0284c7,#0369a1)' },
-    { id: 413, name: '松竹梅（燗・冷）［大］',  desc: '日本酒',                    price: 830,   photo: '🍶', photoBg: 'linear-gradient(135deg,#0369a1,#1e40af)' },
-    { id: 414, name: '翠(すい)ジンソーダ',     desc: 'ジャパニーズジン',           price: 530,   photo: '🥤', photoBg: 'linear-gradient(135deg,#059669,#047857)' },
+    { id: 412, name: '松竹梅（燗・冷）［小］',  desc: '日本酒',                    price: 530,   photo: '🍶', photoBg: 'linear-gradient(135deg,#0284c7,#0369a1)', keywords: ['松竹梅', '日本酒'] },
+    { id: 413, name: '松竹梅（燗・冷）［大］',  desc: '日本酒',                    price: 830,   photo: '🍶', photoBg: 'linear-gradient(135deg,#0369a1,#1e40af)', keywords: ['松竹梅大', '日本酒大'] },
+    { id: 414, name: '翠(すい)ジンソーダ',     desc: 'ジャパニーズジン',           price: 530,   photo: '🥤', photoBg: 'linear-gradient(135deg,#059669,#047857)', keywords: ['翠ジンソーダ', '翠ジン', '翠', 'すいジン'] },
     { id: 415, name: '大隅 芋',               desc: '芋焼酎・グラス',             price: 530,   photo: '🥃', photoBg: 'linear-gradient(135deg,#92400e,#78350f)' },
     { id: 416, name: '大隅 麦',               desc: '麦焼酎・グラス',             price: 530,   photo: '🥃', photoBg: 'linear-gradient(135deg,#b45309,#92400e)' },
     { id: 417, name: '鏡月（韓国焼酎）',        desc: 'グラス',                    price: 530,   photo: '🥃', photoBg: 'linear-gradient(135deg,#0284c7,#0369a1)' },

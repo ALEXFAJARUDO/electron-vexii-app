@@ -13,18 +13,33 @@ export default function VoiceOrderButton({ onConfirm, menu }: Props) {
   const { state, error, isSupported, start, stop, reset } = useVoiceRecognition()
   const [parsedItems, setParsedItems] = useState<ParsedItem[] | null>(null)
   const [rawTranscript, setRawTranscript] = useState('')
+  const [retrying, setRetrying] = useState(false)
 
   if (!isSupported) return null
 
+  function doStart() {
+    start(transcript => {
+      const items = parseVoiceCommand(transcript, menu)
+      if (items.length === 0) {
+        setRetrying(true)
+        setTimeout(() => {
+          setRetrying(false)
+          doStart()
+        }, 2000)
+      } else {
+        setRawTranscript(transcript)
+        setParsedItems(items)
+      }
+    })
+  }
+
   function handlePress() {
-    if (state === 'listening') {
+    if (state === 'listening' || retrying) {
       stop()
+      setRetrying(false)
       return
     }
-    start(transcript => {
-      setRawTranscript(transcript)
-      setParsedItems(parseVoiceCommand(transcript, menu))
-    })
+    doStart()
   }
 
   function handleConfirm(items: ParsedItem[]) {
@@ -40,21 +55,27 @@ export default function VoiceOrderButton({ onConfirm, menu }: Props) {
 
   return (
     <>
-      <button
-        onClick={handlePress}
-        className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-sm transition-all active:scale-95 ${
-          state === 'listening'
-            ? 'bg-red-500 text-white animate-pulse shadow-lg shadow-red-200'
-            : 'bg-orange-500 text-white shadow-sm'
-        }`}
-      >
-        <MicIcon className="w-4 h-4 shrink-0" />
-        {state === 'listening' ? '認識中…' : '音声注文'}
-      </button>
-
-      {error && (
-        <p className="text-[11px] text-red-500 mt-1 text-center">{error}</p>
-      )}
+      <div className="flex flex-col items-end gap-1">
+        <button
+          onClick={handlePress}
+          className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-sm transition-all active:scale-95 ${
+            state === 'listening'
+              ? 'bg-red-500 text-white animate-pulse shadow-lg shadow-red-200'
+              : retrying
+              ? 'bg-orange-400 text-white animate-pulse'
+              : 'bg-orange-500 text-white shadow-sm'
+          }`}
+        >
+          <MicIcon className="w-4 h-4 shrink-0" />
+          {state === 'listening' ? '認識中…' : retrying ? 'もう一度…' : '音声注文'}
+        </button>
+        {retrying && (
+          <p className="text-[10px] text-orange-400 font-semibold">もう一度お願いします</p>
+        )}
+        {error && !retrying && (
+          <p className="text-[10px] text-red-500">{error}</p>
+        )}
+      </div>
 
       {parsedItems !== null && (
         <VoiceOrderConfirm
