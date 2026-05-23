@@ -45,26 +45,29 @@ export function parseVoiceCommand(
 ): ParsedItem[] {
   const results: ParsedItem[] = []
   const seen = new Set<number>()
-  // Track character ranges already claimed by a matched item [start, end)
   const usedRanges: [number, number][] = []
 
   const overlaps = (start: number, end: number) =>
     usedRanges.some(([s, e]) => start < e && end > s)
 
+  function claim(item: VoiceMenuItem, kw: string): boolean {
+    const idx = transcript.indexOf(kw)
+    if (idx === -1 || seen.has(item.id) || overlaps(idx, idx + kw.length)) return false
+    seen.add(item.id)
+    const surrounding = transcript.slice(Math.max(0, idx - 12), idx + kw.length + 12)
+    results.push({ item, qty: extractQty(surrounding) })
+    usedRanges.push([idx, idx + kw.length])
+    return true
+  }
+
+  // Pass 1: exact name matches — claim ranges before keywords run
+  for (const item of menu) claim(item, item.name)
+
+  // Pass 2: keyword matches for items not yet claimed
   for (const item of menu) {
-    const candidates = [item.name, ...(item.keywords ?? [])]
-    for (const kw of candidates) {
-      const idx = transcript.indexOf(kw)
-      if (idx === -1 || seen.has(item.id)) continue
-      if (overlaps(idx, idx + kw.length)) continue
-      seen.add(item.id)
-      const surrounding = transcript.slice(
-        Math.max(0, idx - 12),
-        idx + kw.length + 12,
-      )
-      results.push({ item, qty: extractQty(surrounding) })
-      usedRanges.push([idx, idx + kw.length])
-      break
+    if (seen.has(item.id)) continue
+    for (const kw of item.keywords ?? []) {
+      if (claim(item, kw)) break
     }
   }
 
