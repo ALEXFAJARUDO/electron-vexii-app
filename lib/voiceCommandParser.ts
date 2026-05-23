@@ -45,18 +45,21 @@ export function parseVoiceCommand(
 ): ParsedItem[] {
   const results: ParsedItem[] = []
   const seen = new Set<number>()
+  let remaining = transcript
 
   for (const item of menu) {
     const candidates = [item.name, ...(item.keywords ?? [])]
     for (const kw of candidates) {
-      if (transcript.includes(kw) && !seen.has(item.id)) {
+      if (remaining.includes(kw) && !seen.has(item.id)) {
         seen.add(item.id)
-        const idx = transcript.indexOf(kw)
-        const surrounding = transcript.slice(
+        const idx = remaining.indexOf(kw)
+        const surrounding = remaining.slice(
           Math.max(0, idx - 12),
           idx + kw.length + 12,
         )
         results.push({ item, qty: extractQty(surrounding) })
+        // Blank out matched portion so substrings don't re-match as separate items
+        remaining = remaining.slice(0, idx) + '\0'.repeat(kw.length) + remaining.slice(idx + kw.length)
         break
       }
     }
