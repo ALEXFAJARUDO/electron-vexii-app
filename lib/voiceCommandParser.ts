@@ -45,23 +45,26 @@ export function parseVoiceCommand(
 ): ParsedItem[] {
   const results: ParsedItem[] = []
   const seen = new Set<number>()
-  let remaining = transcript
+  // Track character ranges already claimed by a matched item [start, end)
+  const usedRanges: [number, number][] = []
+
+  const overlaps = (start: number, end: number) =>
+    usedRanges.some(([s, e]) => start < e && end > s)
 
   for (const item of menu) {
     const candidates = [item.name, ...(item.keywords ?? [])]
     for (const kw of candidates) {
-      if (remaining.includes(kw) && !seen.has(item.id)) {
-        seen.add(item.id)
-        const idx = remaining.indexOf(kw)
-        const surrounding = remaining.slice(
-          Math.max(0, idx - 12),
-          idx + kw.length + 12,
-        )
-        results.push({ item, qty: extractQty(surrounding) })
-        // Blank out matched portion so substrings don't re-match as separate items
-        remaining = remaining.slice(0, idx) + '\0'.repeat(kw.length) + remaining.slice(idx + kw.length)
-        break
-      }
+      const idx = transcript.indexOf(kw)
+      if (idx === -1 || seen.has(item.id)) continue
+      if (overlaps(idx, idx + kw.length)) continue
+      seen.add(item.id)
+      const surrounding = transcript.slice(
+        Math.max(0, idx - 12),
+        idx + kw.length + 12,
+      )
+      results.push({ item, qty: extractQty(surrounding) })
+      usedRanges.push([idx, idx + kw.length])
+      break
     }
   }
 
