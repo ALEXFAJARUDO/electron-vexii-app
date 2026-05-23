@@ -831,7 +831,6 @@ export default function YakinikuPage() {
                 </svg>
               </div>
               <h2 className="font-black text-gray-900 text-lg">席番号を入力</h2>
-              <p className="text-sm text-gray-400 mt-1">テーブルのQRコードまたは席札の番号を入力してください</p>
             </div>
             <input
               type="text"
