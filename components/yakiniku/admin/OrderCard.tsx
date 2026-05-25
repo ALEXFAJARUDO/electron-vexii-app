@@ -135,10 +135,9 @@ export default function OrderCard({
                 }
                 const notifStatus = statusMap[a.value]
                 if (notifStatus) {
-                  const itemName = order.items.length <= 1
-                  ? (order.items[0]?.name ?? 'ご注文')
-                  : `${order.items[0]?.name} 他${order.items.length - 1}品`
-                  pushOrderStatusNotification({ orderId: order.id, tableId: order.tableId, itemName, status: notifStatus, updatedAt: Date.now() })
+                  const itemName = order.items[0]?.name ?? 'ご注文'
+                  const itemCount = order.items.length
+                  pushOrderStatusNotification({ orderId: order.id, tableId: order.tableId, itemName, itemCount, status: notifStatus, updatedAt: Date.now() })
                 }
               }}
               className={`flex-1 py-2 rounded-xl text-sm font-bold transition-colors ${a.style}`}

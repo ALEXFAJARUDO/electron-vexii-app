@@ -5,6 +5,7 @@ export type OrderStatusEntry = {
   orderId: string
   tableId: string
   itemName: string
+  itemCount?: number  // 注文内の品数（未設定時は1とみなす）
   status: 'accepted' | 'cooking' | 'ready' | 'served'
   updatedAt: number
 }
@@ -124,12 +125,13 @@ export default function OrderStatusNotification({ tableId }: Props) {
       const inWindow = group.filter(n => latest.updatedAt - n.updatedAt <= COMBINE_WINDOW)
       const outside = group.filter(n => latest.updatedAt - n.updatedAt > COMBINE_WINDOW)
 
-      // ウィンドウ内グループをひとつに結合
+      // ウィンドウ内グループをひとつに結合（品数の合計で「他N品」を計算）
       if (inWindow.length > 0) {
-        const names = inWindow.map(n => n.itemName)
-        const itemName = names.length === 1
-          ? names[0]
-          : `${names[names.length - 1]} 他${names.length - 1}品`
+        const totalItems = inWindow.reduce((sum, n) => sum + (n.itemCount ?? 1), 0)
+        const firstName = inWindow[inWindow.length - 1].itemName // 最古の通知の先頭品名
+        const itemName = totalItems <= 1
+          ? firstName
+          : `${firstName} 他${totalItems - 1}品`
         entries.push({
           dismissKey: `${key}-${latest.updatedAt}`,
           status: latest.status,
