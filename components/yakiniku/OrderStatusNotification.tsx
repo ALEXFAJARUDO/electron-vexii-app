@@ -58,7 +58,31 @@ export default function OrderStatusNotification({ tableId }: Props) {
     return () => { clearInterval(interval); window.removeEventListener('storage', onStorage) }
   }, [tableId])
 
-  const visible = notifications.filter(n => !dismissed.has(n.orderId + n.status))
+  useEffect(() => {
+    const timers: ReturnType<typeof setTimeout>[] = []
+    notifications.forEach(n => {
+      if (n.status !== 'served') return
+      const autoDismiss = 3000
+      const key = n.orderId + n.status
+      if (dismissed.has(key)) return
+      const elapsed = Date.now() - n.updatedAt
+      const delay = Math.max(0, autoDismiss - elapsed)
+
+      timers.push(setTimeout(() => {
+        setDismissed(prev => new Set([...prev, key]))
+      }, delay))
+    })
+    return () => timers.forEach(clearTimeout)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [notifications])
+
+  // 同じ注文IDは最新ステータスだけ表示
+  const latestByOrder = notifications.reduce<Map<string, OrderStatusEntry>>((map, n) => {
+    const cur = map.get(n.orderId)
+    if (!cur || n.updatedAt > cur.updatedAt) map.set(n.orderId, n)
+    return map
+  }, new Map())
+  const visible = [...latestByOrder.values()].filter(n => !dismissed.has(n.orderId + n.status))
 
   if (visible.length === 0) return null
 

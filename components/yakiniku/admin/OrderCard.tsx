@@ -131,7 +131,7 @@ export default function OrderCard({
               onClick={() => {
                 onUpdateStatus(order.id, a.value)
                 const statusMap: Record<OrderStatus, 'accepted' | 'cooking' | 'ready' | 'served' | null> = {
-                  new: 'accepted', cooking: 'cooking', served: 'served', cancelled: null,
+                  new: null, cooking: 'cooking', served: 'served', cancelled: null,
                 }
                 const notifStatus = statusMap[a.value]
                 if (notifStatus) {
