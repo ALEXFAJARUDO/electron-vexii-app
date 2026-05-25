@@ -98,6 +98,20 @@ export default function OrderStatusNotification({ tableId }: Props) {
     return () => { clearInterval(interval); window.removeEventListener('storage', onStorage) }
   }, [tableId])
 
+  // 旧形式（"名前 他N品"埋め込み）・新形式（itemCount フィールド）両対応で品数を取得
+  function getCount(n: OrderStatusEntry): number {
+    if (n.itemCount !== undefined) return n.itemCount
+    const m = n.itemName.match(/ 他(\d+)品$/)
+    return m ? parseInt(m[1]) + 1 : 1
+  }
+  function getFirstName(n: OrderStatusEntry): string {
+    if (n.itemCount !== undefined) return n.itemName
+    return n.itemName.replace(/ 他\d+品$/, '')
+  }
+  function buildLabel(firstName: string, total: number): string {
+    return total <= 1 ? firstName : `${firstName} 他${total - 1}品`
+  }
+
   // 同テーブル・同ステータスの通知を30秒ウィンドウで結合してDisplayEntryを作る
   function buildDisplayEntries(notifs: OrderStatusEntry[]): DisplayEntry[] {
     // orderId単位で最新ステータスだけ残す
@@ -121,31 +135,27 @@ export default function OrderStatusNotification({ tableId }: Props) {
     groupMap.forEach((group, key) => {
       group.sort((a, b) => b.updatedAt - a.updatedAt)
       const latest = group[0]
-      // ウィンドウ内の通知だけまとめる
       const inWindow = group.filter(n => latest.updatedAt - n.updatedAt <= COMBINE_WINDOW)
-      const outside = group.filter(n => latest.updatedAt - n.updatedAt > COMBINE_WINDOW)
+      const outside  = group.filter(n => latest.updatedAt - n.updatedAt > COMBINE_WINDOW)
 
-      // ウィンドウ内グループをひとつに結合（品数の合計で「他N品」を計算）
+      // ウィンドウ内をひとつに結合（品数の合計で「他N品」を計算）
       if (inWindow.length > 0) {
-        const totalItems = inWindow.reduce((sum, n) => sum + (n.itemCount ?? 1), 0)
-        const firstName = inWindow[inWindow.length - 1].itemName // 最古の通知の先頭品名
-        const itemName = totalItems <= 1
-          ? firstName
-          : `${firstName} 他${totalItems - 1}品`
+        const totalItems = inWindow.reduce((sum, n) => sum + getCount(n), 0)
+        const firstName  = getFirstName(inWindow[inWindow.length - 1]) // 最古の先頭品名
         entries.push({
           dismissKey: `${key}-${latest.updatedAt}`,
           status: latest.status,
-          itemName,
+          itemName: buildLabel(firstName, totalItems),
           latestUpdatedAt: latest.updatedAt,
         })
       }
 
-      // ウィンドウ外のものは個別に追加
+      // ウィンドウ外は個別に追加（itemCount も反映）
       outside.forEach(n => {
         entries.push({
           dismissKey: n.orderId + n.status,
           status: n.status,
-          itemName: n.itemName,
+          itemName: buildLabel(getFirstName(n), getCount(n)),
           latestUpdatedAt: n.updatedAt,
         })
       })
