@@ -44,7 +44,15 @@ export default function OrderStatusNotification({ tableId }: Props) {
         const raw = localStorage.getItem('yakiniku_order_status_notifications')
         if (!raw) return
         const all: OrderStatusEntry[] = JSON.parse(raw)
-        const relevant = all.filter(n => n.tableId === tableId && Date.now() - n.updatedAt < 5 * 60 * 1000)
+        // acceptedは不要なので保存データからも除去
+        const cleaned = all.filter(n => n.status !== 'accepted')
+        if (cleaned.length !== all.length) {
+          localStorage.setItem('yakiniku_order_status_notifications', JSON.stringify(cleaned))
+        }
+        const relevant = cleaned.filter(n =>
+          n.tableId === tableId &&
+          Date.now() - n.updatedAt < 5 * 60 * 1000
+        )
         setNotifications(relevant)
       } catch {}
     }
