@@ -135,7 +135,9 @@ export default function OrderCard({
                 }
                 const notifStatus = statusMap[a.value]
                 if (notifStatus) {
-                  const itemName = order.items[0]?.name ?? 'ご注文'
+                  const itemName = order.items.length <= 1
+                  ? (order.items[0]?.name ?? 'ご注文')
+                  : `${order.items[0]?.name} 他${order.items.length - 1}品`
                   pushOrderStatusNotification({ orderId: order.id, tableId: order.tableId, itemName, status: notifStatus, updatedAt: Date.now() })
                 }
               }}
