@@ -9,7 +9,7 @@ import AdBannerSlot from '@/components/yakiniku/AdBannerSlot'
 import OrderStatusNotification from '@/components/yakiniku/OrderStatusNotification'
 import CustomerOrderTimeline from '@/components/yakiniku/CustomerOrderTimeline'
 
-type PanelId = 'wifi' | 'coupons' | 'order' | 'ad' | 'app' | 'store' | 'staff' | 'payment' | 'history' | 'timeline'
+type PanelId = 'wifi' | 'coupons' | 'order' | 'cart' | 'ad' | 'app' | 'store' | 'staff' | 'payment' | 'history' | 'timeline'
 type OrderItem = { id: number; name: string; desc: string; price: number; photo: string; photoBg: string; photoUrl?: string; keywords?: string[]; tag?: string }
 type HistoryEntry = { id: string; tableId: string; items: { name: string; price: number; qty: number }[]; total: number; placedAt: number }
 
@@ -164,12 +164,27 @@ export default function YakinikuPage() {
   const [cart, setCart] = useState<Record<number, number>>({})
   const [orderPlaced, setOrderPlaced] = useState(false)
   const [quickAdded, setQuickAdded] = useState<string | null>(null)
+  const [cartAdded, setCartAdded] = useState<string | null>(null)
   const [orderHistory, setOrderHistory] = useState<HistoryEntry[]>([])
   const [tableId, setTableId] = useState<string>('')
   const [showTableModal, setShowTableModal] = useState(false)
   const [tableInput, setTableInput] = useState('')
-  const [logoImage, setLogoImage] = useState('/restaurant-logo.png')
-  const [kvImage, setKvImage] = useState('/restaurant-hero.png')
+  const [logoImage, setLogoImage] = useState<string>(() => {
+    if (typeof window === 'undefined') return '/uploads/yakiniku/logo.png'
+    try {
+      const raw = localStorage.getItem('genreConfig_yakiniku')
+      if (raw) { const cfg = JSON.parse(raw); if (cfg.logoImage) return cfg.logoImage }
+    } catch {}
+    return '/uploads/yakiniku/logo.png'
+  })
+  const [kvImage, setKvImage] = useState<string>(() => {
+    if (typeof window === 'undefined') return '/uploads/yakiniku/kv.png'
+    try {
+      const raw = localStorage.getItem('genreConfig_yakiniku')
+      if (raw) { const cfg = JSON.parse(raw); if (cfg.kvImage) return cfg.kvImage }
+    } catch {}
+    return '/uploads/yakiniku/kv.png'
+  })
   const [sessionStart] = useState(() => Date.now())
   const [stayMinutes, setStayMinutes] = useState(0)
   const [isPaymentRequested, setIsPaymentRequested] = useState(false)
@@ -189,17 +204,6 @@ export default function YakinikuPage() {
     const id = setInterval(tick, 60000)
     return () => clearInterval(id)
   }, [sessionStart])
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem('genreConfig_yakiniku')
-      if (raw) {
-        const cfg = JSON.parse(raw)
-        if (cfg.logoImage) setLogoImage(cfg.logoImage)
-        if (cfg.kvImage) setKvImage(cfg.kvImage)
-      }
-    } catch {}
-  }, [])
 
   useEffect(() => {
     try {
@@ -401,8 +405,8 @@ export default function YakinikuPage() {
               </span>
             )}
             {cartCount > 0 && (
-              <button onClick={() => setPanel('order')} className="ml-1 flex items-center gap-1.5 bg-red-50 border border-red-300 rounded-lg px-2.5 py-1">
-                <span className="text-xs font-black text-red-700">カート {cartCount}点</span>
+              <button onClick={() => setPanel('cart')} className="ml-1 flex items-center gap-1.5 bg-red-50 border border-red-300 rounded-lg px-2.5 py-1">
+                <span className="text-xs font-black text-red-700">🛒 {cartCount}点</span>
               </button>
             )}
           </div>
@@ -423,7 +427,7 @@ export default function YakinikuPage() {
             <AiRecommendPanel
               orderedItemIds={orderedItemIds}
               stayMinutes={stayMinutes}
-              onAddToCart={(id, name) => { addItem(id); setQuickAdded(name); setTimeout(() => setQuickAdded(null), 1800) }}
+              onAddToCart={(id, name) => { addItem(id); setCartAdded(name); setTimeout(() => setCartAdded(null), 1800) }}
             />
           )}
 
@@ -445,10 +449,17 @@ export default function YakinikuPage() {
             />
           </div>
 
-          {/* クイック追加トースト */}
+          {/* クイック注文トースト */}
           {quickAdded && (
             <div className="fixed top-20 left-1/2 -translate-x-1/2 z-40 bg-gray-900 text-white text-sm font-bold px-4 py-2.5 rounded-xl shadow-lg">
               🍹 {quickAdded} を注文しました
+            </div>
+          )}
+          {/* カート追加トースト */}
+          {cartAdded && (
+            <div className="fixed top-20 left-1/2 -translate-x-1/2 z-40 text-sm font-bold px-4 py-2.5 rounded-xl shadow-lg flex items-center gap-2" style={{ background: '#1a1a3e', border: '1px solid #4c1d95', color: '#a78bfa' }}>
+              <span>🛒</span>
+              <span>{cartAdded} をカートに入れました</span>
             </div>
           )}
 
@@ -613,6 +624,86 @@ export default function YakinikuPage() {
             <div className="w-8 h-1 bg-gray-200 rounded-full mx-auto mt-3 mb-4 cursor-pointer" onClick={() => setPanel(null)} />
 
             {/* ===== モバイルオーダー ===== */}
+            {/* ===== カート ===== */}
+            {panel === 'cart' && (
+              <div className="pb-8">
+                <div className="px-5">
+                  <div className="flex items-center gap-3 mb-4">
+                    <h2 className="font-bold text-gray-900 text-lg flex-1">カート</h2>
+                    {orderPlaced ? (
+                      <span className="text-xs font-bold text-green-600 shrink-0">✓ 注文済み</span>
+                    ) : cartCount > 0 ? (
+                      <button
+                        onClick={placeOrder}
+                        className="shrink-0 px-4 py-2 rounded-xl bg-red-500 text-white font-black text-sm active:scale-95 transition-transform leading-tight text-center"
+                      >
+                        <span className="block">注文する</span>
+                        <span className="block text-[10px] text-red-200">¥{cartTotal.toLocaleString()}</span>
+                      </button>
+                    ) : null}
+                  </div>
+
+                  {cartCount === 0 ? (
+                    <div className="flex flex-col items-center gap-3 py-14 text-center">
+                      <span className="text-5xl">🛒</span>
+                      <p className="text-gray-400 text-sm font-bold">カートは空です</p>
+                      <button
+                        onClick={() => { setPanel('order') }}
+                        className="mt-2 px-5 py-2.5 rounded-xl bg-red-500 text-white font-black text-sm active:scale-95 transition-transform"
+                      >
+                        メニューを見る
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="space-y-3 mb-4">
+                        {ALL_ITEMS.filter(i => (cart[i.id] ?? 0) > 0).map(item => (
+                          <div key={item.id} className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-100 rounded-2xl">
+                            <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0">
+                              {item.photoUrl ? (
+                                <img src={item.photoUrl} alt={item.name} className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-2xl" style={{ background: item.photoBg }}>
+                                  {item.photo}
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-bold text-gray-800 text-sm truncate">{item.name}</p>
+                              <p className="text-[11px] text-gray-400">{item.desc}</p>
+                              <p className="text-sm font-black text-red-600 mt-0.5">¥{(item.price * cart[item.id]).toLocaleString()}</p>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <button onClick={() => remItem(item.id)} className="w-8 h-8 rounded-full bg-white border border-red-200 text-red-500 font-bold text-base flex items-center justify-center">−</button>
+                              <span className="w-5 text-center font-black text-gray-800 text-sm">{cart[item.id]}</span>
+                              <button onClick={() => addItem(item.id)} className="w-8 h-8 rounded-full bg-red-500 text-white font-bold text-base flex items-center justify-center">+</button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex justify-between items-center px-1 mb-5">
+                        <span className="text-sm text-gray-500">合計</span>
+                        <span className="text-2xl font-black text-red-600">¥{cartTotal.toLocaleString()}</span>
+                      </div>
+                      {orderPlaced ? (
+                        <div className="w-full py-4 rounded-xl bg-green-500 text-white font-bold text-sm text-center space-y-1">
+                          <p>✓ ご注文を受け付けました！</p>
+                          <p className="text-xs text-green-100 font-normal">店舗側のiPadに送信されました 🍳</p>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={placeOrder}
+                          className="w-full py-4 rounded-2xl bg-red-500 text-white font-black text-base active:scale-95 transition-transform shadow-md shadow-red-100"
+                        >
+                          注文する（¥{cartTotal.toLocaleString()}）
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+
             {panel === 'order' && (
               <div className="pb-8">
                 {!orderCat && (

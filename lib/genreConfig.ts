@@ -113,5 +113,5 @@ export const GENRE_IMAGE_DEFAULTS: Partial<Record<GenreId, { kvImage: string; lo
   'theme-park':  { kvImage: '/themepark-hero.png',    logoImage: '/themepark-logo.png' },
   concert:       { kvImage: '',                       logoImage: '' },
   hospital:      { kvImage: '/hospital-hero.png',     logoImage: '/hospital-logo.png' },
-  yakiniku:      { kvImage: '/restaurant-hero.png',   logoImage: '/restaurant-logo.png' },
+  yakiniku:      { kvImage: '/uploads/yakiniku/kv.png',   logoImage: '/uploads/yakiniku/logo.png' },
 }
