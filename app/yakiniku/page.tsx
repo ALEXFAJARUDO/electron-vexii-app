@@ -839,7 +839,7 @@ export default function YakinikuPage() {
                                 <p className="text-sm font-black text-red-600 mb-2">¥{item.price.toLocaleString()}</p>
                                 <div className="flex items-center gap-2">
                                   <button
-                                    onClick={() => quickAdd(item.id, item.name)}
+                                    onClick={() => { addItem(item.id); setCartAdded(item.name); setTimeout(() => setCartAdded(null), 1800) }}
                                     className="flex-1 py-1.5 rounded-xl text-xs font-black text-white active:scale-95 transition-transform"
                                     style={{ background: 'linear-gradient(135deg,#dc2626,#b91c1c)' }}
                                   >
