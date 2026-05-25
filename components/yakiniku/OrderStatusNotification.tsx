@@ -47,6 +47,29 @@ export default function OrderStatusNotification({ tableId }: Props) {
   const [notifications, setNotifications] = useState<OrderStatusEntry[]>([])
   const [dismissed, setDismissed] = useState<Set<string>>(new Set())
 
+  // マウント時：アクティブな注文がない通知を削除（前セッションの残留を防ぐ）
+  useEffect(() => {
+    try {
+      const ordersRaw = localStorage.getItem('yakiniku_admin_orders')
+      const orders: Array<{ id: string; tableId: string; status: string }> =
+        ordersRaw ? JSON.parse(ordersRaw) : []
+      const activeIds = new Set(
+        orders
+          .filter(o => o.tableId === tableId && o.status !== 'served' && o.status !== 'cancelled')
+          .map(o => o.id)
+      )
+      const notifRaw = localStorage.getItem('yakiniku_order_status_notifications')
+      if (notifRaw) {
+        const all: OrderStatusEntry[] = JSON.parse(notifRaw)
+        const cleaned = all.filter(n => n.tableId !== tableId || activeIds.has(n.orderId))
+        if (cleaned.length !== all.length) {
+          localStorage.setItem('yakiniku_order_status_notifications', JSON.stringify(cleaned))
+        }
+      }
+    } catch {}
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   useEffect(() => {
     function load() {
       try {
