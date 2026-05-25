@@ -479,13 +479,13 @@ export default function YakinikuPage() {
             ].map((d) => (
               <button
                 key={d.id}
-                onClick={() => quickAdd(d.id, d.label.replace('\n', ''))}
+                onClick={() => { addItem(d.id); setCartAdded(d.label.replace('\n', '')); setTimeout(() => setCartAdded(null), 1800) }}
                 className="rounded-[20px] border flex flex-col items-center justify-center gap-1.5 active:scale-95 transition-transform duration-150 py-3 px-1 min-h-[90px]"
                 style={{ background: d.bg, borderColor: d.border }}
               >
                 <span className="text-3xl leading-none">{d.emoji}</span>
                 <p className="font-bold text-[11px] leading-tight text-center whitespace-pre-line" style={{ color: d.color }}>{d.label}</p>
-                <span className="text-[9px] text-gray-500 font-semibold px-1.5 py-0.5 rounded-full">1タップ注文</span>
+                <span className="text-[9px] text-gray-500 font-semibold px-1.5 py-0.5 rounded-full">カートに追加</span>
               </button>
             ))}
           </div>
