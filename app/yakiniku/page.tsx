@@ -1,11 +1,15 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import BarcodeModal from '@/components/BarcodeModal'
 import VoiceOrderButton from '@/components/restaurant/VoiceOrderButton'
 import { type ParsedItem } from '@/lib/voiceCommandParser'
+import AiRecommendPanel from '@/components/yakiniku/AiRecommendPanel'
+import AdBannerSlot from '@/components/yakiniku/AdBannerSlot'
+import OrderStatusNotification from '@/components/yakiniku/OrderStatusNotification'
+import CustomerOrderTimeline from '@/components/yakiniku/CustomerOrderTimeline'
 
-type PanelId = 'wifi' | 'coupons' | 'order' | 'ad' | 'app' | 'store' | 'staff' | 'payment' | 'history'
+type PanelId = 'wifi' | 'coupons' | 'order' | 'ad' | 'app' | 'store' | 'staff' | 'payment' | 'history' | 'timeline'
 type OrderItem = { id: number; name: string; desc: string; price: number; photo: string; photoBg: string; photoUrl?: string; keywords?: string[]; tag?: string }
 type HistoryEntry = { id: string; tableId: string; items: { name: string; price: number; qty: number }[]; total: number; placedAt: number }
 
@@ -166,12 +170,25 @@ export default function YakinikuPage() {
   const [tableInput, setTableInput] = useState('')
   const [logoImage, setLogoImage] = useState('/restaurant-logo.png')
   const [kvImage, setKvImage] = useState('/restaurant-hero.png')
+  const [sessionStart] = useState(() => Date.now())
+  const [stayMinutes, setStayMinutes] = useState(0)
+  const [isPaymentRequested, setIsPaymentRequested] = useState(false)
+  const [nextCoupon, setNextCoupon] = useState<string | null>(null)
+  const [shokugoCart, setShokugoCart] = useState<Record<number, number>>({})
+  const [shokugoPlaced, setShokugoPlaced] = useState(false)
 
   useEffect(() => {
     const saved = localStorage.getItem('yakiniku_table_id') ?? ''
     setTableId(saved)
     if (!saved) setShowTableModal(true)
   }, [])
+
+  useEffect(() => {
+    const tick = () => setStayMinutes(Math.floor((Date.now() - sessionStart) / 60000))
+    tick()
+    const id = setInterval(tick, 60000)
+    return () => clearInterval(id)
+  }, [sessionStart])
 
   useEffect(() => {
     try {
@@ -202,8 +219,59 @@ export default function YakinikuPage() {
   const cartTotal = ALL_ITEMS.reduce((s, i) => s + (cart[i.id] ?? 0) * i.price, 0)
   const cartCount = ALL_ITEMS.reduce((s, i) => s + (cart[i.id] ?? 0), 0)
 
+  const orderedItemIds = useMemo(() => {
+    const ids: number[] = []
+    orderHistory.forEach(entry => entry.items.forEach(item => {
+      const found = ALL_ITEMS.find(i => i.name === item.name)
+      if (found) ids.push(found.id)
+    }))
+    return ids
+  }, [orderHistory])
+
   function addItem(id: number) { setCart(p => ({ ...p, [id]: (p[id] ?? 0) + 1 })) }
   function remItem(id: number) { setCart(p => ({ ...p, [id]: Math.max(0, (p[id] ?? 0) - 1) })) }
+  function addShokugo(id: number) { setShokugoCart(p => ({ ...p, [id]: (p[id] ?? 0) + 1 })) }
+  function remShokugo(id: number) { setShokugoCart(p => { const n = Math.max(0, (p[id] ?? 0) - 1); const next = { ...p, [id]: n }; if (!n) delete next[id]; return next }) }
+  const shokugoCount = ALL_ITEMS.reduce((s, i) => s + (shokugoCart[i.id] ?? 0), 0)
+  const shokugoTotal = ALL_ITEMS.reduce((s, i) => s + (shokugoCart[i.id] ?? 0) * i.price, 0)
+
+  async function placeShokugoOrder() {
+    const cartItemsList = ALL_ITEMS.filter(i => (shokugoCart[i.id] ?? 0) > 0)
+    const now = Date.now()
+    const orderId = `shokugo-${now}`
+    const entry: HistoryEntry = {
+      id: orderId,
+      tableId,
+      items: cartItemsList.map(i => ({ name: `[食後] ${i.name}`, price: i.price, qty: shokugoCart[i.id] })),
+      total: shokugoTotal,
+      placedAt: now,
+    }
+    const newHistory = [entry, ...orderHistory]
+    setOrderHistory(newHistory)
+    localStorage.setItem('yakiniku_order_history', JSON.stringify(newHistory))
+    const adminOrder = {
+      id: orderId,
+      tableId,
+      items: cartItemsList.map(i => ({
+        id: `${orderId}-${i.id}`,
+        name: `[食後] ${i.name}`,
+        qty: shokugoCart[i.id],
+        price: i.price,
+        category: 'food',
+      })),
+      status: 'new',
+      placedAt: now,
+      total: shokugoTotal,
+      checkedItemIds: [],
+    }
+    try {
+      const raw = localStorage.getItem('yakiniku_admin_orders')
+      const current = raw ? JSON.parse(raw) : []
+      localStorage.setItem('yakiniku_admin_orders', JSON.stringify([...current, adminOrder]))
+    } catch {}
+    setShokugoPlaced(true)
+    setTimeout(() => { setShokugoCart({}); setShokugoPlaced(false) }, 3000)
+  }
 
   function quickAdd(id: number, name: string) {
     const item = ALL_ITEMS.find(i => i.id === id)
@@ -307,6 +375,7 @@ export default function YakinikuPage() {
 
   return (
     <>
+      {tableId && <OrderStatusNotification tableId={tableId} />}
       <main className="min-h-dvh flex flex-col bg-black">
         <header className="bg-black border-b border-gray-800 py-3 shrink-0">
           <div className="max-w-lg mx-auto w-full px-3 flex items-center gap-2.5">
@@ -326,6 +395,11 @@ export default function YakinikuPage() {
                 {tableId ? `席 ${tableId}` : '席番号を設定'}
               </span>
             </button>
+            {stayMinutes > 0 && (
+              <span className="ml-1 text-[9px] text-gray-500 font-semibold">
+                {stayMinutes}分滞在
+              </span>
+            )}
             {cartCount > 0 && (
               <button onClick={() => setPanel('order')} className="ml-1 flex items-center gap-1.5 bg-red-50 border border-red-300 rounded-lg px-2.5 py-1">
                 <span className="text-xs font-black text-red-700">カート {cartCount}点</span>
@@ -343,6 +417,15 @@ export default function YakinikuPage() {
               className="w-full h-full object-cover"
             />
           </div>
+
+          {/* ━━ AIおすすめ ━━ */}
+          {orderedItemIds.length > 0 && (
+            <AiRecommendPanel
+              orderedItemIds={orderedItemIds}
+              stayMinutes={stayMinutes}
+              onAddToCart={(id, name) => { addItem(id); setQuickAdded(name); setTimeout(() => setQuickAdded(null), 1800) }}
+            />
+          )}
 
           {/* ━━ 音声注文 ━━ */}
           <div className="bg-gray-900 border border-gray-700 rounded-2xl px-4 py-3 flex items-center gap-3">
@@ -460,6 +543,19 @@ export default function YakinikuPage() {
               </div>
             </button>
 
+            {/* 注文ステータス */}
+            <button onClick={() => setPanel('timeline')}
+              className="rounded-[20px] border flex items-center gap-3 p-3.5 active:scale-95 transition-transform duration-150"
+              style={{ background: '#1a0a00', borderColor: '#7c2d12' }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-xl" style={{ background: 'linear-gradient(135deg,#ea580c,#c2410c)' }}>
+                🔥
+              </div>
+              <div className="text-left">
+                <p className="font-bold text-gray-200 text-sm leading-tight">注文ステータス</p>
+                <p className="text-[10px] text-gray-500 leading-tight">調理・提供状況を確認</p>
+              </div>
+            </button>
+
             {/* 店舗情報 */}
             <button onClick={() => setPanel('store')}
               className="rounded-[20px] border col-span-2 flex items-center gap-3 p-3.5 active:scale-95 transition-transform duration-150"
@@ -486,16 +582,24 @@ export default function YakinikuPage() {
             <p className="font-black text-green-400 text-base">お会計</p>
           </button>
 
-          {/* 広告スペース */}
-          <div className="col-span-2 rounded-2xl overflow-hidden aspect-video">
-            <iframe
-              src="https://www.youtube.com/embed/vNVdeRkjT2Y?autoplay=1&mute=1&loop=1&playlist=vNVdeRkjT2Y&controls=0&modestbranding=1"
-              title="Advertisement"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="w-full h-full"
-            />
-          </div>
+          {/* ━━ 広告バナー ━━ */}
+          <AdBannerSlot
+            orderedItemIds={orderedItemIds}
+            stayMinutes={stayMinutes}
+            isPaymentRequested={isPaymentRequested}
+          />
+
+          {/* ━━ 次回クーポン ━━ */}
+          {nextCoupon && (
+            <div className="rounded-2xl border flex items-center gap-3 px-4 py-3" style={{ background: '#0a1f0a', borderColor: '#1a4d1a' }}>
+              <span className="text-2xl">🎟</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-black text-green-400">次回クーポンをゲット！</p>
+                <p className="text-[10px] text-gray-400 mt-0.5">コード: <span className="font-mono font-bold text-green-300">{nextCoupon}</span></p>
+              </div>
+              <button onClick={() => setNextCoupon(null)} className="text-gray-600 text-xs">✕</button>
+            </div>
+          )}
         </div>
 
         <div className="py-2 flex items-center justify-center shrink-0">
@@ -573,33 +677,123 @@ export default function YakinikuPage() {
                       )}
                     </div>
 
+                    {/* 食後カート */}
+                    {orderCat === 'menu03' && shokugoCount > 0 && (
+                      <div className="mb-3 rounded-2xl border overflow-hidden" style={{ background: '#0f0a2e', borderColor: '#4c1d95' }}>
+                        <div className="flex items-center gap-2 px-3 py-2" style={{ borderBottom: '1px solid #2d1b69' }}>
+                          <span className="text-sm">🌙</span>
+                          <p className="text-xs font-black" style={{ color: '#a78bfa' }}>食後注文リスト</p>
+                          <span className="ml-auto text-[10px] font-bold" style={{ color: '#a78bfa' }}>¥{shokugoTotal.toLocaleString()}</span>
+                        </div>
+                        <div className="px-3 py-2 space-y-1.5">
+                          {ALL_ITEMS.filter(i => (shokugoCart[i.id] ?? 0) > 0).map(item => (
+                            <div key={item.id} className="flex items-center gap-2">
+                              <p className="text-xs text-gray-300 flex-1 truncate">{item.name}</p>
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <button onClick={() => remShokugo(item.id)} className="w-5 h-5 rounded-full bg-purple-900 text-purple-300 text-xs flex items-center justify-center font-bold">−</button>
+                                <span className="text-xs font-black text-white w-3 text-center">{shokugoCart[item.id]}</span>
+                                <button onClick={() => addShokugo(item.id)} className="w-5 h-5 rounded-full bg-purple-700 text-white text-xs flex items-center justify-center font-bold">+</button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="px-3 pb-3">
+                          {shokugoPlaced ? (
+                            <div className="w-full py-2 rounded-xl text-center text-xs font-black text-green-300" style={{ background: '#052e16' }}>
+                              ✓ 食後注文を送りました！
+                            </div>
+                          ) : (
+                            <button
+                              onClick={placeShokugoOrder}
+                              className="w-full py-2 rounded-xl text-xs font-black text-white active:scale-95 transition-transform"
+                              style={{ background: 'linear-gradient(135deg,#7c3aed,#5b21b6)' }}
+                            >
+                              🌙 食後にまとめて注文する（{shokugoCount}点）
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
                     <div className="space-y-3 mb-4">
                       {(ORDER_MENU[orderCat] ?? []).map((item) => (
-                        <div key={item.id} className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-100 rounded-2xl">
-                          <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0">
-                            {item.photoUrl ? (
-                              <img src={item.photoUrl} alt={item.name} className="w-full h-full object-cover" />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-3xl" style={{ background: item.photoBg }}>
-                                {item.photo}
+                        <div key={item.id} className={`p-3 rounded-2xl border ${orderCat === 'menu03' ? 'bg-white border-gray-100' : 'flex items-center gap-3 bg-gray-50 border-gray-100'}`}>
+                          {orderCat === 'menu03' ? (
+                            /* 手打ち冷麺・一品メニュー専用レイアウト */
+                            <div className="flex gap-3">
+                              <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0">
+                                {item.photoUrl ? (
+                                  <img src={item.photoUrl} alt={item.name} className="w-full h-full object-cover" />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-3xl" style={{ background: item.photoBg }}>
+                                    {item.photo}
+                                  </div>
+                                )}
                               </div>
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-1.5 mb-0.5">
-                              <p className="font-bold text-gray-800 text-sm truncate">{item.name}</p>
-                              {item.tag && (
-                                <span className="text-[9px] bg-red-500 text-white px-1.5 py-0.5 rounded-full font-bold shrink-0">{item.tag}</span>
-                              )}
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-1.5 mb-0.5">
+                                  <p className="font-bold text-gray-800 text-sm truncate">{item.name}</p>
+                                  {item.tag && (
+                                    <span className="text-[9px] bg-red-500 text-white px-1.5 py-0.5 rounded-full font-bold shrink-0">{item.tag}</span>
+                                  )}
+                                </div>
+                                <p className="text-[11px] text-gray-400 mb-1.5">{item.desc}</p>
+                                <p className="text-sm font-black text-red-600 mb-2">¥{item.price.toLocaleString()}</p>
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    onClick={() => quickAdd(item.id, item.name)}
+                                    className="flex-1 py-1.5 rounded-xl text-xs font-black text-white active:scale-95 transition-transform"
+                                    style={{ background: 'linear-gradient(135deg,#dc2626,#b91c1c)' }}
+                                  >
+                                    今すぐ注文
+                                  </button>
+                                  <button
+                                    onClick={() => { addShokugo(item.id); setQuickAdded(`${item.name}を食後リストに追加`); setTimeout(() => setQuickAdded(null), 1800) }}
+                                    className="flex-1 py-1.5 rounded-xl text-xs font-black active:scale-95 transition-transform"
+                                    style={{ background: '#f3e8ff', color: '#7c3aed', border: '1px solid #ddd6fe' }}
+                                  >
+                                    🌙 食後に注文
+                                  </button>
+                                </div>
+                                {(cart[item.id] ?? 0) > 0 && (
+                                  <div className="flex items-center gap-2 mt-2">
+                                    <p className="text-[10px] text-gray-400">カート：</p>
+                                    <button onClick={() => remItem(item.id)} className="w-6 h-6 rounded-full bg-white border border-red-200 text-red-500 font-bold text-xs flex items-center justify-center">−</button>
+                                    <span className="text-xs font-black text-gray-800">{cart[item.id]}</span>
+                                    <button onClick={() => addItem(item.id)} className="w-6 h-6 rounded-full bg-red-500 text-white font-bold text-xs flex items-center justify-center">+</button>
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                            <p className="text-[11px] text-gray-400 mb-1">{item.desc}</p>
-                            <p className="text-sm font-black text-red-600">¥{item.price.toLocaleString()}</p>
-                          </div>
-                          <div className="flex items-center gap-2 shrink-0">
-                            <button onClick={() => remItem(item.id)} className="w-8 h-8 rounded-full bg-white border border-red-200 text-red-500 font-bold text-base flex items-center justify-center">−</button>
-                            <span className="w-4 text-center font-black text-gray-800 text-sm">{cart[item.id] ?? 0}</span>
-                            <button onClick={() => addItem(item.id)} className="w-8 h-8 rounded-full bg-red-500 text-white font-bold text-base flex items-center justify-center">+</button>
-                          </div>
+                          ) : (
+                            /* 通常カテゴリのレイアウト */
+                            <>
+                              <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0">
+                                {item.photoUrl ? (
+                                  <img src={item.photoUrl} alt={item.name} className="w-full h-full object-cover" />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-3xl" style={{ background: item.photoBg }}>
+                                    {item.photo}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-1.5 mb-0.5">
+                                  <p className="font-bold text-gray-800 text-sm truncate">{item.name}</p>
+                                  {item.tag && (
+                                    <span className="text-[9px] bg-red-500 text-white px-1.5 py-0.5 rounded-full font-bold shrink-0">{item.tag}</span>
+                                  )}
+                                </div>
+                                <p className="text-[11px] text-gray-400 mb-1">{item.desc}</p>
+                                <p className="text-sm font-black text-red-600">¥{item.price.toLocaleString()}</p>
+                              </div>
+                              <div className="flex items-center gap-2 shrink-0">
+                                <button onClick={() => remItem(item.id)} className="w-8 h-8 rounded-full bg-white border border-red-200 text-red-500 font-bold text-base flex items-center justify-center">−</button>
+                                <span className="w-4 text-center font-black text-gray-800 text-sm">{cart[item.id] ?? 0}</span>
+                                <button onClick={() => addItem(item.id)} className="w-8 h-8 rounded-full bg-red-500 text-white font-bold text-base flex items-center justify-center">+</button>
+                              </div>
+                            </>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -702,11 +896,31 @@ export default function YakinikuPage() {
                   </div>
                 )}
                 <button
-                  onClick={() => { setPanel(null); setQuickAdded('お会計の準備をします'); setTimeout(() => setQuickAdded(null), 2000) }}
+                  onClick={() => {
+                    setPanel(null)
+                    setIsPaymentRequested(true)
+                    setNextCoupon('KARUBI1')
+                    setQuickAdded('お会計の準備をします')
+                    setTimeout(() => setQuickAdded(null), 2000)
+                  }}
                   className="w-full py-4 rounded-2xl bg-green-500 text-white font-black text-base active:scale-95 transition-transform shadow-md shadow-green-200"
                 >
                   お会計をお願いする
                 </button>
+                <p className="text-[10px] text-gray-400 mt-3">次回使えるクーポンをプレゼント 🎟</p>
+              </div>
+            )}
+
+            {/* ===== 注文ステータスタイムライン ===== */}
+            {panel === 'timeline' && (
+              <div className="px-4 pb-8">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center">
+                    <span className="text-xl">🔥</span>
+                  </div>
+                  <h2 className="font-bold text-gray-900 text-lg">注文ステータス</h2>
+                </div>
+                <CustomerOrderTimeline tableId={tableId} />
               </div>
             )}
 

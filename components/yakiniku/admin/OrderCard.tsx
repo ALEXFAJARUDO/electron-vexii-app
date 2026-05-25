@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { type DemoOrder, type OrderStatus } from '@/lib/demoYakinikuOrders'
 import OrderStatusBadge from './OrderStatusBadge'
+import { pushOrderStatusNotification } from '@/components/yakiniku/OrderStatusNotification'
 
 function ElapsedMin({ placedAt }: { placedAt: number }) {
   const [mins, setMins] = useState(0)
@@ -127,7 +128,17 @@ export default function OrderCard({
           {actions.map(a => (
             <button
               key={a.value}
-              onClick={() => onUpdateStatus(order.id, a.value)}
+              onClick={() => {
+                onUpdateStatus(order.id, a.value)
+                const statusMap: Record<OrderStatus, 'accepted' | 'cooking' | 'ready' | 'served' | null> = {
+                  new: 'accepted', cooking: 'cooking', served: 'served', cancelled: null,
+                }
+                const notifStatus = statusMap[a.value]
+                if (notifStatus) {
+                  const itemName = order.items[0]?.name ?? 'ご注文'
+                  pushOrderStatusNotification({ orderId: order.id, tableId: order.tableId, itemName, status: notifStatus, updatedAt: Date.now() })
+                }
+              }}
               className={`flex-1 py-2 rounded-xl text-sm font-bold transition-colors ${a.style}`}
             >
               {a.label}

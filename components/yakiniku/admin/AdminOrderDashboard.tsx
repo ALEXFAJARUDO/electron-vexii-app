@@ -16,7 +16,7 @@ const FILTERS: { value: Filter; label: string }[] = [
   { value: 'cancelled', label: 'キャンセル' },
 ]
 
-export default function AdminOrderDashboard() {
+export default function AdminOrderDashboard({ embedded }: { embedded?: boolean } = {}) {
   const { orders, updateStatus, toggleItemChecked, resetToDemo, loaded } = useYakinikuOrders()
   const [filter, setFilter] = useState<Filter>('all')
 
@@ -24,8 +24,9 @@ export default function AdminOrderDashboard() {
   const sorted   = [...filtered].sort((a, b) => b.placedAt - a.placedAt)
 
   return (
-    <div className="min-h-screen bg-[#080808] text-white flex flex-col">
+    <div className={embedded ? 'text-white flex flex-col' : 'min-h-screen bg-[#080808] text-white flex flex-col'}>
       {/* Header */}
+      {!embedded && (
       <header className="bg-[#0d0d0d] border-b border-white/10 px-6 py-3 flex items-center gap-4 shrink-0">
         <div className="flex items-center gap-3">
           <span className="text-2xl">🔥</span>
@@ -50,8 +51,9 @@ export default function AdminOrderDashboard() {
           </button>
         </div>
       </header>
+      )}
 
-      <div className="flex-1 p-6 flex flex-col gap-5 overflow-y-auto">
+      <div className={embedded ? 'flex-1 p-6 flex flex-col gap-5' : 'flex-1 p-6 flex flex-col gap-5 overflow-y-auto'}>
         {/* Stats */}
         {loaded && <OrderStatsCards orders={orders} />}
 
@@ -91,7 +93,7 @@ export default function AdminOrderDashboard() {
         )}
 
         {/* New order banner */}
-        {loaded && orders.some(o => o.status === 'new') && (
+        {loaded && !embedded && orders.some(o => o.status === 'new') && (
           <div className="fixed bottom-6 right-6 bg-red-600 text-white px-5 py-3 rounded-2xl shadow-lg shadow-red-900/50 animate-pulse font-bold text-sm pointer-events-none">
             🔔 新規注文あり — {orders.filter(o => o.status === 'new').length}件
           </div>

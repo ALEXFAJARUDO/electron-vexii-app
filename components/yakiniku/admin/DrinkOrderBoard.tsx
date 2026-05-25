@@ -90,7 +90,7 @@ function DrinkCard({
   )
 }
 
-export default function DrinkOrderBoard() {
+export default function DrinkOrderBoard({ embedded }: { embedded?: boolean } = {}) {
   const { orders, updateStatus, toggleItemChecked, loaded } = useYakinikuOrders()
 
   const drinkOrders = orders
@@ -106,8 +106,9 @@ export default function DrinkOrderBoard() {
   const cookingCount = drinkOrders.filter(o => o.status === 'cooking').length
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white flex flex-col">
+    <div className={embedded ? 'text-white flex flex-col' : 'min-h-screen bg-[#050505] text-white flex flex-col'}>
       {/* Header */}
+      {!embedded && (
       <header className="bg-[#0a0a0a] border-b border-white/10 px-6 py-3 flex items-center gap-4 shrink-0">
         <span className="text-2xl">🍺</span>
         <div>
@@ -133,6 +134,18 @@ export default function DrinkOrderBoard() {
           </Link>
         </div>
       </header>
+      )}
+
+      {embedded && (
+        <div className="flex items-center gap-4 px-6 py-3 border-b border-white/10 bg-[#0a0a0a]">
+          <span className="text-xl">🍺</span>
+          <p className="font-black text-white">ドリンク場</p>
+          <div className="flex gap-3 ml-4">
+            <span className="text-[10px] bg-amber-500/20 border border-amber-500/40 rounded-lg px-2 py-1 text-amber-400 font-bold">未対応 {newCount}</span>
+            <span className="text-[10px] bg-blue-500/20 border border-blue-500/40 rounded-lg px-2 py-1 text-blue-400 font-bold">作成中 {cookingCount}</span>
+          </div>
+        </div>
+      )}
 
       <div className="flex-1 p-6 overflow-y-auto">
         {!loaded ? (
