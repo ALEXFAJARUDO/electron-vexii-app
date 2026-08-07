@@ -1,6 +1,7 @@
 export type GenreId =
   | 'restaurant' | 'cafe' | 'hotel' | 'concert' | 'racing'
   | 'stadium' | 'hospital' | 'airport' | 'mall' | 'convenience' | 'theme-park' | 'yakiniku'
+  | 'ootori-wings'
 
 export type Coupon = {
   id: string
@@ -93,6 +94,7 @@ export const GENRES: GenreMeta[] = [
   { id: 'concert',     label: 'コンサート会場',     emoji: '🎵', color: '#7c3aed', light: '#c4b5fd', bg: '#f5f3ff', border: '#ddd6fe', hasMenu: false, hasFloor: false, hasSchedule: true  },
   { id: 'hospital',    label: '病院',               emoji: '🏥', color: '#10b981', light: '#6ee7b7', bg: '#ecfdf5', border: '#a7f3d0', hasMenu: false, hasFloor: true,  hasSchedule: false },
   { id: 'yakiniku',   label: '焼肉屋',             emoji: '🥩', color: '#dc2626', light: '#fca5a5', bg: '#fff1f2', border: '#fecdd3', hasMenu: true,  hasFloor: false, hasSchedule: false },
+  { id: 'ootori-wings', label: 'おおとりウイングス', emoji: '🦢', color: '#0891b2', light: '#67e8f9', bg: '#ecfeff', border: '#a5f3fc', hasMenu: false, hasFloor: true,  hasSchedule: true  },
 ]
 
 export function getGenre(id: string): GenreMeta | undefined {
@@ -114,4 +116,5 @@ export const GENRE_IMAGE_DEFAULTS: Partial<Record<GenreId, { kvImage: string; lo
   concert:       { kvImage: '',                       logoImage: '' },
   hospital:      { kvImage: '/hospital-hero.png',     logoImage: '/hospital-logo.png' },
   yakiniku:      { kvImage: '/uploads/yakiniku/kv.png',   logoImage: '/uploads/yakiniku/logo.png' },
+  'ootori-wings': { kvImage: '/mall-hero.png',            logoImage: '/mall-logo.png' },
 }
