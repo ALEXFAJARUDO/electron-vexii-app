@@ -139,7 +139,7 @@ export default function OotoriWingsPage() {
         <div className="flex-1 max-w-lg mx-auto w-full p-3 pb-6 grid grid-cols-2 auto-rows-[minmax(110px,auto)] gap-[15px]">
           {/* ヒーロー画像 */}
           <div className="col-span-2 rounded-2xl overflow-hidden shrink-0" style={{ height: '25vh' }}>
-            <img src="/mall-hero.png" alt="おおとりウイングス" className="w-full h-full object-cover" />
+            <img src="/ootori-hero.png" alt="おおとりウイングス" className="w-full h-full object-cover" />
           </div>
 
           {/* 施設情報カード */}

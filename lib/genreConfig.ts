@@ -116,5 +116,5 @@ export const GENRE_IMAGE_DEFAULTS: Partial<Record<GenreId, { kvImage: string; lo
   concert:       { kvImage: '',                       logoImage: '' },
   hospital:      { kvImage: '/hospital-hero.png',     logoImage: '/hospital-logo.png' },
   yakiniku:      { kvImage: '/uploads/yakiniku/kv.png',   logoImage: '/uploads/yakiniku/logo.png' },
-  'ootori-wings': { kvImage: '/mall-hero.png',            logoImage: '/mall-logo.png' },
+  'ootori-wings': { kvImage: '/ootori-hero.png',          logoImage: '/mall-logo.png' },
 }
