@@ -4,9 +4,18 @@ import { iconGradient } from '@/lib/colorLight'
 import { useState } from 'react'
 import Link from 'next/link'
 
-type PanelId = 'floor1' | 'floor2' | 'floor3' | 'events' | 'map'
+type PanelId = 'floor1' | 'floor2' | 'floor3' | 'events' | 'map' | 'flyer'
 
 const OFFICIAL_SITE_URL = 'https://wingssc.co.jp/'
+
+const FLYER_ITEMS = [
+  { emoji: '🍎', name: 'サンふじりんご 3個', price: '498円', note: '(税込)', shop: 'まるしげ' },
+  { emoji: '🍞', name: '食パン 1斤', price: '198円', note: '(税込)', shop: 'まるしげ' },
+  { emoji: '💈', name: 'カット+シャンプー', price: '3,300円', note: '平日限定', shop: 'ローラン' },
+  { emoji: '💅', name: 'ジェルネイル', price: '20%OFF', note: '新規のお客様', shop: 'NICE NAIL' },
+  { emoji: '📚', name: '夏期講習 受付中', price: '無料体験', note: '先着30名', shop: 'おおとりアカデミー' },
+  { emoji: '💪', name: '月会費', price: '初月無料', note: '入会金無料キャンペーン中', shop: 'カーブス' },
+]
 
 const FLOOR1_SHOPS = [
   { name: 'おおとりウイングス 旅のサロン', category: '旅行代理店', hours: '10:00〜20:00', open: true },
@@ -110,6 +119,19 @@ export default function OotoriWingsPage() {
       icon: (
         <svg className="w-9 h-9" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c-.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z"/>
+        </svg>
+      ),
+    },
+    {
+      id: 'flyer',
+      label: 'デジタルチラシ',
+      desc: '今週のお買い得情報',
+      color: '#ec4899',
+      bg: '#fdf2f8',
+      border: '#fbcfe8',
+      icon: (
+        <svg className="w-9 h-9" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
         </svg>
       ),
     },
@@ -368,6 +390,46 @@ export default function OotoriWingsPage() {
                   className="block text-center text-xs font-semibold text-cyan-600 underline"
                 >
                   詳細なフロアマップを公式サイトで見る
+                </a>
+              </div>
+            )}
+
+            {/* デジタルチラシ */}
+            {panel === 'flyer' && (
+              <div className="px-5 pb-8">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+                    </svg>
+                  </div>
+                  <h2 className="font-bold text-gray-900 text-lg">デジタルチラシ</h2>
+                </div>
+
+                <div className="bg-pink-50 border border-pink-100 rounded-2xl p-4 mb-4">
+                  <p className="font-bold text-gray-800 text-sm">今週のお買い得情報</p>
+                  <p className="text-xs text-gray-400 mt-0.5">※サンプル表示です。実際の内容は各店舗にご確認ください。</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  {FLYER_ITEMS.map((item) => (
+                    <div key={item.name} className="bg-white border border-pink-100 rounded-xl p-3 flex flex-col items-center text-center shadow-sm">
+                      <span className="text-3xl mb-1">{item.emoji}</span>
+                      <p className="font-semibold text-gray-800 text-xs leading-tight">{item.name}</p>
+                      <p className="font-bold text-pink-500 text-sm mt-1">{item.price}</p>
+                      <p className="text-[10px] text-gray-400 mt-0.5">{item.note}</p>
+                      <p className="text-[10px] text-gray-300 mt-1">{item.shop}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <a
+                  href={OFFICIAL_SITE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 block text-center text-xs font-semibold text-cyan-600 underline"
+                >
+                  最新のチラシ情報を公式サイトで見る
                 </a>
               </div>
             )}
